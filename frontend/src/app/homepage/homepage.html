@@ -1,0 +1,17 @@
+<h2>Login</h2>
+  Username: <input type="text" name="username" [(ngModel)]="username">
+<br/>
+  Password: <input type="password" name="password" [(ngModel)]="password">
+<br/>
+<button (click)="login()">Login</button>
+<hr/>
+<h2>Register</h2>
+  Username: <input type="text" name="u" [(ngModel)]="user.username">
+<br/>
+  Password: <input type="password" name="p" [(ngModel)]="user.password">
+<br/>
+  Firstname: <input type="text" name="f" [(ngModel)]="user.firstname">
+<br/>
+  Lastname: <input type="text" name="l" [(ngModel)]="user.lastname">
+<br/>
+<button (click)="register()">Register</button>
