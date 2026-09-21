@@ -2,29 +2,66 @@
 
 <form #registerForm="ngForm">
   <div>
-    Username: <input type="text" name="username" [(ngModel)]="registerUser.username" required>
+    Username:
+    <input type="text" name="username" [(ngModel)]="registerUser.username" #username="ngModel" required>
+
+    @if (username.touched && username.errors?.["required"]) {
+      <p>Username is required.</p>
+    }
   </div>
 
   <div>
     Password:
-    <input type="password" name="password" [(ngModel)]="registerUser.password"
+    <input type="password" name="password" [(ngModel)]="registerUser.password" #password="ngModel"
            pattern="^(?=[A-Za-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,12}$" required>
+
+    @if (password.touched && password.errors?.["required"]) {
+      <p>Password is required.</p>
+    }
+
+    @if (password.touched && password.errors?.["pattern"]) {
+      <p>Password must start with a letter, contain 8-12 characters, one uppercase letter, one number and one special character.</p>
+    }
   </div>
 
   <div>
-    First name: <input type="text" name="firstName" [(ngModel)]="registerUser.firstName" required>
+    First name:
+    <input type="text" name="firstName" [(ngModel)]="registerUser.firstName" #firstName="ngModel" required>
+
+    @if (firstName.touched && firstName.errors?.["required"]) {
+      <p>First name is required.</p>
+    }
   </div>
 
   <div>
-    Last name: <input type="text" name="lastName" [(ngModel)]="registerUser.lastName" required>
+    Last name:
+    <input type="text" name="lastName" [(ngModel)]="registerUser.lastName" #lastName="ngModel" required>
+
+    @if (lastName.touched && lastName.errors?.["required"]) {
+      <p>Last name is required.</p>
+    }
   </div>
 
   <div>
-    Phone: <input type="tel" name="phone" [(ngModel)]="registerUser.phone" required>
+    Phone:
+    <input type="tel" name="phone" [(ngModel)]="registerUser.phone" #phone="ngModel" required>
+
+    @if (phone.touched && phone.errors?.["required"]) {
+      <p>Phone number is required.</p>
+    }
   </div>
 
   <div>
-    Email: <input type="email" name="email" [(ngModel)]="registerUser.email" required>
+    Email:
+    <input type="email" name="email" [(ngModel)]="registerUser.email" #email="ngModel" email required>
+
+    @if (email.touched && email.errors?.["required"]) {
+      <p>Email is required.</p>
+    }
+
+    @if (email.touched && email.errors?.["email"]) {
+      <p>Please enter a valid email address.</p>
+    }
   </div>
 
   <div>
@@ -39,26 +76,52 @@
   @if (registerUser.role === "businessClient" || registerUser.role === "printer") {
     <div>
       Institution name:
-      <input type="text" name="institutionName" [(ngModel)]="registerUser.institution.name" required>
+      <input type="text" name="institutionName" [(ngModel)]="registerUser.institution.name"
+             #institutionName="ngModel" required>
+
+      @if (institutionName.touched && institutionName.errors?.["required"]) {
+        <p>Institution name is required.</p>
+      }
     </div>
 
     <div>
       Institution address:
-      <input type="text" name="institutionAddress" [(ngModel)]="registerUser.institution.address" required>
+      <input type="text" name="institutionAddress" [(ngModel)]="registerUser.institution.address"
+             #institutionAddress="ngModel" required>
+
+      @if (institutionAddress.touched && institutionAddress.errors?.["required"]) {
+        <p>Institution address is required.</p>
+      }
     </div>
 
     <div>
       Registration number:
       <input type="text" name="registrationNumber" [(ngModel)]="registerUser.institution.registrationNumber"
-             pattern="[0-9]{8}" maxlength="8" required>
+             #registrationNumber="ngModel" pattern="[0-9]{8}" maxlength="8" required>
+
+      @if (registrationNumber.touched && registrationNumber.errors?.["required"]) {
+        <p>Registration number is required.</p>
+      }
+
+      @if (registrationNumber.touched && registrationNumber.errors?.["pattern"]) {
+        <p>Registration number must contain exactly 8 digits.</p>
+      }
     </div>
 
     <div>
       Tax ID:
       <input type="text" name="taxId" [(ngModel)]="registerUser.institution.taxId"
-             pattern="[1-9][0-9]{8}" maxlength="9" required>
+             #taxId="ngModel" pattern="[1-9][0-9]{8}" maxlength="9" required>
+
+      @if (taxId.touched && taxId.errors?.["required"]) {
+        <p>Tax ID is required.</p>
+      }
+
+      @if (taxId.touched && taxId.errors?.["pattern"]) {
+        <p>Tax ID must contain 9 digits and cannot start with zero.</p>
+      }
     </div>
   }
 
-  <button type="button" (click)="register()" [disabled]="registerForm.invalid">Register</button>
+  <button type="button" (click)="register(registerForm)">Register</button>
 </form>

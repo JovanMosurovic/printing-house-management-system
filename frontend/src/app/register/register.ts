@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {RegisterModel} from '../models/register';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-register',
@@ -16,12 +16,18 @@ export class Register {
 
   registerUser = new RegisterModel();
 
-  register() {
+  register(registerForm: NgForm) {
+    if (registerForm.invalid) {
+      registerForm.form.markAllAsTouched();
+      return;
+    }
+
     this.userService.register(this.registerUser).subscribe(data => {
       alert(data.message);
 
       if (data.message === "User successfully added.") {
         this.registerUser = new RegisterModel()
+        registerForm.resetForm(this.registerUser);
       }
     })
   }
