@@ -1,0 +1,64 @@
+<h2>Register</h2>
+
+<form #registerForm="ngForm">
+  <div>
+    Username: <input type="text" name="username" [(ngModel)]="registerUser.username" required>
+  </div>
+
+  <div>
+    Password:
+    <input type="password" name="password" [(ngModel)]="registerUser.password"
+           pattern="^(?=[A-Za-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,12}$" required>
+  </div>
+
+  <div>
+    First name: <input type="text" name="firstName" [(ngModel)]="registerUser.firstName" required>
+  </div>
+
+  <div>
+    Last name: <input type="text" name="lastName" [(ngModel)]="registerUser.lastName" required>
+  </div>
+
+  <div>
+    Phone: <input type="tel" name="phone" [(ngModel)]="registerUser.phone" required>
+  </div>
+
+  <div>
+    Email: <input type="email" name="email" [(ngModel)]="registerUser.email" required>
+  </div>
+
+  <div>
+    Role:
+    <select name="role" [(ngModel)]="registerUser.role">
+      <option value="individualClient">Individual client</option>
+      <option value="businessClient">Business client</option>
+      <option value="printer">Printing house</option>
+    </select>
+  </div>
+
+  @if (registerUser.role === "businessClient" || registerUser.role === "printer") {
+    <div>
+      Institution name:
+      <input type="text" name="institutionName" [(ngModel)]="registerUser.institution.name" required>
+    </div>
+
+    <div>
+      Institution address:
+      <input type="text" name="institutionAddress" [(ngModel)]="registerUser.institution.address" required>
+    </div>
+
+    <div>
+      Registration number:
+      <input type="text" name="registrationNumber" [(ngModel)]="registerUser.institution.registrationNumber"
+             pattern="[0-9]{8}" maxlength="8" required>
+    </div>
+
+    <div>
+      Tax ID:
+      <input type="text" name="taxId" [(ngModel)]="registerUser.institution.taxId"
+             pattern="[1-9][0-9]{8}" maxlength="9" required>
+    </div>
+  }
+
+  <button type="button" (click)="register()" [disabled]="registerForm.invalid">Register</button>
+</form>

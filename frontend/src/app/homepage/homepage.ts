@@ -1,41 +1,30 @@
-import { Component, inject } from '@angular/core';
-import { User } from '../services/user';
-import { UserType } from '../models/user';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import {Component, inject} from '@angular/core';
+import {UserService} from '../services/user.service';
+import {LoginModel} from '../models/login';
+import {RouterLink} from '@angular/router';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-homepage',
-  imports: [FormsModule],
+  imports: [
+    RouterLink,
+    FormsModule
+  ],
   templateUrl: './homepage.html',
   styleUrl: './homepage.css',
 })
 export class Homepage {
+  private userService = inject(UserService);
 
-  private userService = inject(User)
+  loginUser = new LoginModel();
 
-  username  = ""
-  password = ""
-
-  private router = inject(Router);
-
-  login(){
-    this.userService.login(this.username, this.password).subscribe((user)=>{
-      if(user){
-        this.router.navigate(["/user"]);
+  login() {
+    this.userService.login(this.loginUser).subscribe(data => {
+      if (data != null) {
+        alert(`Welcome ${data.firstName} ${data.lastName}`);
+      } else {
+        alert("Wrong credentials or the account is not approved.");
       }
-      else{
-        alert("No user")
-      }
-    })
-
-  }
-
-  user: UserType = new UserType()
-
-  register(){
-    this.userService.register(this.user).subscribe((msg)=>{
-      alert(msg.message)
-    })
+    });
   }
 }

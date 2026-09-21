@@ -8,14 +8,18 @@ export class UserController{
         try {
             let username = req.body.username;
             let password = req.body.password;
-            let role = req.body.role;
 
             let user = await UserModel.findOne({
-                username: username,
-                role: role
+                username: username
             }).select("+passwordHash")
 
             if (user == null) {
+                res.json(null);
+                return;
+            }
+
+            // Admin will have separate login endpoint
+            if (user.role == "admin") {
                 res.json(null);
                 return;
             }
