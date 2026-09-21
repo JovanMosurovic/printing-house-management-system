@@ -22,13 +22,23 @@ export class Register {
       return;
     }
 
-    this.userService.register(this.registerUser).subscribe(data => {
-      alert(data.message);
+    this.userService.register(this.registerUser).subscribe({
+      next: data => {
+        alert(data.message);
 
-      if (data.message === "User successfully added.") {
-        this.registerUser = new RegisterModel()
-        registerForm.resetForm(this.registerUser);
+        if (data.message === "User successfully added.") {
+          this.registerUser = new RegisterModel();
+          registerForm.resetForm(this.registerUser);
+        }
+      },
+      error: error => {
+        if (error.error?.message) {
+          alert(error.error.message);
+        } else {
+          alert("Unexpected error while registering.");
+        }
       }
-    })
+    });
   }
+
 }
