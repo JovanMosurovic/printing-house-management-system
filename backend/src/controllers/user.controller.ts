@@ -42,6 +42,20 @@ export class UserController{
         }
     }
 
+    async getPendingUsers(req: express.Request, res: express.Response) {
+        try {
+            let users = await UserModel.find({
+                status: "pending",
+                role: {$ne: "admin"}
+            }).sort({createdAt: 1});
+
+            res.json(users);
+        } catch (e) {
+            console.log("Error while getting pending users.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     async login(req: express.Request, res: express.Response) {
         try {
             let username = req.body.username;
@@ -203,5 +217,56 @@ export class UserController{
             res.status(500).json({message: "Unexpected server error."});
         }
 
+    }
+
+    async updateUserStatus(req: express.Request, res: express.Response) {
+        try {
+            let userId = req.body.userId;
+            let status = req.body.status;
+
+            if (!userId) {
+                res.status(400).json({message: "User ID is required."});
+                return;
+            }
+
+            if (status != "approved" && status != "rejected") {
+                res.status(400).json({message: "Status must be approved or rejected."});
+                return;
+            }
+
+            let user = await UserModel.findById(userId);
+
+            if (user == null) {
+                res.status(404).json({message: "User not found."});
+                return;
+            }
+
+            if (user.role == "admin") {
+                res.status(400).json({message: "Administrator status cannot be changed."});
+                return;
+            }
+
+            if (user.status != "pending") {
+                res.status(409).json({message: "Registration has already been processed."});
+                return;
+            }
+
+            user.status = status;
+            await user.save();
+
+            if (status == "approved") {
+                res.json({message: "User registration successfully approved."});
+            } else {
+                res.json({message: "User registration successfully rejected."});
+            }
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Invalid user ID."});
+                return;
+            }
+
+            console.log("Error while updating user status.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
     }
 }

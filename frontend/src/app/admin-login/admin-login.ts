@@ -2,6 +2,8 @@ import {Component, inject} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {LoginModel} from '../models/login';
 import {FormsModule, NgForm} from '@angular/forms';
+import {Router} from '@angular/router';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-admin-login',
@@ -11,6 +13,8 @@ import {FormsModule, NgForm} from '@angular/forms';
 })
 export class AdminLogin {
   private userService = inject(UserService);
+  private authService = inject(AuthService);
+  private router = inject(Router)
 
   loginAdmin = new LoginModel();
   message = "";
@@ -25,7 +29,8 @@ export class AdminLogin {
 
     this.userService.adminLogin(this.loginAdmin).subscribe({
       next: data => {
-        this.message = `Welcome administrator ${data.firstName} ${data.lastName}`;
+        this.authService.setLoggedUser(data);
+        this.router.navigate(["/admin"]);
       },
       error: error => {
         if (error.error?.message) {

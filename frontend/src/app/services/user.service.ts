@@ -30,6 +30,19 @@ export class UserService {
     return this.http.post<UserModel>(`${this.apiUrl}/admin/login`, data);
   }
 
+  getPendingUsers() {
+    return this.http.get<UserModel[]>(`${this.apiUrl}/admin/pending`);
+  }
+
+  updateUserStatus(userId: string, status: "approved" | "rejected") {
+    const data = {
+      userId: userId,
+      status: status
+    };
+
+    return this.http.post<MessageModel>(`${this.apiUrl}/admin/update-user-status`, data);
+  }
+
   register(registerUser: RegisterModel) {
     const institution =
       registerUser.role === "individualClient" ? undefined :

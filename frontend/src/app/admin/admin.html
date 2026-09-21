@@ -1,0 +1,56 @@
+<h2>Pending registrations</h2>
+<button type="button" (click)="logout()">Logout</button>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (pendingUsers.length === 0 && !message) {
+  <p>There are no pending registrations.</p>
+} @else {
+  <table>
+    <thead>
+    <tr>
+      <th>Username</th>
+      <th>Name</th>
+      <th>Contact</th>
+      <th>Role</th>
+      <th>Institution</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @for (user of pendingUsers; track user._id) {
+        <tr>
+          <td>{{user.username}}</td>
+          <td>{{user.firstName}} {{user.lastName}}</td>
+          <td>
+            {{user.email}}<br>
+            {{user.phone}}
+          </td>
+          <td>{{user.role}}</td>
+          <td>
+            @if (user.institution) {
+              {{user.institution.name}}<br>
+              {{user.institution.address}}<br>
+              Registration number: {{user.institution.registrationNumber}}<br>
+              Tax ID: {{user.institution.taxId}}
+            } @else {
+              -
+            }
+          </td>
+          <td>
+            <button type="button" (click)="updateUserStatus(user._id, 'approved')">
+              Approve
+            </button>
+
+            <button type="button" (click)="updateUserStatus(user._id, 'rejected')">
+              Reject
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
