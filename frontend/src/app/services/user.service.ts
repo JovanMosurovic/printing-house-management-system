@@ -44,25 +44,30 @@ export class UserService {
   }
 
   register(registerUser: RegisterModel) {
-    const institution =
-      registerUser.role === "individualClient" ? undefined :
-        {
-          name: registerUser.institution.name,
-          address: registerUser.institution.address,
-          registrationNumber: registerUser.institution.registrationNumber,
-          taxId: registerUser.institution.taxId
-        };
+    const data = new FormData();
 
-    const data = {
-      username: registerUser.username,
-      password: registerUser.password,
-      firstName: registerUser.firstName,
-      lastName: registerUser.lastName,
-      phone: registerUser.phone,
-      email: registerUser.email,
-      role: registerUser.role,
-      institution: institution
-    };
+    data.append("username", registerUser.username);
+    data.append("password", registerUser.password);
+    data.append("firstName", registerUser.firstName);
+    data.append("lastName", registerUser.lastName);
+    data.append("phone", registerUser.phone);
+    data.append("email", registerUser.email);
+    data.append("role", registerUser.role);
+
+    if (registerUser.role === "businessClient" || registerUser.role === "printer") {
+      const institution = {
+        name: registerUser.institution.name,
+        address: registerUser.institution.address,
+        registrationNumber: registerUser.institution.registrationNumber,
+        taxId: registerUser.institution.taxId
+      };
+
+      data.append("institution", JSON.stringify(institution));
+    }
+
+    if (registerUser.profileImage) {
+      data.append("profileImage", registerUser.profileImage);
+    }
 
     return this.http.post<MessageModel>(`${this.apiUrl}/register`, data);
   }

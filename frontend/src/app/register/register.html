@@ -123,7 +123,16 @@
     </div>
   }
 
-  <button type="button" (click)="register(registerForm)">Register</button>
+  <div>
+    Profile image:
+    <input #profileImageInput type="file" accept=".jpg,.jpeg,.png,.gif" (change)="selectProfileImage(profileImageInput)">
+
+    @if (profileImageError) {
+      <p>{{profileImageError}}</p>
+    }
+  </div>
+
+  <button type="button" (click)="register(registerForm, profileImageInput)">Register</button>
 </form>
 
 @if (message) {

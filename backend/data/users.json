@@ -8,7 +8,7 @@
 	"lastName": "Nikolic",
 	"phone": "0612345678",
 	"email": "newclient1@example.com",
-	"profileImage": "/uploads/profiles/default_profile_image.jpg",
+	"profileImage": "/uploads/profiles/default_profile_image.png",
 	"role": "individualClient",
 	"status": "pending",
 	"lastLogin": null,
@@ -30,7 +30,7 @@
 	"lastName": "Jovanovic",
 	"phone": "0623456789",
 	"email": "newbusiness1@example.com",
-	"profileImage": "/uploads/profiles/default_profile_image.jpg",
+	"profileImage": "/uploads/profiles/default_profile_image.png",
 	"role": "businessClient",
 	"status": "pending",
 	"institution": {
@@ -61,7 +61,7 @@
 	"lastName": "Petrovic",
 	"phone": "0634567890",
 	"email": "newprinter1@example.com",
-	"profileImage": "/uploads/profiles/default_profile_image.jpg",
+	"profileImage": "/uploads/profiles/default_profile_image.png",
 	"role": "printer",
 	"status": "pending",
 	"institution": {
@@ -92,7 +92,7 @@
 	"lastName": "Administrator",
 	"phone": "0600000000",
 	"email": "admin@example.com",
-	"profileImage": "/uploads/profiles/default_profile_image.jpg",
+	"profileImage": "/uploads/profiles/default_profile_image.png",
 	"role": "admin",
 	"status": "approved",
 	"lastLogin": {

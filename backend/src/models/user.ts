@@ -68,7 +68,7 @@ let UserSchema = new Schema({
     },
     profileImage: {
         type: String,
-        default: "/uploads/profiles/default_profile_image.jpg"
+        default: "/uploads/profiles/default_profile_image.png"
     },
     role: {
         type: String,

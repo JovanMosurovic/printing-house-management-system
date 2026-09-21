@@ -1,7 +1,9 @@
 import express from 'express'
+import multer from 'multer'
 import { UserController } from '../controllers/user.controller'
 
 const userRouter = express.Router()
+const upload = multer({storage: multer.memoryStorage()})
 
 userRouter.route("/admin/login").post(
     (req, res)=>
@@ -24,6 +26,7 @@ userRouter.route("/login").post(
 )
 
 userRouter.route("/register").post(
+    upload.single("profileImage"),
     (req, res)=>
         new UserController().register(req, res)
 )

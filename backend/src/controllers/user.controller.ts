@@ -1,5 +1,8 @@
 import express from 'express'
 import bcrypt from 'bcryptjs'
+import fs from 'fs'
+import path from 'path'
+import {imageSize} from 'image-size'
 
 import UserModel from '../models/user';
 
@@ -119,6 +122,41 @@ export class UserController{
             let role = req.body.role
             let institution = req.body.institution
 
+            if (typeof institution == "string") {
+                try {
+                    institution = JSON.parse(institution)
+                } catch {
+                    res.status(400).json({message: "Institution data is not valid."})
+                    return
+                }
+            }
+
+            let profileImage = "/uploads/profiles/default_profile_image.png"
+            let imageExtension = ""
+
+            if (req.file) {
+                try {
+                    let dimensions = imageSize(req.file.buffer)
+                    let imageType = dimensions.type
+
+                    if (imageType != "jpg" && imageType != "png" && imageType != "gif") {
+                        res.status(400).json({message: "Profile image must be a JPG, PNG or GIF file."})
+                        return
+                    }
+
+                    if (dimensions.width < 100 || dimensions.height < 100 ||
+                        dimensions.width > 250 || dimensions.height > 250) {
+                        res.status(400).json({message: "Profile image dimensions must be between 100x100 and 250x250 pixels."})
+                        return
+                    }
+
+                    imageExtension = imageType
+                } catch {
+                    res.status(400).json({message: "Profile image must be a valid JPG, PNG or GIF file."})
+                    return
+                }
+            }
+
             if (!password) {
                 res.status(400).json({message: "Password is required"});
                 return;
@@ -172,6 +210,14 @@ export class UserController{
                 }
             }
 
+            if (req.file) {
+                let fileName = `profile_${Date.now()}.${imageExtension}`
+                let filePath = path.join(__dirname, "../../uploads/profiles", fileName)
+
+                fs.writeFileSync(filePath, req.file.buffer)
+                profileImage = `/uploads/profiles/${fileName}`
+            }
+
             let passwordHash = await bcrypt.hash(password, 8)
 
             await UserModel.insertOne({
@@ -181,6 +227,7 @@ export class UserController{
                 lastName: lastName,
                 phone: phone,
                 email: email,
+                profileImage: profileImage,
                 role: role,
                 status: "pending",
                 institution: institution
