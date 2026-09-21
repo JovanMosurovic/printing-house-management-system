@@ -4,6 +4,8 @@ import {UserModel} from '../models/user';
 import {LoginModel} from '../models/login';
 import {RegisterModel} from '../models/register';
 import {MessageModel} from '../models/message';
+import {ForgotPasswordModel} from '../models/forgot-password';
+import {ResetPasswordModel} from '../models/reset-password';
 
 @Injectable({
   providedIn: 'root',
@@ -66,5 +68,23 @@ export class UserService {
     };
 
     return this.http.post<MessageModel>(`${this.apiUrl}/register`, data);
+  }
+
+  forgotPassword(forgotPasswordData: ForgotPasswordModel) {
+    const data = {
+      usernameOrEmail: forgotPasswordData.usernameOrEmail
+    };
+
+    return this.http.post<MessageModel>(`${this.apiUrl}/forgot-password`, data);
+  }
+
+  resetPassword(resetPasswordData: ResetPasswordModel) {
+    const data = {
+      token: resetPasswordData.token,
+      newPassword: resetPasswordData.newPassword,
+      confirmPassword: resetPasswordData.confirmPassword
+    };
+
+    return this.http.post<MessageModel>(`${this.apiUrl}/reset-password`, data);
   }
 }

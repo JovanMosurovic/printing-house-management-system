@@ -28,4 +28,14 @@ userRouter.route("/register").post(
         new UserController().register(req, res)
 )
 
+userRouter.route("/forgot-password").post(
+    (req, res) =>
+        new UserController().forgotPassword(req, res)
+)
+
+userRouter.route("/reset-password").post(
+    (req, res) =>
+        new UserController().resetPassword(req, res)
+)
+
 export default userRouter;

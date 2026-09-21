@@ -40,6 +40,16 @@ let UserSchema = new Schema({
         required: true,
         select: false
     },
+    passwordResetTokenHash: {
+        type: String,
+        default: null,
+        select: false
+    },
+    passwordResetExpiresAt: {
+        type: Date,
+        default: null,
+        select: false
+    },
     firstName: {
         type: String,
         required: [true, "First name is required"],

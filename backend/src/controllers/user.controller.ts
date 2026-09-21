@@ -3,8 +3,10 @@ import bcrypt from 'bcryptjs'
 import fs from 'fs'
 import path from 'path'
 import {imageSize} from 'image-size'
+import crypto from 'crypto'
 
 import UserModel from '../models/user';
+import {EmailService} from '../services/email.service'
 
 export class UserController{
 
@@ -308,6 +310,97 @@ export class UserController{
 
             console.log("Error while updating user status.");
             res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    async forgotPassword(req: express.Request, res: express.Response) {
+        try {
+            let usernameOrEmail = req.body.usernameOrEmail?.trim()
+
+            if (!usernameOrEmail) {
+                res.status(400).json({message: "Username or email is required."})
+                return
+            }
+
+            let user = await UserModel.findOne({
+                $or: [
+                    {username: usernameOrEmail},
+                    {email: usernameOrEmail.toLowerCase()}
+                ]
+            })
+
+            if (user == null) {
+                res.status(404).json({message: "User with entered username or email was not found."})
+                return
+            }
+
+            let resetToken = crypto.randomBytes(32).toString("hex")
+            let resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex")
+
+            user.passwordResetTokenHash = resetTokenHash
+            user.passwordResetExpiresAt = new Date(Date.now() + 5 * 60 * 1000)
+            await user.save()
+
+            let frontendUrl = process.env.FRONTEND_URL || "http://localhost:4200"
+            let resetLink = `${frontendUrl}/reset-password/${resetToken}`
+
+            await new EmailService().sendPasswordResetEmail(user.email, resetLink)
+
+            res.json({
+                message: "Password reset link was sent to your email address."
+            })
+        } catch (e) {
+            console.log("Error while creating password reset link.")
+            res.status(500).json({message: "Unexpected server error."})
+        }
+    }
+
+    async resetPassword(req: express.Request, res: express.Response) {
+        try {
+            let token = req.body.token
+            let newPassword = req.body.newPassword
+            let confirmPassword = req.body.confirmPassword
+
+            if (!token || !newPassword || !confirmPassword) {
+                res.status(400).json({message: "Token, new password and password confirmation are required."})
+                return
+            }
+
+            if (newPassword != confirmPassword) {
+                res.status(400).json({message: "Passwords do not match."})
+                return
+            }
+
+            let passwordRegex = /^(?=[A-Za-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,12}$/
+
+            if (!passwordRegex.test(newPassword)) {
+                res.status(400).json({
+                    message: "Password must start with a letter, contain 8-12 characters, one uppercase letter, one number and one special character."
+                })
+                return
+            }
+
+            let resetTokenHash = crypto.createHash("sha256").update(token).digest("hex")
+
+            let user = await UserModel.findOne({
+                passwordResetTokenHash: resetTokenHash,
+                passwordResetExpiresAt: {$gt: new Date()}
+            }).select("+passwordResetTokenHash +passwordResetExpiresAt")
+
+            if (user == null) {
+                res.status(400).json({message: "Password reset link is invalid or has expired."})
+                return
+            }
+
+            user.passwordHash = await bcrypt.hash(newPassword, 8)
+            user.passwordResetTokenHash = null
+            user.passwordResetExpiresAt = null
+            await user.save()
+
+            res.json({message: "Password was successfully changed."})
+        } catch (e) {
+            console.log("Error while resetting password.")
+            res.status(500).json({message: "Unexpected server error."})
         }
     }
 }
