@@ -1,0 +1,107 @@
+[{
+	"_id": {
+		"$oid": "6ab171d7ed8b034d71f9fb98"
+	},
+	"username": "newclient1",
+	"passwordHash": "$2b$08$PuE4Oc2bK3BsqY00kwfR9ObBCxwylHdsm9cTTx5ENMc98ZgUYmo..",
+	"firstName": "Nikola",
+	"lastName": "Nikolic",
+	"phone": "0612345678",
+	"email": "newclient1@example.com",
+	"profileImage": "/uploads/profiles/default_profile_image.jpg",
+	"role": "individualClient",
+	"status": "pending",
+	"lastLogin": null,
+	"createdAt": {
+		"$date": "2026-09-21T18:05:11.071Z"
+	},
+	"updatedAt": {
+		"$date": "2026-09-21T18:05:11.071Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "6ab171dded8b034d71f9fb9e"
+	},
+	"username": "newbusiness1",
+	"passwordHash": "$2b$08$OhOI74E6PG5n2vrrt76wdOMJvBGCZ2IJsN5X4Q9wyrT/Nr0FmmsIq",
+	"firstName": "Jovan",
+	"lastName": "Jovanovic",
+	"phone": "0623456789",
+	"email": "newbusiness1@example.com",
+	"profileImage": "/uploads/profiles/default_profile_image.jpg",
+	"role": "businessClient",
+	"status": "pending",
+	"institution": {
+		"name": "Business Test",
+		"address": "Bulevar oslobodjenja 10, Beograd",
+		"registrationNumber": "11223344",
+		"taxId": "123456780",
+		"_id": {
+			"$oid": "6ab171dded8b034d71f9fb9f"
+		}
+	},
+	"lastLogin": null,
+	"createdAt": {
+		"$date": "2026-09-21T18:05:17.508Z"
+	},
+	"updatedAt": {
+		"$date": "2026-09-21T18:05:17.508Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "6ab171e3ed8b034d71f9fba5"
+	},
+	"username": "newprinter1",
+	"passwordHash": "$2b$08$uyMLyt8GUYz1VNtPg9ACL.zPyKehcRytu29BH4BOhVgB7V9rTOhRC",
+	"firstName": "Petar",
+	"lastName": "Petrovic",
+	"phone": "0634567890",
+	"email": "newprinter1@example.com",
+	"profileImage": "/uploads/profiles/default_profile_image.jpg",
+	"role": "printer",
+	"status": "pending",
+	"institution": {
+		"name": "Test Printing House",
+		"address": "Kralja Petra 20, Beograd",
+		"registrationNumber": "44332211",
+		"taxId": "987654320",
+		"_id": {
+			"$oid": "6ab171e3ed8b034d71f9fba6"
+		}
+	},
+	"lastLogin": null,
+	"createdAt": {
+		"$date": "2026-09-21T18:05:23.036Z"
+	},
+	"updatedAt": {
+		"$date": "2026-09-21T18:05:23.036Z"
+	},
+	"__v": 0
+},
+{
+	"_id": {
+		"$oid": "6ab1837153a748965438337f"
+	},
+	"username": "admin",
+	"passwordHash": "$2b$08$ju1VRhoIxeJ714yKXdKbI.7V0mSIBivn3WTozyoaXgygfy5LP/xb.",
+	"firstName": "System",
+	"lastName": "Administrator",
+	"phone": "0600000000",
+	"email": "admin@example.com",
+	"profileImage": "/uploads/profiles/default_profile_image.jpg",
+	"role": "admin",
+	"status": "approved",
+	"lastLogin": {
+		"$date": "2026-09-21T19:20:24.999Z"
+	},
+	"updatedAt": {
+		"$date": "2026-09-21T19:20:25.002Z"
+	},
+	"createdAt": {
+		"$date": "2026-09-21T19:24:00.522Z"
+	}
+}]

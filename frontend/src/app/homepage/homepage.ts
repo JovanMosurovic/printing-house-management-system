@@ -2,7 +2,7 @@ import {Component, inject} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {LoginModel} from '../models/login';
 import {RouterLink} from '@angular/router';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-homepage',
@@ -17,13 +17,26 @@ export class Homepage {
   private userService = inject(UserService);
 
   loginUser = new LoginModel();
+  message = "";
 
-  login() {
-    this.userService.login(this.loginUser).subscribe(data => {
-      if (data != null) {
-        alert(`Welcome ${data.firstName} ${data.lastName}`);
-      } else {
-        alert("Wrong credentials or the account is not approved.");
+  login(loginForm: NgForm) {
+    this.message = "";
+
+    if (loginForm.invalid) {
+      loginForm.form.markAllAsTouched();
+      return;
+    }
+
+    this.userService.login(this.loginUser).subscribe({
+      next: data => {
+        this.message = `Welcome ${data.firstName} ${data.lastName}`;
+      },
+      error: error => {
+        if (error.error?.message) {
+          this.message = error.error.message;
+        } else {
+          this.message = "Unexpected error while logging in.";
+        }
       }
     });
   }

@@ -15,8 +15,11 @@ export class Register {
   private userService = inject(UserService);
 
   registerUser = new RegisterModel();
+  message = "";
 
   register(registerForm: NgForm) {
+    this.message = "";
+
     if (registerForm.invalid) {
       registerForm.form.markAllAsTouched();
       return;
@@ -24,7 +27,7 @@ export class Register {
 
     this.userService.register(this.registerUser).subscribe({
       next: data => {
-        alert(data.message);
+        this.message = data.message;
 
         if (data.message === "User successfully added.") {
           this.registerUser = new RegisterModel();
@@ -33,9 +36,9 @@ export class Register {
       },
       error: error => {
         if (error.error?.message) {
-          alert(error.error.message);
+          this.message = error.error.message;
         } else {
-          alert("Unexpected error while registering.");
+          this.message = "Unexpected error while registering.";
         }
       }
     });

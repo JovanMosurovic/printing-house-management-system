@@ -1,0 +1,27 @@
+<h2>Administrator login</h2>
+
+<form #adminLoginForm="ngForm">
+  <div>
+    Username:
+    <input type="text" name="username" [(ngModel)]="loginAdmin.username" #username="ngModel" required>
+
+    @if (username.touched && username.errors?.["required"]) {
+      <p>Username is required.</p>
+    }
+  </div>
+
+  <div>
+    Password:
+    <input type="password" name="password" [(ngModel)]="loginAdmin.password" #password="ngModel" required>
+
+    @if (password.touched && password.errors?.["required"]) {
+      <p>Password is required.</p>
+    }
+  </div>
+
+  <button type="button" (click)="login(adminLoginForm)">Login</button>
+</form>
+
+@if (message) {
+  <p>{{message}}</p>
+}

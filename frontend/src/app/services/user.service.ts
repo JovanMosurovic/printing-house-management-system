@@ -18,7 +18,16 @@ export class UserService {
       password: loginUser.password,
     };
 
-    return this.http.post<UserModel | null>(`${this.apiUrl}/login`, data);
+    return this.http.post<UserModel>(`${this.apiUrl}/login`, data);
+  }
+
+  adminLogin(loginAdmin: LoginModel) {
+    const data = {
+      username: loginAdmin.username,
+      password: loginAdmin.password
+    };
+
+    return this.http.post<UserModel>(`${this.apiUrl}/admin/login`, data);
   }
 
   register(registerUser: RegisterModel) {

@@ -4,34 +4,82 @@ import bcrypt from 'bcryptjs'
 import UserModel from '../models/user';
 
 export class UserController{
+
+    async adminLogin(req: express.Request, res: express.Response) {
+        try {
+            let username = req.body.username;
+            let password = req.body.password;
+
+            if (!username || !password) {
+                res.status(400).json({message: "Username and password are required."});
+                return;
+            }
+
+            let admin = await UserModel.findOne({
+                username: username,
+                role: "admin"
+            }).select("+passwordHash");
+
+            if (admin == null) {
+                res.status(401).json({message: "Incorrect administrator username or password."});
+                return;
+            }
+
+            let correctPassword = await bcrypt.compare(password, admin.passwordHash);
+
+            if (!correctPassword) {
+                res.status(401).json({message: "Incorrect administrator username or password."});
+                return;
+            }
+
+            admin.lastLogin = new Date();
+            await admin.save();
+
+            res.json(admin);
+        } catch (e) {
+            console.log("Error in admin login.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     async login(req: express.Request, res: express.Response) {
         try {
             let username = req.body.username;
             let password = req.body.password;
+
+            if (!username || !password) {
+                res.status(400).json({message: "Username and password are required."});
+                return;
+            }
 
             let user = await UserModel.findOne({
                 username: username
             }).select("+passwordHash")
 
             if (user == null) {
-                res.json(null);
+                res.status(401).json({message: "Incorrect username or password."});
                 return;
             }
 
-            // Admin will have separate login endpoint
-            if (user.role == "admin") {
-                res.json(null);
-                return;
-            }
+            let correctPassword = await bcrypt.compare(password, user.passwordHash);
 
-            if (user.status != "approved") {
-                res.json(null);
-                return;
-            }
-
-            let correctPassword = await bcrypt.compare(password, user.passwordHash)
             if (!correctPassword) {
-                res.json(null);
+                res.status(401).json({message: "Incorrect username or password."});
+                return;
+            }
+
+            if (user.role == "admin") {
+                res.status(403).json({message: "Administrators must use the administrator login page."});
+                return;
+            }
+
+            if (user.status == "pending") {
+                res.status(403).json({message: "Your registration is waiting for administrator approval."});
+                return;
+            }
+
+            if (user.status == "rejected") {
+                res.status(403).json({message: "Your registration has been rejected."});
                 return;
             }
 
@@ -41,7 +89,7 @@ export class UserController{
             res.json(user)
         } catch (e) {
             console.log("Error in login.");
-            res.json(null);
+            res.status(500).json({message: "Unexpected server error."});
         }
     }
 

@@ -1,14 +1,30 @@
 <h2>Login</h2>
 
-<div>
-  Username: <input type="text" name="username" [(ngModel)]="loginUser.username">
-</div>
+<form #loginForm="ngForm">
+  <div>
+    Username:
+    <input type="text" name="username" [(ngModel)]="loginUser.username" #username="ngModel" required>
 
-<div>
-  Password: <input type="password" name="password" [(ngModel)]="loginUser.password">
-</div>
+    @if (username.touched && username.errors?.["required"]) {
+      <p>Username is required.</p>
+    }
+  </div>
 
-<button type="button" (click)="login()" [disabled]="!loginUser.username || !loginUser.password">Login</button>
+  <div>
+    Password:
+    <input type="password" name="password" [(ngModel)]="loginUser.password" #password="ngModel" required>
+
+    @if (password.touched && password.errors?.["required"]) {
+      <p>Password is required.</p>
+    }
+  </div>
+
+  <button type="button" (click)="login(loginForm)">Login</button>
+</form>
+
+@if (message) {
+  <p>{{message}}</p>
+}
 
 <p>
   Don't have an account?
