@@ -21,6 +21,10 @@ export class AuthService {
     return this.getLoggedUser()?.role == "admin";
   }
 
+  isLoggedIn() {
+    return this.getLoggedUser() != null;
+  }
+
   logout() {
     sessionStorage.removeItem(this.storageKey);
   }

@@ -1,8 +1,9 @@
 import {Component, inject} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {LoginModel} from '../models/login';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {FormsModule, NgForm} from '@angular/forms';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-homepage',
@@ -15,6 +16,8 @@ import {FormsModule, NgForm} from '@angular/forms';
 })
 export class Homepage {
   private userService = inject(UserService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   loginUser = new LoginModel();
   message = "";
@@ -29,7 +32,13 @@ export class Homepage {
 
     this.userService.login(this.loginUser).subscribe({
       next: data => {
-        this.message = `Welcome ${data.firstName} ${data.lastName}`;
+        this.authService.setLoggedUser(data);
+
+        if (data.role == "printer") {
+          this.router.navigate(["/printer"]);
+        } else {
+          this.router.navigate(["/client"]);
+        }
       },
       error: error => {
         if (error.error?.message) {
