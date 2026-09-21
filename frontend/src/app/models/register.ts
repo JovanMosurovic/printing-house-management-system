@@ -8,7 +8,7 @@ export class RegisterModel {
   lastName = "";
   phone = "";
   email = "";
-  profileImage: File | null = null;
+  profileImage = "";
 
   role: UserRole = "individualClient";
 

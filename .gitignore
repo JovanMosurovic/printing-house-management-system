@@ -26,7 +26,3 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 coverage/
-
-# Uploaded profile images
-backend/uploads/profiles/*
-!backend/uploads/profiles/default_profile_image.png

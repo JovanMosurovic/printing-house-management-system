@@ -68,7 +68,7 @@ let UserSchema = new Schema({
     },
     profileImage: {
         type: String,
-        default: "/uploads/profiles/default_profile_image.png"
+        required: [true, "Profile image is required"]
     },
     role: {
         type: String,

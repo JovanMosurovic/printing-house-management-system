@@ -51,7 +51,7 @@ export class Register {
     const file = input.files?.[0];
 
     this.profileImageError = "";
-    this.registerUser.profileImage = null;
+    this.registerUser.profileImage = "";
 
     if (!file) return;
 
@@ -61,29 +61,36 @@ export class Register {
       return;
     }
 
-    this.registerUser.profileImage = file;
+    const reader = new FileReader();
 
-    const image = new Image();
-    const imageUrl = URL.createObjectURL(file);
+    reader.onload = () => {
+      const profileImageBase64 = reader.result as string;
+      const image = new Image();
 
-    image.onload = () => {
-      if (image.width < 100 || image.height < 100 || image.width > 250 || image.height > 250) {
-        this.profileImageError = "Profile image dimensions must be between 100x100 and 250x250 pixels.";
-        this.registerUser.profileImage = null;
+      image.onload = () => {
+        if (image.width < 100 || image.height < 100 || image.width > 250 || image.height > 250) {
+          this.profileImageError = "Profile image dimensions must be between 100x100 and 250x250 pixels.";
+          input.value = "";
+          return;
+        }
+
+        this.registerUser.profileImage = profileImageBase64;
+      };
+
+      image.onerror = () => {
+        this.profileImageError = "Profile image is not valid.";
         input.value = "";
-      }
+      };
 
-      URL.revokeObjectURL(imageUrl);
+      image.src = profileImageBase64;
     };
 
-    image.onerror = () => {
-      this.profileImageError = "Profile image is not valid.";
-      this.registerUser.profileImage = null;
+    reader.onerror = () => {
+      this.profileImageError = "Profile image could not be read.";
       input.value = "";
-      URL.revokeObjectURL(imageUrl);
     };
 
-    image.src = imageUrl;
+    reader.readAsDataURL(file);
   }
 
 }

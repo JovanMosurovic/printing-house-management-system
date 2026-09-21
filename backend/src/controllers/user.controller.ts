@@ -122,25 +122,29 @@ export class UserController{
             let role = req.body.role
             let institution = req.body.institution
 
-            if (typeof institution == "string") {
+            let profileImage = req.body.profileImage
+
+            if (!profileImage) {
+                let defaultImagePath = path.join(__dirname, "../../uploads/profiles/default_profile_image.jpg")
+                let defaultImageBase64 = fs.readFileSync(defaultImagePath).toString("base64")
+
+                profileImage = `data:image/jpeg;base64,${defaultImageBase64}`
+            } else {
                 try {
-                    institution = JSON.parse(institution)
-                } catch {
-                    res.status(400).json({message: "Institution data is not valid."})
-                    return
-                }
-            }
+                    let imageMatch = profileImage.match(/^data:image\/(jpeg|png|gif);base64,(.+)$/)
 
-            let profileImage = "/uploads/profiles/default_profile_image.png"
-            let imageExtension = ""
-
-            if (req.file) {
-                try {
-                    let dimensions = imageSize(req.file.buffer)
-                    let imageType = dimensions.type
-
-                    if (imageType != "jpg" && imageType != "png" && imageType != "gif") {
+                    if (imageMatch == null) {
                         res.status(400).json({message: "Profile image must be a JPG, PNG or GIF file."})
+                        return
+                    }
+
+                    let imageFormat = imageMatch[1]
+                    let imageBuffer = Buffer.from(imageMatch[2], "base64")
+                    let dimensions = imageSize(imageBuffer)
+                    let expectedImageType = imageFormat == "jpeg" ? "jpg" : imageFormat
+
+                    if (dimensions.type != expectedImageType) {
+                        res.status(400).json({message: "Profile image format is not valid."})
                         return
                     }
 
@@ -149,8 +153,6 @@ export class UserController{
                         res.status(400).json({message: "Profile image dimensions must be between 100x100 and 250x250 pixels."})
                         return
                     }
-
-                    imageExtension = imageType
                 } catch {
                     res.status(400).json({message: "Profile image must be a valid JPG, PNG or GIF file."})
                     return
@@ -208,14 +210,6 @@ export class UserController{
                     res.status(409).json({message: "Tax ID is already in use."});
                     return;
                 }
-            }
-
-            if (req.file) {
-                let fileName = `profile_${Date.now()}.${imageExtension}`
-                let filePath = path.join(__dirname, "../../uploads/profiles", fileName)
-
-                fs.writeFileSync(filePath, req.file.buffer)
-                profileImage = `/uploads/profiles/${fileName}`
             }
 
             let passwordHash = await bcrypt.hash(password, 8)
