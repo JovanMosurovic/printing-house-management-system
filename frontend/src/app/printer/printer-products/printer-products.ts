@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {FormsModule, NgForm} from '@angular/forms';
+import {FormsModule, NgForm, NgModel} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {ProductService} from '../../services/product.service';
@@ -27,6 +27,8 @@ export class PrinterProducts implements OnInit {
 
   message = "";
   messageIsError = false;
+  productMessage = "";
+  productMessageIsError = false;
   mainImageError = "";
   additionalImagesError = "";
 
@@ -128,7 +130,8 @@ export class PrinterProducts implements OnInit {
     this.newProduct.dostupneBoje.splice(colorIndex, 1);
   }
 
-  addPrintingService() {
+  addPrintingService(serviceId: NgModel, printingType: NgModel, additionalPrice: NgModel,
+                     maximumWidth: NgModel, maximumHeight: NgModel) {
     let printingService = this.newPrintingService;
 
     if (!printingService.idUsluge.trim() || !printingService.tipStampe.trim()) {
@@ -160,6 +163,13 @@ export class PrinterProducts implements OnInit {
 
     this.newProduct.uslugeStampe.push(serviceToAdd);
     this.newPrintingService = new PrintingServiceModel();
+
+    let serviceFields = [serviceId, printingType, additionalPrice, maximumWidth, maximumHeight];
+    for (let serviceField of serviceFields) {
+      serviceField.control.markAsPristine();
+      serviceField.control.markAsUntouched();
+    }
+
     this.message = "";
     this.messageIsError = false;
   }
@@ -242,23 +252,25 @@ export class PrinterProducts implements OnInit {
   }
 
   addProduct(productForm: NgForm, mainImageInput: HTMLInputElement, additionalImagesInput: HTMLInputElement) {
-    this.message = "";
-    this.messageIsError = false;
+    this.productMessage = "";
+    this.productMessageIsError = false;
 
     if (productForm.invalid || this.mainImageError || this.additionalImagesError) {
       productForm.form.markAllAsTouched();
+      this.productMessage = "Correct the marked product fields.";
+      this.productMessageIsError = true;
       return;
     }
 
     if (!this.newProduct.slikaUrl) {
-      this.message = "Main product image is required.";
-      this.messageIsError = true;
+      this.productMessage = "Main product image is required.";
+      this.productMessageIsError = true;
       return;
     }
 
     if (this.newProduct.uslugeStampe.length == 0) {
-      this.message = "Add at least one printing service.";
-      this.messageIsError = true;
+      this.productMessage = "Add at least one printing service.";
+      this.productMessageIsError = true;
       return;
     }
 
@@ -266,7 +278,7 @@ export class PrinterProducts implements OnInit {
 
     this.productService.addProduct(this.loggedUser._id, this.newProduct).subscribe({
       next: data => {
-        this.message = data.message;
+        this.productMessage = data.message;
         this.newProduct = new ProductModel();
         this.newProduct.dostupneBoje = ["Bela"];
         this.newPrintingService = new PrintingServiceModel();
@@ -285,11 +297,11 @@ export class PrinterProducts implements OnInit {
         this.loadProducts();
       },
       error: error => {
-        this.messageIsError = true;
+        this.productMessageIsError = true;
         if (error.error?.message) {
-          this.message = error.error.message;
+          this.productMessage = error.error.message;
         } else {
-          this.message = "Unexpected error while adding the product.";
+          this.productMessage = "Unexpected error while adding the product.";
         }
       }
     });

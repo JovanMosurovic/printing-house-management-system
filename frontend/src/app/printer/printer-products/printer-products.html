@@ -162,14 +162,14 @@
       <p class="section-description">Add one main image and optionally up to three additional images.</p>
 
       <div class="image-upload-grid">
-        <div class="image-upload-field">
+        <div class="image-upload-field" [class.required-image-missing]="!newProduct.slikaUrl">
           <div class="image-field-heading">
             <strong>Main image</strong>
             <span>JPG, PNG or GIF</span>
           </div>
 
           <input #mainImageInput type="file" accept=".jpg,.jpeg,.png,.gif" (change)="selectMainImage(mainImageInput)">
-          <p class="image-error">{{mainImageError}}</p>
+          <p class="image-error">{{mainImageError || (!newProduct.slikaUrl ? 'Main product image is required.' : '')}}</p>
 
           @if (newProduct.slikaUrl) {
             <div class="main-image-preview">
@@ -208,7 +208,7 @@
       <h4>Printing services</h4>
 
       @if (newProduct.uslugeStampe.length === 0) {
-        <p class="empty-section-message">No printing services have been added.</p>
+        <p class="empty-section-message required-section-message">Add at least one printing service.</p>
       } @else {
         <table class="services-table">
           <thead>
@@ -239,35 +239,69 @@
       <div class="form-grid service-form-grid">
         <label class="form-field">
           <span>Service ID</span>
-          <input type="text" name="serviceId" [(ngModel)]="newPrintingService.idUsluge">
+          <input type="text" name="serviceId" [(ngModel)]="newPrintingService.idUsluge"
+                 #serviceId="ngModel" [ngModelOptions]="{standalone: true}" required>
+          @if (serviceId.touched && serviceId.errors?.["required"]) {
+            <p>Service ID is required.</p>
+          }
         </label>
 
         <label class="form-field">
           <span>Printing type</span>
-          <input type="text" name="printingType" [(ngModel)]="newPrintingService.tipStampe">
+          <input type="text" name="printingType" [(ngModel)]="newPrintingService.tipStampe"
+                 #printingType="ngModel" [ngModelOptions]="{standalone: true}" required>
+          @if (printingType.touched && printingType.errors?.["required"]) {
+            <p>Printing type is required.</p>
+          }
         </label>
 
         <label class="form-field">
           <span>Additional price per item</span>
-          <input type="number" name="additionalPrice" min="0" [(ngModel)]="newPrintingService.dodatnaCenaPoKomadu">
+          <input type="number" name="additionalPrice" min="0" [(ngModel)]="newPrintingService.dodatnaCenaPoKomadu"
+                 #additionalPrice="ngModel" [ngModelOptions]="{standalone: true}" required>
+          @if (additionalPrice.touched && additionalPrice.errors?.["required"]) {
+            <p>Additional price is required.</p>
+          }
+          @if (additionalPrice.touched && additionalPrice.errors?.["min"]) {
+            <p>Additional price cannot be negative.</p>
+          }
         </label>
 
         <label class="form-field">
           <span>Maximum width (mm)</span>
-          <input type="number" name="maximumWidth" min="1" [(ngModel)]="newPrintingService.maxSirinaMm">
+          <input type="number" name="maximumWidth" min="1" [(ngModel)]="newPrintingService.maxSirinaMm"
+                 #maximumWidth="ngModel" [ngModelOptions]="{standalone: true}" required>
+          @if (maximumWidth.touched && maximumWidth.errors?.["required"]) {
+            <p>Maximum width is required.</p>
+          }
+          @if (maximumWidth.touched && maximumWidth.errors?.["min"]) {
+            <p>Maximum width must be at least 1 mm.</p>
+          }
         </label>
 
         <label class="form-field">
           <span>Maximum height (mm)</span>
-          <input type="number" name="maximumHeight" min="1" [(ngModel)]="newPrintingService.maxVisinaMm">
+          <input type="number" name="maximumHeight" min="1" [(ngModel)]="newPrintingService.maxVisinaMm"
+                 #maximumHeight="ngModel" [ngModelOptions]="{standalone: true}" required>
+          @if (maximumHeight.touched && maximumHeight.errors?.["required"]) {
+            <p>Maximum height is required.</p>
+          }
+          @if (maximumHeight.touched && maximumHeight.errors?.["min"]) {
+            <p>Maximum height must be at least 1 mm.</p>
+          }
         </label>
       </div>
 
-      <button class="secondary-action" type="button" (click)="addPrintingService()">Add printing service</button>
+      <button class="secondary-action" type="button"
+              [disabled]="serviceId.invalid || printingType.invalid || additionalPrice.invalid || maximumWidth.invalid || maximumHeight.invalid"
+              (click)="addPrintingService(serviceId, printingType, additionalPrice, maximumWidth, maximumHeight)">Add printing service</button>
     </div>
 
     <div class="product-submit-actions">
-      <button class="primary-action" type="button" (click)="addProduct(productForm, mainImageInput, additionalImagesInput)">Add product</button>
+      <p class="feedback-message" [class.feedback-error]="productMessageIsError" aria-live="polite">{{productMessage}}</p>
+      <button class="primary-action" type="button"
+              [disabled]="productForm.invalid || !newProduct.slikaUrl || newProduct.uslugeStampe.length == 0 || mainImageError != '' || additionalImagesError != ''"
+              (click)="addProduct(productForm, mainImageInput, additionalImagesInput)">Add product</button>
     </div>
   </form>
 </section>
