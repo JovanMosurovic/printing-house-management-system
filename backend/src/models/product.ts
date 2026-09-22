@@ -52,6 +52,19 @@ const ProductCommentSchema = new Schema({
     }
 });
 
+const ProductRatingHistorySchema = new Schema({
+    score: {
+        type: Number,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+}, {
+    _id: false
+});
+
 let ProductSchema = new Schema({
     stamparijaId: {
         type: Schema.Types.ObjectId,
@@ -129,6 +142,10 @@ let ProductSchema = new Schema({
     nesvidjanja: [{
         type: Schema.Types.ObjectId
     }],
+    ratingHistory: {
+        type: [ProductRatingHistorySchema],
+        default: []
+    },
     comments: {
         type: [ProductCommentSchema],
         default: []

@@ -13,6 +13,11 @@ productRouter.route("/admin/add-subcategory").post(
         new ProductController().addSubcategory(req, res)
 );
 
+productRouter.route("/admin/statistics").get(
+    (req, res) =>
+        new ProductController().getAdminStatistics(req, res)
+);
+
 productRouter.route("/homepage").get(
     (req, res) =>
         new ProductController().getHomepageData(req, res)

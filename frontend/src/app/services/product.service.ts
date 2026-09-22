@@ -2,6 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CategoryModel, HomepageDataModel, ProductModel, ProductSearchModel} from '../models/product';
 import {MessageModel} from '../models/message';
+import {AdminStatisticsModel} from '../models/statistics';
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +31,10 @@ export class ProductService {
   addSubcategory(categoryId: string, subcategoryName: string) {
     const data = {categoryId: categoryId, subcategoryName: subcategoryName};
     return this.http.post<CategoryModel>(`${this.apiUrl}/admin/add-subcategory`, data);
+  }
+
+  getAdminStatistics() {
+    return this.http.get<AdminStatisticsModel>(`${this.apiUrl}/admin/statistics`);
   }
 
   searchProducts(productSearch: ProductSearchModel) {

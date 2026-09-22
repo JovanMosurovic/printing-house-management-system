@@ -1,0 +1,81 @@
+.bar-chart {
+  max-width: 900px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 140px;
+  gap: 12px;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.bar-track {
+  height: 28px;
+  background: #e5e5ea;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background: #007aff;
+}
+
+.pie-chart-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.pie-chart {
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+}
+
+.chart-legend div,
+.product-selection label {
+  display: block;
+  margin: 8px 0;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.line-chart-wrapper {
+  max-width: 900px;
+  overflow-x: auto;
+}
+
+.line-chart {
+  width: 100%;
+  min-width: 650px;
+}
+
+.axis {
+  stroke: #8e8e93;
+  stroke-width: 2;
+}
+
+.rating-line {
+  fill: none;
+  stroke-width: 3;
+}
+
+section {
+  margin: 32px 0;
+}
+
+@media (max-width: 700px) {
+  .bar-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,93 @@
+<h2>Administrator statistics</h2>
+
+<p><a routerLink="/admin">Back to administrator page</a></p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+<section>
+  <h3>Printing house revenue in the last three months</h3>
+
+  @if (statistics.printingHouseRevenue.length === 0) {
+    <p>There are no orders in the selected period.</p>
+  } @else {
+    <div class="bar-chart">
+      @for (printingHouse of statistics.printingHouseRevenue; track printingHouse.printingHouseId) {
+        <div class="bar-row">
+          <div class="bar-label">{{printingHouse.printingHouseName}}</div>
+          <div class="bar-track">
+            <div class="bar" [style.width.%]="getRevenueBarWidth(printingHouse.revenue)"></div>
+          </div>
+          <div class="bar-value">{{printingHouse.revenue | number:'1.2-2'}} RSD</div>
+        </div>
+      }
+    </div>
+  }
+</section>
+
+<section>
+  <h3>Most frequently ordered products in the last month</h3>
+
+  @if (statistics.popularProducts.length === 0) {
+    <p>There are no orders in the selected period.</p>
+  } @else {
+    <div class="pie-chart-wrapper">
+      <div class="pie-chart" [style.background]="getPieChartBackground()"></div>
+
+      <div class="chart-legend">
+        @for (product of statistics.popularProducts; track product.productId; let i = $index) {
+          <div>
+            <span class="legend-color" [style.background]="getChartColor(i)"></span>
+            {{product.productName}}: {{product.quantity}} ({{product.percentage}}%)
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>
+
+<section>
+  <h3>Product rating over time</h3>
+  <p>Rating is calculated as the number of likes minus the number of dislikes.</p>
+
+  @if (statistics.productRatings.length === 0) {
+    <p>There are no products.</p>
+  } @else {
+    <div class="product-selection">
+      @for (product of statistics.productRatings; track product.productId; let i = $index) {
+        <label>
+          <input type="checkbox" [checked]="isProductSelected(product.productId)" (change)="toggleProduct(product.productId)">
+          <span class="legend-color" [style.background]="getChartColor(i)"></span>
+          {{product.productName}}
+        </label>
+      }
+    </div>
+
+    @if (!hasSelectedProducts()) {
+      <p>Select at least one product to display the graph.</p>
+    } @else {
+      <div class="line-chart-wrapper">
+        <svg class="line-chart" viewBox="0 0 800 350" role="img" aria-label="Product rating over time">
+          <line x1="60" y1="20" x2="60" y2="300" class="axis"></line>
+          <line x1="60" y1="300" x2="760" y2="300" class="axis"></line>
+
+          <text x="15" y="30">{{getMaximumRating()}}</text>
+          <text x="15" y="305">{{getMinimumRating()}}</text>
+          <text x="60" y="330">{{formatChartDate(getMinimumRatingDate())}}</text>
+          <text x="680" y="330">{{formatChartDate(getMaximumRatingDate())}}</text>
+
+          @for (product of statistics.productRatings; track product.productId; let i = $index) {
+            @if (isProductSelected(product.productId)) {
+              <polyline [attr.points]="getRatingLinePoints(product)" [attr.stroke]="getChartColor(i)" class="rating-line"></polyline>
+
+              @for (point of product.ratingHistory; track $index) {
+                <circle [attr.cx]="getPointX(point.date)" [attr.cy]="getPointY(point.score)" r="5" [attr.fill]="getChartColor(i)"></circle>
+              }
+            }
+          }
+        </svg>
+      </div>
+    }
+  }
+</section>

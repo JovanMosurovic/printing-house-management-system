@@ -93,6 +93,123 @@ export class ProductController {
         }
     }
 
+    // Returns data needed for all administrator charts
+    // Used on the administrator statistics page
+    async getAdminStatistics(req: express.Request, res: express.Response) {
+        try {
+            let today = new Date();
+            let threeMonthsAgo = new Date();
+            let oneMonthAgo = new Date();
+            threeMonthsAgo.setMonth(today.getMonth() - 3);
+            oneMonthAgo.setMonth(today.getMonth() - 1);
+
+            let recentInvoices = await InvoiceModel.find({
+                createdAt: {$gte: threeMonthsAgo},
+                status: {$ne: "cancelled"}
+            });
+
+            let printingHouseRevenue = [];
+
+            for (let invoice of recentInvoices) {
+                let existingPrintingHouse = null;
+
+                for (let printingHouse of printingHouseRevenue) {
+                    if (printingHouse.printingHouseId == invoice.printingHouseId.toString()) {
+                        existingPrintingHouse = printingHouse;
+                        break;
+                    }
+                }
+
+                if (existingPrintingHouse == null) {
+                    printingHouseRevenue.push({
+                        printingHouseId: invoice.printingHouseId.toString(),
+                        printingHouseName: invoice.printingHouseName,
+                        revenue: invoice.totalPrice
+                    });
+                } else {
+                    existingPrintingHouse.revenue += invoice.totalPrice;
+                }
+            }
+
+            printingHouseRevenue.sort((firstPrintingHouse, secondPrintingHouse) =>
+                secondPrintingHouse.revenue - firstPrintingHouse.revenue
+            );
+
+            let lastMonthInvoices = await InvoiceModel.find({
+                createdAt: {$gte: oneMonthAgo},
+                status: {$ne: "cancelled"}
+            });
+
+            let popularProducts = [];
+            let totalQuantity = 0;
+
+            for (let invoice of lastMonthInvoices) {
+                for (let item of invoice.items) {
+                    let existingProduct = null;
+
+                    for (let product of popularProducts) {
+                        if (product.productId == item.productId.toString()) {
+                            existingProduct = product;
+                            break;
+                        }
+                    }
+
+                    if (existingProduct == null) {
+                        popularProducts.push({
+                            productId: item.productId.toString(),
+                            productName: item.productName,
+                            quantity: item.quantity,
+                            percentage: 0
+                        });
+                    } else {
+                        existingProduct.quantity += item.quantity;
+                    }
+
+                    totalQuantity += item.quantity;
+                }
+            }
+
+            for (let product of popularProducts) {
+                if (totalQuantity > 0) product.percentage = Math.round(product.quantity * 10000 / totalQuantity) / 100;
+            }
+
+            popularProducts.sort((firstProduct, secondProduct) => secondProduct.quantity - firstProduct.quantity);
+
+            let products = await ProductModel.find();
+            let productRatings = [];
+
+            for (let product of products) {
+                let ratingHistory = [];
+
+                for (let rating of product.ratingHistory) {
+                    ratingHistory.push({date: rating.createdAt, score: rating.score});
+                }
+
+                if (ratingHistory.length == 0) {
+                    ratingHistory.push({
+                        date: product.createdAt,
+                        score: product.svidjanja.length - product.nesvidjanja.length
+                    });
+                }
+
+                productRatings.push({
+                    productId: product._id,
+                    productName: product.naziv,
+                    ratingHistory: ratingHistory
+                });
+            }
+
+            res.json({
+                printingHouseRevenue: printingHouseRevenue,
+                popularProducts: popularProducts,
+                productRatings: productRatings
+            });
+        } catch (e) {
+            console.log("Error while getting administrator statistics.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     // Returns homepage statistics, active categories and top five products
     // Used on the public homepage to return printing house count, active categories and top five products
     async getHomepageData(req: express.Request, res: express.Response) {
@@ -837,6 +954,16 @@ export class ProductController {
                 return;
             }
 
+            let previousReaction = "";
+
+            for (let likeClientId of product.svidjanja) {
+                if (likeClientId.toString() == clientId) previousReaction = "like";
+            }
+
+            for (let dislikeClientId of product.nesvidjanja) {
+                if (dislikeClientId.toString() == clientId) previousReaction = "dislike";
+            }
+
             for (let i = product.svidjanja.length - 1; i >= 0; i--) {
                 if (product.svidjanja[i].toString() == clientId) product.svidjanja.splice(i, 1);
             }
@@ -847,6 +974,13 @@ export class ProductController {
 
             if (reaction == "like") product.svidjanja.push(clientId);
             if (reaction == "dislike") product.nesvidjanja.push(clientId);
+
+            if (previousReaction != reaction) {
+                product.ratingHistory.push({
+                    score: product.svidjanja.length - product.nesvidjanja.length,
+                    createdAt: new Date()
+                });
+            }
 
             await product.save();
             res.json({message: "Product reaction was successfully saved."});

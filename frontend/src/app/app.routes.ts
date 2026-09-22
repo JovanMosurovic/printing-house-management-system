@@ -18,6 +18,7 @@ import {PrinterAuctions} from './printer-auctions/printer-auctions';
 import {ClientPublicProcurements} from './client-public-procurements/client-public-procurements';
 import {AdminUsers} from './admin-users/admin-users';
 import {AdminCategories} from './admin-categories/admin-categories';
+import {AdminStatistics} from './admin-statistics/admin-statistics';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
@@ -25,6 +26,7 @@ export const routes: Routes = [
   { path: "admin/login", component: AdminLogin },
   { path: "admin/users", component: AdminUsers },
   { path: "admin/categories", component: AdminCategories },
+  { path: "admin/statistics", component: AdminStatistics },
   { path: "admin", component: Admin },
 
   { path: "client/cart", component: Cart },
