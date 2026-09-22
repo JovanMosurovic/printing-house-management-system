@@ -8,6 +8,7 @@ import {imageSize} from "image-size";
 export class ProductController {
 
     // Returns homepage statistics, active categories and top five products
+    // Used on the public homepage to return printing house count, active categories and top five products
     async getHomepageData(req: express.Request, res: express.Response) {
         try {
             let printers = await UserModel.find({
@@ -87,6 +88,7 @@ export class ProductController {
     }
 
     // Returns categories that currently have products in stock
+    // Used by public and client search forms to list categories that contain products in stock
     async getActiveCategories(req: express.Request, res: express.Response) {
         try {
             let printers = await UserModel.find({
@@ -120,6 +122,7 @@ export class ProductController {
     }
 
     // Returns all predefined product categories and subcategories
+    // Used by the printing house product form to list all predefined categories and subcategories
     async getAllCategories(req: express.Request, res: express.Response) {
         try {
             let categories = await CategoryModel.find().sort({naziv: 1});
@@ -131,6 +134,7 @@ export class ProductController {
     }
 
     // Searches available products by name and category and sorts the results
+    // Used by public and client search pages to return sorted products that are currently in stock
     async searchProducts(req: express.Request, res: express.Response) {
         try {
             let naziv = req.body.naziv?.trim() || "";
@@ -207,6 +211,7 @@ export class ProductController {
     }
 
     // Returns all products that belong to one printing house
+    // Used on the printing house products page to list all of its products, including out-of-stock products
     async getPrintingHouseProducts(req: express.Request, res: express.Response) {
         try {
             let printerId = req.params.printerId;
@@ -256,6 +261,7 @@ export class ProductController {
     }
 
     // Adds one product and its printing services to a printing house
+    // Used on the printing house products page to add one product, its images and printing services
     async addProduct(req: express.Request, res: express.Response) {
         try {
             let printerId = req.body.printerId;
@@ -344,7 +350,8 @@ export class ProductController {
             for (let i = 0; i < uslugeStampe.length; i++) {
                 let printingService = uslugeStampe[i];
 
-                if (!printingService.idUsluge?.trim() || !printingService.tipStampe?.trim()) {
+                if (typeof printingService.idUsluge != "string" || !printingService.idUsluge.trim() ||
+                    typeof printingService.tipStampe != "string" || !printingService.tipStampe.trim()) {
                     res.status(400).json({message: "Printing service ID and type are required."});
                     return;
                 }
@@ -357,7 +364,8 @@ export class ProductController {
                 }
 
                 for (let j = i + 1; j < uslugeStampe.length; j++) {
-                    if (printingService.idUsluge.trim() == uslugeStampe[j].idUsluge?.trim()) {
+                    if (typeof uslugeStampe[j].idUsluge == "string" &&
+                        printingService.idUsluge.trim() == uslugeStampe[j].idUsluge.trim()) {
                         res.status(409).json({message: "Printing service IDs must be unique within one product."});
                         return;
                     }
@@ -401,6 +409,7 @@ export class ProductController {
     }
 
     // Changes the stock quantity of one printing house product
+    // Used on the printing house products page to update the quantity of one owned product
     async updateProductQuantity(req: express.Request, res: express.Response) {
         try {
             let printerId = req.body.printerId;
@@ -446,8 +455,193 @@ export class ProductController {
         }
     }
 
+    // Imports products and printing services from a JSON file after images are added
+    // Used on the JSON import page to validate and save all loaded products after their images are added
+    async importProducts(req: express.Request, res: express.Response) {
+        try {
+            let printerId = req.body.printerId;
+            let importedProducts = req.body.products;
+
+            if (!printerId) {
+                res.status(400).json({message: "Printing house ID is required."});
+                return;
+            }
+
+            if (!Array.isArray(importedProducts) || importedProducts.length == 0) {
+                res.status(400).json({message: "The JSON file must contain at least one product."});
+                return;
+            }
+
+            let printer = await UserModel.findOne({_id: printerId, role: "printer", status: "approved"});
+
+            if (printer == null) {
+                res.status(404).json({message: "Approved printing house was not found."});
+                return;
+            }
+
+            let preparedProducts: any[] = [];
+            let importedProductCodes: string[] = [];
+
+            for (let importedProduct of importedProducts) {
+                let sifra = typeof importedProduct.sifra == "string" ? importedProduct.sifra.trim() : "";
+                let naziv = typeof importedProduct.naziv == "string" ? importedProduct.naziv.trim() : "";
+                let opis = typeof importedProduct.opis == "string" ? importedProduct.opis.trim() : "";
+                let kategorija = importedProduct.kategorija;
+                let potkategorija = importedProduct.potkategorija;
+                let jedinicnaCena = importedProduct.jedinicnaCena;
+                let kolicinaNaLageru = importedProduct.kolicinaNaLageru;
+                let slikaUrl = importedProduct.slikaUrl;
+                let dodatneSlike = Array.isArray(importedProduct.dodatneSlike) ? importedProduct.dodatneSlike : [];
+                let uslugeStampe = importedProduct.uslugeStampe;
+
+                if (!sifra || !naziv || !opis || !kategorija || !potkategorija || !slikaUrl) {
+                    res.status(400).json({message: "Every imported product must contain all information and a main image."});
+                    return;
+                }
+
+                if (typeof jedinicnaCena != "number" || jedinicnaCena < 0) {
+                    res.status(400).json({message: `Unit price is not valid for product ${naziv}.`});
+                    return;
+                }
+
+                if (!Number.isInteger(kolicinaNaLageru) || kolicinaNaLageru < 0) {
+                    res.status(400).json({message: `Stock quantity is not valid for product ${naziv}.`});
+                    return;
+                }
+
+                if (!Array.isArray(uslugeStampe) || uslugeStampe.length == 0) {
+                    res.status(400).json({message: `At least one printing service is required for product ${naziv}.`});
+                    return;
+                }
+
+                if (dodatneSlike.length > 3) {
+                    res.status(400).json({message: `Product ${naziv} can have at most three additional images.`});
+                    return;
+                }
+
+                let category = await CategoryModel.findOne({naziv: kategorija, potkategorije: potkategorija});
+
+                if (category == null) {
+                    res.status(400).json({message: `Category and subcategory are not valid for product ${naziv}.`});
+                    return;
+                }
+
+                if (importedProductCodes.includes(sifra)) {
+                    res.status(409).json({message: `Product code ${sifra} appears more than once in the JSON file.`});
+                    return;
+                }
+
+                let existingProduct = await ProductModel.findOne({stamparijaId: printerId, sifra: sifra});
+
+                if (existingProduct != null) {
+                    res.status(409).json({message: `A product with code ${sifra} already exists in the printing house.`});
+                    return;
+                }
+
+                if (!this.isValidProductImage(slikaUrl)) {
+                    res.status(400).json({message: `Main image is not valid for product ${naziv}.`});
+                    return;
+                }
+
+                for (let additionalImage of dodatneSlike) {
+                    if (!this.isValidProductImage(additionalImage)) {
+                        res.status(400).json({message: `One of the additional images is not valid for product ${naziv}.`});
+                        return;
+                    }
+                }
+
+                let preparedColors: string[] = [];
+
+                if (Array.isArray(importedProduct.dostupneBoje)) {
+                    for (let color of importedProduct.dostupneBoje) {
+                        if (typeof color == "string" && color.trim() && !preparedColors.includes(color.trim())) {
+                            preparedColors.push(color.trim());
+                        }
+                    }
+                }
+
+                if (preparedColors.length == 0) preparedColors.push("Bela");
+
+                let preparedServices = [];
+
+                for (let i = 0; i < uslugeStampe.length; i++) {
+                    let printingService = uslugeStampe[i];
+
+                    if (typeof printingService.idUsluge != "string" || !printingService.idUsluge.trim() ||
+                        typeof printingService.tipStampe != "string" || !printingService.tipStampe.trim()) {
+                        res.status(400).json({message: `Printing service ID and type are required for product ${naziv}.`});
+                        return;
+                    }
+
+                    if (typeof printingService.dodatnaCenaPoKomadu != "number" || printingService.dodatnaCenaPoKomadu < 0 ||
+                        typeof printingService.maxSirinaMm != "number" || printingService.maxSirinaMm < 1 ||
+                        typeof printingService.maxVisinaMm != "number" || printingService.maxVisinaMm < 1) {
+                        res.status(400).json({message: `Printing service data is not valid for product ${naziv}.`});
+                        return;
+                    }
+
+                    for (let j = i + 1; j < uslugeStampe.length; j++) {
+                        if (typeof uslugeStampe[j].idUsluge == "string" &&
+                            printingService.idUsluge.trim() == uslugeStampe[j].idUsluge.trim()) {
+                            res.status(409).json({message: `Printing service IDs must be unique for product ${naziv}.`});
+                            return;
+                        }
+                    }
+
+                    preparedServices.push({
+                        idUsluge: printingService.idUsluge.trim(),
+                        tipStampe: printingService.tipStampe.trim(),
+                        dodatnaCenaPoKomadu: printingService.dodatnaCenaPoKomadu,
+                        maxSirinaMm: printingService.maxSirinaMm,
+                        maxVisinaMm: printingService.maxVisinaMm
+                    });
+                }
+
+                importedProductCodes.push(sifra);
+                preparedProducts.push({
+                    stamparijaId: printer._id,
+                    nazivStamparije: printer.institution?.name || "",
+                    sifra: sifra,
+                    naziv: naziv,
+                    opis: opis,
+                    kategorija: kategorija,
+                    potkategorija: potkategorija,
+                    jedinicnaCena: jedinicnaCena,
+                    kolicinaNaLageru: kolicinaNaLageru,
+                    dostupneBoje: preparedColors,
+                    slikaUrl: slikaUrl,
+                    dodatneSlike: dodatneSlike,
+                    uslugeStampe: preparedServices
+                });
+            }
+
+            for (let preparedProduct of preparedProducts) {
+                let product = new ProductModel(preparedProduct);
+                await product.save();
+            }
+
+            res.status(201).json({message: `${preparedProducts.length} products were successfully imported.`});
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Printing house ID is not valid."});
+                return;
+            }
+
+            if (e.name == "ValidationError") {
+                let firstErrorName = Object.keys(e.errors)[0];
+                let firstError = e.errors[firstErrorName];
+                res.status(400).json({message: firstError.message});
+                return;
+            }
+
+            console.log("Error while importing products.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     // Returns complete details about one available product and its printing house
     // This is for product details page
+    // Used on the product details page to return product, printing house, rating and latest comments
     async getProductDetails(req: express.Request, res: express.Response) {
         try {
             let productId = req.params.productId;
@@ -522,6 +716,7 @@ export class ProductController {
     }
 
     // Adds or changes a client's reaction to a received product
+    // Used in the product archive to add or change a client's reaction to a received product
     async setReaction(req: express.Request, res: express.Response) {
         try {
             let clientId = req.body.clientId;
@@ -581,6 +776,7 @@ export class ProductController {
     }
 
     // Adds a client's comment to a received product
+    // Used in the product archive to add a client's comment to a received product
     async addComment(req: express.Request, res: express.Response) {
         try {
             let clientId = req.body.clientId;
@@ -644,6 +840,7 @@ export class ProductController {
         }
     }
 
+    // Used while adding or importing products to verify Base64 JPG, PNG and GIF images
     private isValidProductImage(image: string) {
         try {
             let imageMatch = image.match(/^data:image\/(jpeg|png|gif);base64,(.+)$/);

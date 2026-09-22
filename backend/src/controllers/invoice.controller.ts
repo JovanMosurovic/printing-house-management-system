@@ -9,6 +9,7 @@ import {EmailService} from "../services/email.service";
 export class InvoiceController {
 
     // Returns all non-cancelled invoices that belong to one printing house
+    // Used on the printing house page to list all of its non-cancelled orders
     async getPrintingHouseInvoices(req: express.Request, res: express.Response) {
         try {
             let printerId = req.params.printerId;
@@ -37,6 +38,7 @@ export class InvoiceController {
     }
 
     // Changes an invoice from ordered to in printing or from in printing to delivered
+    // Used by a printing house to move an order from ordered to in printing and then delivered
     async updateInvoiceStatus(req: express.Request, res: express.Response) {
         try {
             let printerId = req.body.printerId;
@@ -94,6 +96,7 @@ export class InvoiceController {
     }
 
     // Returns all invoices that belong to one client
+    // Used below the client profile to list current and previously completed non-cancelled orders
     async getClientInvoices(req: express.Request, res: express.Response) {
         try {
             let clientId = req.params.clientId;
@@ -126,6 +129,7 @@ export class InvoiceController {
     }
 
     // Returns delivered and received products that belong to one client
+    // Used on the product archive page to list a client's delivered and received products
     async getProductArchive(req: express.Request, res: express.Response) {
         try {
             let clientId = req.params.clientId;
@@ -181,6 +185,7 @@ export class InvoiceController {
     }
 
     // Changes a delivered invoice to received
+    // Used in the product archive when a client confirms that a delivered order was received
     async markAsReceived(req: express.Request, res: express.Response) {
         try {
             let clientId = req.body.clientId;
@@ -219,6 +224,7 @@ export class InvoiceController {
     }
 
     // Cancels an ordered invoice and restores product quantities to stock
+    // Used below the client profile to cancel an ordered invoice and restore its stock quantities
     async cancelInvoice(req: express.Request, res: express.Response) {
         try {
             let clientId = req.body.clientId;
@@ -294,6 +300,7 @@ export class InvoiceController {
     }
 
     // Creates one invoice for each printing house represented in the shopping cart
+    // Used when confirming the cart to create one invoice per printing house and reduce product stock
     async confirmOrder(req: express.Request, res: express.Response) {
         try {
             let clientId = req.body.clientId;

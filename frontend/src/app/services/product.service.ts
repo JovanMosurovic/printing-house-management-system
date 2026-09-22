@@ -74,4 +74,9 @@ export class ProductService {
     return this.http.post<MessageModel>(`${this.apiUrl}/printer/update-quantity`, data);
   }
 
+  importProducts(printerId: string, products: ProductModel[]) {
+    const data = {printerId: printerId, products: products};
+    return this.http.post<MessageModel>(`${this.apiUrl}/printer/import`, data);
+  }
+
 }

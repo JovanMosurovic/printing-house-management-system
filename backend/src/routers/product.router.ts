@@ -43,6 +43,11 @@ productRouter.route("/printer/update-quantity").post(
         new ProductController().updateProductQuantity(req, res)
 );
 
+productRouter.route("/printer/import").post(
+    (req, res) =>
+        new ProductController().importProducts(req, res)
+);
+
 productRouter.route("/printer/:printerId").get(
     (req, res) =>
         new ProductController().getPrintingHouseProducts(req, res)

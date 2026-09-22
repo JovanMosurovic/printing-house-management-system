@@ -59,3 +59,9 @@ export class ProductSearchModel {
   kategorija = "";
   sortDirection: SortDirection = "asc";
 }
+
+export class ProductImportFileModel {
+  stamparijaId = "";
+  nazivStamparije = "";
+  proizvodi: ProductModel[] = [];
+}

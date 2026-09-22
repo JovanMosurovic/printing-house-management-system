@@ -10,6 +10,7 @@ import {EmailService} from '../services/email.service'
 
 export class UserController{
 
+    // Used by the separate administrator login page and returns only an approved administrator
     async adminLogin(req: express.Request, res: express.Response) {
         try {
             let username = req.body.username;
@@ -47,6 +48,7 @@ export class UserController{
         }
     }
 
+    // Used on the administrator page to list all registration requests waiting for approval
     async getPendingUsers(req: express.Request, res: express.Response) {
         try {
             let users = await UserModel.find({
@@ -61,6 +63,7 @@ export class UserController{
         }
     }
 
+    // Used by the public login form and returns an approved client or printing house
     async login(req: express.Request, res: express.Response) {
         try {
             let username = req.body.username;
@@ -112,6 +115,7 @@ export class UserController{
         }
     }
 
+    // Used by the registration page to validate and create a new pending user request
     async register (req: express.Request, res: express.Response) {
         try {
             let username = req.body.username
@@ -262,6 +266,7 @@ export class UserController{
 
     }
 
+    // Used by the administrator to approve or reject a pending registration request
     async updateUserStatus(req: express.Request, res: express.Response) {
         try {
             let userId = req.body.userId;
@@ -313,6 +318,7 @@ export class UserController{
         }
     }
 
+    // Used by the forgot password page to create and email a five-minute reset link
     async forgotPassword(req: express.Request, res: express.Response) {
         try {
             let usernameOrEmail = req.body.usernameOrEmail?.trim()
@@ -355,6 +361,7 @@ export class UserController{
         }
     }
 
+    // Used by the reset password page to validate the token and save the new password
     async resetPassword(req: express.Request, res: express.Response) {
         try {
             let token = req.body.token
@@ -404,6 +411,7 @@ export class UserController{
         }
     }
 
+    // Used on client and printing house profile pages to load current user information
     async getUserProfile(req: express.Request, res: express.Response) {
         try {
             let userId = req.params.userId;
@@ -434,6 +442,7 @@ export class UserController{
         }
     }
 
+    // Used on client and printing house profile pages to validate and save profile changes
     async updateUserProfile(req: express.Request, res: express.Response) {
         try {
             let userId = req.body.userId;

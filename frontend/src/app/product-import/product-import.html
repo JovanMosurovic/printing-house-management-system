@@ -1,0 +1,69 @@
+<h2>Import products from JSON</h2>
+
+<p><a routerLink="/printer/products">Back to products and services</a></p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+<div>
+  JSON file:
+  <input #jsonFileInput type="file" accept=".json,application/json" (change)="selectJsonFile(jsonFileInput)">
+</div>
+
+@if (selectedFileName) {
+  <p>Selected file: {{selectedFileName}}</p>
+}
+
+@if (importedProducts.length > 0) {
+  <h3>Products from file</h3>
+
+  @for (product of importedProducts; track $index; let productIndex = $index) {
+    <div>
+      <h4>{{product.sifra}} - {{product.naziv}}</h4>
+      <p>{{product.opis}}</p>
+      <p>Category: {{product.kategorija}} / {{product.potkategorija}}</p>
+      <p>Unit price: {{product.jedinicnaCena}} RSD</p>
+      <p>Stock quantity: {{product.kolicinaNaLageru}}</p>
+      <p>Available colors: {{product.dostupneBoje.join(', ')}}</p>
+
+      <p>Printing services:</p>
+      <ul>
+        @for (service of product.uslugeStampe; track service.idUsluge) {
+          <li>
+            {{service.tipStampe}} - {{service.dodatnaCenaPoKomadu}} RSD,
+            {{service.maxSirinaMm}}x{{service.maxVisinaMm}} mm
+          </li>
+        }
+      </ul>
+
+      <div>
+        Main image:
+        <input #mainImageInput type="file" accept=".jpg,.jpeg,.png,.gif"
+               (change)="selectMainImage(product, productIndex, mainImageInput)">
+        @if (product.slikaUrl) {
+          <img [src]="product.slikaUrl" alt="Main product image" width="120">
+        }
+      </div>
+
+      <div>
+        Additional image (maximum 3):
+        <input #additionalImageInput type="file" accept=".jpg,.jpeg,.png,.gif"
+               (change)="selectAdditionalImage(product, productIndex, additionalImageInput)">
+
+        @for (image of product.dodatneSlike; track $index) {
+          <div>
+            <img [src]="image" alt="Additional product image" width="80">
+            <button type="button" (click)="removeAdditionalImage(product, productIndex, $index)">Remove</button>
+          </div>
+        }
+      </div>
+
+      @if (imageErrors[productIndex]) {
+        <p>{{imageErrors[productIndex]}}</p>
+      }
+    </div>
+  }
+
+  <button type="button" (click)="importProducts(jsonFileInput)">Import products</button>
+}
