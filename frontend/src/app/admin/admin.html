@@ -32,7 +32,7 @@
           <td>
             @if (user.institution) {
               {{user.institution.name}}<br>
-              {{user.institution.address}}<br>
+              {{user.institution.address}}, {{user.institution.city}}<br>
               Registration number: {{user.institution.registrationNumber}}<br>
               Tax ID: {{user.institution.taxId}}
             } @else {

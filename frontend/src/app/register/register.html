@@ -95,6 +95,16 @@
     </div>
 
     <div>
+      Institution city:
+      <input type="text" name="institutionCity" [(ngModel)]="registerUser.institution.city"
+             #institutionCity="ngModel" required>
+
+      @if (institutionCity.touched && institutionCity.errors?.["required"]) {
+        <p>Institution city is required.</p>
+      }
+    </div>
+
+    <div>
       Registration number:
       <input type="text" name="registrationNumber" [(ngModel)]="registerUser.institution.registrationNumber"
              #registrationNumber="ngModel" pattern="[0-9]{8}" maxlength="8" required>

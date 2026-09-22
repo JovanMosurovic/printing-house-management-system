@@ -1,0 +1,39 @@
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (product) {
+  <h2>{{product.naziv}}</h2>
+
+  <p>Printing house: {{product.nazivStamparije}}</p>
+  <p>City: {{product.grad}}</p>
+  <p>Likes: {{product.brojSvidjanja}}</p>
+  <p>Dislikes: {{product.brojNesvidjanja}}</p>
+
+  <h3>Gallery</h3>
+
+  @if (selectedImage) {
+    <div>
+      <img [src]="selectedImage"
+           [alt]="product.naziv"
+           width="250">
+    </div>
+
+    <div>
+      @for (image of images; track $index) {
+        <button type="button"
+                (click)="selectImage($index)">
+          <img [src]="image"
+               [alt]="product.naziv"
+               width="80">
+        </button>
+      }
+    </div>
+  } @else {
+    <p>This product currently has no images.</p>
+  }
+}
+
+<p>
+  <a routerLink="/">Back to homepage</a>
+</p>

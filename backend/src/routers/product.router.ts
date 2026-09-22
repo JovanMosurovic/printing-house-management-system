@@ -1,0 +1,21 @@
+import express from 'express'
+import {ProductController} from "../controllers/product.controller";
+
+const productRouter = express.Router()
+
+productRouter.route("/homepage").get(
+    (req, res) =>
+        new ProductController().getHomepageData(req, res)
+);
+
+productRouter.route("/search").post(
+    (req, res) =>
+        new ProductController().searchProducts(req, res)
+);
+
+productRouter.route("/:productId").get(
+    (req, res) =>
+        new ProductController().getProductDetails(req, res)
+);
+
+export default productRouter;

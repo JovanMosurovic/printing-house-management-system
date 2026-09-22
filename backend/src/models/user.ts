@@ -11,6 +11,11 @@ const InstitutionSchema = new Schema({
         type: String,
         required: [true, "Institution address is required"],
     },
+    city: {
+        type: String,
+        required: [true, "Institution city is required"],
+        trim: true
+    },
     registrationNumber: {
         type: String,
         required: [true, "Registration number is required"],

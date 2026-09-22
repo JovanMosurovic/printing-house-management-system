@@ -1,0 +1,30 @@
+[
+  {
+    "naziv": "Štampa malih formata",
+    "potkategorije": [
+      "Olovke",
+      "Vizit karte",
+      "Flajeri",
+      "Zahvalnice",
+      "Pozivnice",
+      "Fascikle"
+    ]
+  },
+  {
+    "naziv": "Štampa velikih formata",
+    "potkategorije": [
+      "Posteri",
+      "Rollups",
+      "Fototapete"
+    ]
+  },
+  {
+    "naziv": "Kreativne štampe",
+    "potkategorije": [
+      "Šolje",
+      "Štampa na majicama",
+      "Štampa na duksevima",
+      "Štampa na cegerima"
+    ]
+  }
+]

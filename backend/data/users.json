@@ -35,7 +35,8 @@
 	"status": "pending",
 	"institution": {
 		"name": "Business Test",
-		"address": "Bulevar oslobodjenja 10, Beograd",
+		"address": "Bulevar oslobodjenja 10",
+		"city": "Beograd",
 		"registrationNumber": "11223344",
 		"taxId": "123456780",
 		"_id": {
@@ -66,7 +67,8 @@
 	"status": "approved",
 	"institution": {
 		"name": "Test Printing House",
-		"address": "Kralja Petra 20, Beograd",
+		"address": "Kralja Petra 20",
+		"city": "Beograd",
 		"registrationNumber": "44332211",
 		"taxId": "987654320",
 		"_id": {

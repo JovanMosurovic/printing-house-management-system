@@ -7,6 +7,7 @@ export class InstitutionModel {
 
   name = ""
   address = ""
+  city = ""
   registrationNumber = ""
   taxId = ""
 }

@@ -34,3 +34,119 @@
 <p>
   <a routerLink="/forgot-password">Forgot password?</a>
 </p>
+
+<hr>
+
+<h2>Printing House</h2>
+
+<p>
+  Number of registered printing houses:
+  {{homepageData.brojStamparija}}
+</p>
+
+<h3>Top rated products</h3>
+
+@if (homepageData.topProizvodi.length === 0) {
+  <p>There are currently no available products.</p>
+} @else {
+  <table>
+    <thead>
+    <tr>
+      <th>Product</th>
+      <th>Printing house</th>
+      <th>Category</th>
+      <th>Likes</th>
+      <th>Dislikes</th>
+      <th>Details</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @for (product of homepageData.topProizvodi; track product._id) {
+        <tr>
+          <td>{{product.naziv}}</td>
+          <td>{{product.nazivStamparije}}</td>
+          <td>{{product.kategorija}}</td>
+          <td>{{product.brojSvidjanja}}</td>
+          <td>{{product.brojNesvidjanja}}</td>
+          <td>
+            <button type="button" (click)="openProductDetails(product._id)">
+              Details
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+<h3>Product search</h3>
+
+<form>
+  <div>
+    Product name:
+    <input type="text" name="productName"
+           [(ngModel)]="productSearch.naziv">
+  </div>
+
+  <div>
+    Category:
+    <select name="productCategory"
+            [(ngModel)]="productSearch.kategorija">
+      <option value="">All categories</option>
+
+      @for (category of homepageData.kategorije; track category) {
+        <option [value]="category">{{category}}</option>
+      }
+    </select>
+  </div>
+
+  <button type="button" (click)="searchProducts()">Search</button>
+</form>
+
+@if (productMessage) {
+  <p>{{productMessage}}</p>
+}
+
+@if (products.length > 0) {
+  <table>
+    <thead>
+    <tr>
+      <th>
+        <button type="button" (click)="changeSortDirection()">
+          Product
+          @if (productSearch.sortDirection == "asc") {
+            ▲
+          } @else {
+            ▼
+          }
+        </button>
+      </th>
+      <th>Printing house</th>
+      <th>Category</th>
+      <th>Subcategory</th>
+      <th>Likes</th>
+      <th>Dislikes</th>
+      <th>Details</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @for (product of products; track product._id) {
+        <tr>
+          <td>{{product.naziv}}</td>
+          <td>{{product.nazivStamparije}}</td>
+          <td>{{product.kategorija}}</td>
+          <td>{{product.potkategorija}}</td>
+          <td>{{product.brojSvidjanja}}</td>
+          <td>{{product.brojNesvidjanja}}</td>
+          <td>
+            <button type="button" (click)="openProductDetails(product._id)">
+              Details
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

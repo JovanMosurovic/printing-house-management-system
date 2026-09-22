@@ -51,6 +51,7 @@ export class UserService {
         {
           name: registerUser.institution.name,
           address: registerUser.institution.address,
+          city: registerUser.institution.city,
           registrationNumber: registerUser.institution.registrationNumber,
           taxId: registerUser.institution.taxId
         };
