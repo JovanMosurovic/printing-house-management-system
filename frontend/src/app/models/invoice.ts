@@ -6,6 +6,10 @@ export type InvoiceSortField = "invoiceId" | "printingHouseName" | "printingHous
 
 export type ProductArchiveSortField = "productName" | "quantity" | "printingHouseName" | "orderDate";
 
+export type PaymentMethod = "" | "card" | "publicProcurement";
+
+export type PaymentStatus = "" | "paid" | "refunded" | "notApplicable";
+
 export class InvoiceItemModel {
   productId = "";
   productCode = "";
@@ -38,6 +42,9 @@ export class InvoiceModel {
   items: InvoiceItemModel[] = [];
   totalPrice = 0;
   status: InvoiceStatus = "ordered";
+  paymentMethod: PaymentMethod = "";
+  paymentStatus: PaymentStatus = "";
+  cardLastFour = "";
 
   createdAt = "";
   updatedAt = "";

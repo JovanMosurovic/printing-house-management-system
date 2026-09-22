@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {CartItemModel} from '../models/cart';
 import {ArchivedProductModel, ConfirmOrderResponseModel, InvoiceModel, InvoiceStatus} from '../models/invoice';
 import {MessageModel} from '../models/message';
+import {PaymentModel} from '../models/payment';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +12,8 @@ export class InvoiceService {
   private http = inject(HttpClient);
   private apiUrl = "http://localhost:4000/api/invoices";
 
-  confirmOrder(clientId: string, cartItems: CartItemModel[]) {
-    const data = {clientId: clientId, items: cartItems};
+  confirmOrder(clientId: string, cartItems: CartItemModel[], payment: PaymentModel) {
+    const data = {clientId: clientId, items: cartItems, payment: payment};
     return this.http.post<ConfirmOrderResponseModel>(`${this.apiUrl}/confirm`, data);
   }
 

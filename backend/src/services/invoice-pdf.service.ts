@@ -44,6 +44,13 @@ export class InvoicePdfService {
             pdf.text(`Grad: ${invoice.printingHouseCity}`);
             pdf.moveDown();
 
+            if (invoice.paymentMethod == "card") {
+                pdf.font("DejaVuBold").text("Plaćanje");
+                pdf.font("DejaVu").text(`Status: ${invoice.paymentStatus}`);
+                pdf.text(`Kartica: **** **** **** ${invoice.cardLastFour}`);
+                pdf.moveDown();
+            }
+
             pdf.moveTo(50, pdf.y).lineTo(545, pdf.y).stroke();
             pdf.moveDown();
 

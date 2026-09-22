@@ -1,0 +1,144 @@
+:host > h2,
+.payment-intro {
+  text-align: center;
+}
+
+.payment-intro {
+  margin-bottom: 34px;
+}
+
+.payment-layout {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.payment-information {
+  display: grid;
+  gap: 18px;
+}
+
+.payment-summary,
+.test-card,
+.payment-result {
+  margin: 0;
+  padding: 26px;
+}
+
+.payment-label {
+  display: block;
+  margin-bottom: 18px;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.summary-item,
+.summary-total,
+.test-card dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.summary-item {
+  padding: 10px 0;
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summary-item strong {
+  flex: 0 0 auto;
+}
+
+.summary-total {
+  padding-top: 20px;
+  font-size: 1.05rem;
+}
+
+.test-card {
+  background: var(--color-brand-soft);
+  border-color: rgba(var(--color-brand-rgb), 0.16);
+}
+
+.test-card p {
+  margin: -8px 0 16px;
+  font-size: 0.84rem;
+}
+
+.test-card dl {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.test-card dt {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+
+.test-card dd {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.82rem;
+  font-weight: 680;
+  text-align: right;
+}
+
+.payment-form {
+  width: 100%;
+  margin: 0;
+}
+
+.payment-form h3,
+.payment-result h3 {
+  margin-top: 0;
+}
+
+.payment-form .form-actions {
+  flex-wrap: wrap;
+}
+
+.payment-form .feedback-message {
+  flex-basis: 100%;
+  min-height: 24px;
+}
+
+.payment-result {
+  width: min(100%, 620px);
+  margin: 24px auto 0;
+  text-align: center;
+}
+
+.payment-result-icon {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 20px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: var(--color-brand);
+  border-radius: 50%;
+}
+
+.payment-result-error h3 {
+  color: var(--color-danger);
+}
+
+@media (max-width: 820px) {
+  .payment-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-information {
+    order: 2;
+  }
+}

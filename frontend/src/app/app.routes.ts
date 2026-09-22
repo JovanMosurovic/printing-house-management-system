@@ -19,6 +19,7 @@ import {ClientPublicProcurements} from './client/client-public-procurements/clie
 import {AdminUsers} from './admin/admin-users/admin-users';
 import {AdminCategories} from './admin/admin-categories/admin-categories';
 import {AdminStatistics} from './admin/admin-statistics/admin-statistics';
+import {Payment} from './client/payment/payment';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
@@ -30,6 +31,7 @@ export const routes: Routes = [
   { path: "admin", component: Admin },
 
   { path: "client/cart", component: Cart },
+  { path: "client/payment", component: Payment },
   { path: "client/archive", component: ProductArchive },
   { path: "client/products", component: ClientProducts },
   { path: "client/public-procurements", component: ClientPublicProcurements },

@@ -175,7 +175,12 @@
                 }
               </ol>
             </td>
-            <td>{{invoice.totalPrice}} RSD</td>
+            <td>
+              {{invoice.totalPrice}} RSD
+              @if (invoice.paymentStatus == "paid") {
+                <span class="payment-status-text">Paid ···· {{invoice.cardLastFour}}</span>
+              }
+            </td>
             <td><span class="order-status-text">{{invoice.status == "inPrinting" ? "in printing" : invoice.status}}</span></td>
             <td>{{invoice.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
             <td>

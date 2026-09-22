@@ -38,9 +38,7 @@
   <p>Cart total: {{totalPrice}} RSD</p>
 
   @if (loggedUser?.role == "individualClient") {
-    <button type="button" [disabled]="isConfirming" (click)="confirmOrder()">
-      {{isConfirming ? "Confirming..." : "Confirm order"}}
-    </button>
+    <button type="button" (click)="openPayment()">Proceed to payment</button>
   } @else {
     <button type="button" [disabled]="isConfirming" (click)="createPublicProcurement()">
       {{isConfirming ? "Opening..." : "Open public procurement"}}

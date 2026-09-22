@@ -111,6 +111,20 @@ let InvoiceSchema = new Schema({
         type: String,
         enum: ["ordered", "inPrinting", "delivered", "received", "cancelled"],
         default: "ordered"
+    },
+    paymentMethod: {
+        type: String,
+        enum: ["", "card", "publicProcurement"],
+        default: ""
+    },
+    paymentStatus: {
+        type: String,
+        enum: ["", "paid", "refunded", "notApplicable"],
+        default: ""
+    },
+    cardLastFour: {
+        type: String,
+        default: ""
     }
 }, {
     timestamps: true

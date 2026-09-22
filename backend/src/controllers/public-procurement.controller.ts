@@ -396,7 +396,9 @@ export class PublicProcurementController {
                 printingHouseCity: winningPrinter.institution?.city || "",
                 items: invoiceItems,
                 totalPrice: winningOffer.totalPrice,
-                status: "inPrinting"
+                status: "inPrinting",
+                paymentMethod: "publicProcurement",
+                paymentStatus: "notApplicable"
             });
 
             await invoice.save();

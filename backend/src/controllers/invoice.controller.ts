@@ -297,6 +297,9 @@ export class InvoiceController {
             }
 
             invoice.status = "cancelled";
+            if (invoice.paymentMethod == "card" && invoice.paymentStatus == "paid") {
+                invoice.paymentStatus = "refunded";
+            }
             await invoice.save();
 
             res.json({message: "Order was successfully cancelled."});
@@ -311,12 +314,13 @@ export class InvoiceController {
         }
     }
 
-    // Creates one invoice for each printing house represented in the shopping cart
-    // Used when confirming the cart to create one invoice per printing house and reduce product stock
+    // Creates one paid invoice for each printing house represented in the shopping cart
+    // Used after simulated card payment to create invoices and reduce product stock
     async confirmOrder(req: express.Request, res: express.Response) {
         try {
             let clientId = req.body.clientId;
             let cartItems = req.body.items;
+            let payment = req.body.payment;
 
             if (!clientId) {
                 res.status(400).json({message: "Client ID is required."});
@@ -349,6 +353,26 @@ export class InvoiceController {
                 res.status(403).json({message: "Only clients can create orders."});
                 return;
             }
+
+            if (payment == null || typeof payment.cardholder != "string" ||
+                typeof payment.cardNumber != "string" || typeof payment.expiryDate != "string" ||
+                typeof payment.cvv != "string") {
+                res.status(400).json({message: "All card payment details are required."});
+                return;
+            }
+
+            let cardholder = payment.cardholder.trim();
+            let cardNumber = payment.cardNumber.replace(/\s/g, "");
+            let expiryDate = payment.expiryDate.trim();
+            let cvv = payment.cvv.trim();
+
+            if (cardholder != "Test Client" || cardNumber != "4242424242424242" ||
+                expiryDate != "12/30" || cvv != "123") {
+                res.status(400).json({message: "Simulated card details are not valid."});
+                return;
+            }
+
+            let cardLastFour = cardNumber.slice(-4);
 
             let requestedProducts: any[] = [];
             let invoiceGroups: any[] = [];
@@ -518,7 +542,10 @@ export class InvoiceController {
                     printingHouseCity: invoiceGroup.printingHouseCity,
                     items: invoiceGroup.items,
                     totalPrice: invoiceGroup.totalPrice,
-                    status: "ordered"
+                    status: "ordered",
+                    paymentMethod: "card",
+                    paymentStatus: "paid",
+                    cardLastFour: cardLastFour
                 });
 
                 await invoice.save();

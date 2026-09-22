@@ -1,0 +1,120 @@
+<h2>Card payment</h2>
+
+<p class="payment-intro">Complete the simulated payment to confirm your order.</p>
+
+@if (paymentCompleted) {
+  <section class="payment-result">
+    <span class="payment-result-icon" aria-hidden="true">✓</span>
+    <h3>Payment completed</h3>
+    <p>{{message}}</p>
+    <button type="button" (click)="openProfile()">View orders</button>
+  </section>
+} @else if (cartItems.length == 0) {
+  <section class="payment-result payment-result-error">
+    <h3>Payment unavailable</h3>
+    <p>{{message}}</p>
+    <button type="button" (click)="backToCart()">Back to cart</button>
+  </section>
+} @else {
+  <div class="payment-layout">
+    <div class="payment-information">
+      <section class="payment-summary">
+        <span class="payment-label">Order summary</span>
+
+        @for (cartItem of cartItems; track $index) {
+          <div class="summary-item">
+            <span>{{cartItem.productName}} × {{cartItem.quantity}}</span>
+            <strong>{{cartItem.totalPrice}} RSD</strong>
+          </div>
+        }
+
+        <div class="summary-total">
+          <span>Total</span>
+          <strong>{{totalPrice}} RSD</strong>
+        </div>
+      </section>
+
+      <section class="test-card">
+        <span class="payment-label">Simulated test card</span>
+        <p>Use these test details.</p>
+        <dl>
+          <div><dt>Cardholder</dt><dd>Test Client</dd></div>
+          <div><dt>Card number</dt><dd>4242 4242 4242 4242</dd></div>
+          <div><dt>Expiry date</dt><dd>12/30</dd></div>
+          <div><dt>CVV</dt><dd>123</dd></div>
+        </dl>
+      </section>
+    </div>
+
+    <form class="payment-form" #paymentForm="ngForm" autocomplete="off">
+      <h3>Payment details</h3>
+
+      <div>
+        Cardholder:
+        <input type="text" name="cardholder" [(ngModel)]="payment.cardholder"
+               #cardholder="ngModel" minlength="2" maxlength="50" autocomplete="off" required>
+
+        @if (cardholder.touched && cardholder.errors?.["required"]) {
+          <p>Cardholder is required.</p>
+        }
+
+        @if (cardholder.touched && cardholder.errors?.["minlength"]) {
+          <p>Enter a valid cardholder name.</p>
+        }
+      </div>
+
+      <div>
+        Card number:
+        <input type="text" name="cardNumber" [(ngModel)]="payment.cardNumber"
+               #cardNumber="ngModel" pattern="[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}"
+               maxlength="19" inputmode="numeric" autocomplete="off" required>
+
+        @if (cardNumber.touched && cardNumber.errors?.["required"]) {
+          <p>Card number is required.</p>
+        }
+
+        @if (cardNumber.touched && cardNumber.errors?.["pattern"]) {
+          <p>Enter the card number in the displayed format.</p>
+        }
+      </div>
+
+      <div>
+        Expiry date:
+        <input type="text" name="expiryDate" [(ngModel)]="payment.expiryDate"
+               #expiryDate="ngModel" pattern="(0[1-9]|1[0-2])/[0-9]{2}"
+               maxlength="5" placeholder="MM/YY" inputmode="numeric" autocomplete="off" required>
+
+        @if (expiryDate.touched && expiryDate.errors?.["required"]) {
+          <p>Expiry date is required.</p>
+        }
+
+        @if (expiryDate.touched && expiryDate.errors?.["pattern"]) {
+          <p>Enter the expiry date in MM/YY format.</p>
+        }
+      </div>
+
+      <div>
+        CVV:
+        <input type="password" name="cvv" [(ngModel)]="payment.cvv"
+               #cvv="ngModel" pattern="[0-9]{3}" maxlength="3"
+               inputmode="numeric" autocomplete="off" required>
+
+        @if (cvv.touched && cvv.errors?.["required"]) {
+          <p>CVV is required.</p>
+        }
+
+        @if (cvv.touched && cvv.errors?.["pattern"]) {
+          <p>CVV must contain exactly three digits.</p>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="button" [disabled]="isPaying" (click)="pay(paymentForm)">
+          {{isPaying ? "Processing..." : "Pay " + totalPrice + " RSD"}}
+        </button>
+        <button type="button" [disabled]="isPaying" (click)="backToCart()">Back</button>
+        <p class="feedback-message" [class.feedback-error]="messageIsError" aria-live="polite">{{message}}</p>
+      </div>
+    </form>
+  </div>
+}

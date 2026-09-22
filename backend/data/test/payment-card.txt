@@ -1,0 +1,9 @@
+SIMULATED TEST CARD
+
+Cardholder: Test Client
+Card number: 4242 4242 4242 4242
+Expiry date: 12/30
+CVV: 123
+
+This card is used only for simulated payments.
+Never enter real card information.

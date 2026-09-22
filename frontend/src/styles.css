@@ -527,6 +527,15 @@ td button {
   text-transform: capitalize;
 }
 
+.payment-status-text {
+  margin-top: 4px;
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.76rem;
+  font-weight: 560;
+  white-space: nowrap;
+}
+
 .back-link {
   display: inline-flex;
   align-items: center;

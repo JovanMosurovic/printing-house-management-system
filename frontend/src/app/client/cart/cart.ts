@@ -4,7 +4,6 @@ import {PrintingHouseCartModel} from '../../models/cart';
 import {UserModel} from '../../models/user';
 import {AuthService} from '../../services/auth.service';
 import {CartService} from '../../services/cart.service';
-import {InvoiceService} from '../../services/invoice.service';
 import {PublicProcurementService} from '../../services/public-procurement.service';
 
 @Component({
@@ -16,7 +15,6 @@ import {PublicProcurementService} from '../../services/public-procurement.servic
 export class Cart implements OnInit {
   private authService = inject(AuthService);
   private cartService = inject(CartService);
-  private invoiceService = inject(InvoiceService);
   private publicProcurementService = inject(PublicProcurementService);
   private router = inject(Router);
 
@@ -68,7 +66,7 @@ export class Cart implements OnInit {
     }
   }
 
-  confirmOrder() {
+  openPayment() {
     this.message = "";
     this.messageIsError = false;
 
@@ -88,26 +86,7 @@ export class Cart implements OnInit {
       return;
     }
 
-    this.isConfirming = true;
-
-    this.invoiceService.confirmOrder(this.loggedUser._id, cartItems).subscribe({
-      next: data => {
-        this.cartService.clearCart(this.loggedUser!._id);
-        this.loadCart();
-        this.message = data.message;
-        this.isConfirming = false;
-      },
-      error: error => {
-        this.messageIsError = true;
-        if (error.error?.message) {
-          this.message = error.error.message;
-        } else {
-          this.message = "Unexpected error while confirming the order.";
-        }
-
-        this.isConfirming = false;
-      }
-    });
+    this.router.navigate(["/client/payment"]);
   }
 
   createPublicProcurement() {
