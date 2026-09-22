@@ -42,4 +42,5 @@ export class InvoiceModel {
 export class ConfirmOrderResponseModel {
   message = "";
   invoices: InvoiceModel[] = [];
+  emailSent = false;
 }

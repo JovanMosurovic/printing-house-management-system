@@ -3,6 +3,8 @@ import {imageSize} from "image-size";
 import InvoiceModel from "../models/invoice";
 import ProductModel from "../models/product";
 import UserModel from "../models/user";
+import {InvoicePdfService} from "../services/invoice-pdf.service";
+import {EmailService} from "../services/email.service";
 
 export class InvoiceController {
 
@@ -219,9 +221,35 @@ export class InvoiceController {
                 createdInvoices.push(invoice);
             }
 
+            let emailSent = true;
+
+            try {
+                let attachments = [];
+                let invoicePdfService = new InvoicePdfService();
+
+                for (let invoice of createdInvoices) {
+                    let pdfBuffer = await invoicePdfService.createInvoicePdf(invoice);
+
+                    attachments.push({
+                        filename: `invoice_${invoice._id}.pdf`,
+                        content: pdfBuffer
+                    });
+                }
+
+                await new EmailService().sendInvoiceEmail(client.email, attachments);
+            } catch (emailError) {
+                emailSent = false;
+                console.log("Order was confirmed, but invoice email could not be sent.");
+            }
+
+            let responseMessage = emailSent
+                ? "Order was successfully confirmed. Invoices were sent to your email address."
+                : "Order was successfully confirmed, but invoices could not be sent to your email address.";
+
             res.status(201).json({
-                message: "Order was successfully confirmed.",
-                invoices: createdInvoices
+                message: responseMessage,
+                invoices: createdInvoices,
+                emailSent: emailSent
             });
         } catch (e: any) {
             if (e.name == "CastError") {
