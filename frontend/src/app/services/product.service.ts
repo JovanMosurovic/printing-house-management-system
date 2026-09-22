@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {HomepageDataModel, ProductModel, ProductSearchModel, PublicProductDetailsModel} from '../models/product';
+import {HomepageDataModel, ProductModel, ProductSearchModel} from '../models/product';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +11,10 @@ export class ProductService {
 
   getHomepageData() {
     return this.http.get<HomepageDataModel>(`${this.apiUrl}/homepage`);
+  }
+
+  getActiveCategories() {
+    return this.http.get<string[]>(`${this.apiUrl}/categories`);
   }
 
   searchProducts(productSearch: ProductSearchModel) {
@@ -24,7 +28,7 @@ export class ProductService {
   }
 
   getProductDetails(productId: string) {
-    return this.http.get<PublicProductDetailsModel>(`${this.apiUrl}/${productId}`);
+    return this.http.get<ProductModel>(`${this.apiUrl}/${productId}`);
   }
 
 }

@@ -8,6 +8,7 @@ import {Printer} from './printer/printer';
 import {ForgotPassword} from './forgot-password/forgot-password';
 import {ResetPassword} from './reset-password/reset-password';
 import {ProductDetails} from './product-details/product-details';
+import {ClientProducts} from './client-products/client-products';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: "admin", component: Admin },
 
   { path: "client", component: Client },
+  { path: "client/products", component: ClientProducts },
   { path: "printer", component: Printer },
 
   { path: "forgot-password", component: ForgotPassword },

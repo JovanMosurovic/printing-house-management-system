@@ -12,6 +12,8 @@ export class ProductModel {
   _id = "";
   stamparijaId = "";
   nazivStamparije = "";
+  adresaStamparije = "";
+  grad = "";
 
   sifra = "";
   naziv = "";
@@ -41,17 +43,4 @@ export class ProductSearchModel {
   naziv = "";
   kategorija = "";
   sortDirection: SortDirection = "asc";
-}
-
-export class PublicProductDetailsModel {
-  _id = "";
-  naziv = "";
-  nazivStamparije = "";
-  grad = "";
-
-  slikaUrl = "";
-  dodatneSlike: string[] = [];
-
-  brojSvidjanja = 0;
-  brojNesvidjanja = 0;
 }

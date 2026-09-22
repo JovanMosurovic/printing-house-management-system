@@ -1,24 +1,35 @@
 import {Component, inject} from '@angular/core';
 import {ProductService} from '../services/product.service';
 import {ActivatedRoute, RouterLink} from '@angular/router';
-import {PublicProductDetailsModel} from '../models/product';
+import {ProductModel} from '../models/product';
+import {AuthService} from '../services/auth.service';
+import {FormsModule} from '@angular/forms';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-product-details',
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   templateUrl: './product-details.html',
   styleUrl: './product-details.css',
 })
 export class ProductDetails {
   private productService = inject(ProductService);
   private activatedRoute = inject(ActivatedRoute);
+  private authService = inject(AuthService);
+  private sanitizer = inject(DomSanitizer);
 
-  product: PublicProductDetailsModel | null = null;
+  product: ProductModel | null = null;
   images: string[] = [];
   selectedImage = "";
+  selectedColor = "";
+  mapUrl: SafeResourceUrl | null = null;
+  isClient = false;
   message = "";
 
   ngOnInit() {
+    let loggedUser = this.authService.getLoggedUser();
+    this.isClient = loggedUser?.role == "individualClient" || loggedUser?.role == "businessClient";
+
     let productId =
       this.activatedRoute.snapshot.paramMap.get("productId");
 
@@ -30,7 +41,14 @@ export class ProductDetails {
     this.productService.getProductDetails(productId).subscribe({
       next: data => {
         this.product = data;
+        this.selectedColor = data.dostupneBoje[0] || "Bela";
         this.images = [];
+
+        if (data.adresaStamparije || data.grad) {
+          let location = `${data.adresaStamparije}, ${data.grad}`;
+          let url = `https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed`;
+          this.mapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        }
 
         if (data.slikaUrl) {
           this.images.push(data.slikaUrl);

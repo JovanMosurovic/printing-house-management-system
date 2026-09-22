@@ -1,13 +1,13 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {AuthService} from '../services/auth.service';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {UserModel} from '../models/user';
 import {UserService} from '../services/user.service';
 import {FormsModule, NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-client',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './client.html',
   styleUrl: './client.css',
 })

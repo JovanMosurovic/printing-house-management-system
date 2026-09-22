@@ -1,0 +1,70 @@
+<h2>Product search</h2>
+
+<p>
+  <a routerLink="/client">Back to profile</a>
+</p>
+
+<form>
+  <div>
+    Product name:
+    <input type="text" name="productName" [(ngModel)]="productSearch.naziv">
+  </div>
+
+  <div>
+    Category:
+    <select name="productCategory" [(ngModel)]="productSearch.kategorija">
+      <option value="">All categories</option>
+
+      @for (category of categories; track category) {
+        <option [value]="category">{{category}}</option>
+      }
+    </select>
+  </div>
+
+  <button type="button" (click)="searchProducts()">Search</button>
+</form>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (products.length > 0) {
+  <table>
+    <thead>
+    <tr>
+      <th>
+        <button type="button" (click)="changeSortDirection()">
+          Product
+          @if (productSearch.sortDirection == "asc") {
+            ▲
+          } @else {
+            ▼
+          }
+        </button>
+      </th>
+      <th>Printing house</th>
+      <th>Category</th>
+      <th>Subcategory</th>
+      <th>Likes</th>
+      <th>Dislikes</th>
+      <th>Details</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @for (product of products; track product._id) {
+        <tr>
+          <td>{{product.naziv}}</td>
+          <td>{{product.nazivStamparije}}</td>
+          <td>{{product.kategorija}}</td>
+          <td>{{product.potkategorija}}</td>
+          <td>{{product.brojSvidjanja}}</td>
+          <td>{{product.brojNesvidjanja}}</td>
+          <td>
+            <button type="button" (click)="openProductDetails(product._id)">Details</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

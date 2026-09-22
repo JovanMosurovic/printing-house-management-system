@@ -4,6 +4,7 @@ import UserModel from "../models/user";
 
 export class ProductController {
 
+    // Returns homepage statistics, active categories and top five products
     async getHomepageData(req: express.Request, res: express.Response) {
         try {
             let printers = await UserModel.find({
@@ -82,6 +83,40 @@ export class ProductController {
         }
     }
 
+    // Returns categories that currently have products in stock
+    async getActiveCategories(req: express.Request, res: express.Response) {
+        try {
+            let printers = await UserModel.find({
+                role: "printer",
+                status: "approved"
+            }).select("_id");
+
+            let printerIds = [];
+
+            for (let printer of printers) {
+                printerIds.push(printer._id);
+            }
+
+            let products = await ProductModel.find({
+                stamparijaId: {$in: printerIds},
+                kolicinaNaLageru: {$gt: 0}
+            }).select("kategorija");
+
+            let categories: string[] = [];
+
+            for (let product of products) {
+                if (!categories.includes(product.kategorija)) categories.push(product.kategorija);
+            }
+
+            categories.sort((firstCategory, secondCategory) => firstCategory.localeCompare(secondCategory, "sr"));
+            res.json(categories);
+        } catch (e) {
+            console.log("Error while getting active categories.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Searches available products by name and category and sorts the results
     async searchProducts(req: express.Request, res: express.Response) {
         try {
             let naziv = req.body.naziv?.trim() || "";
@@ -157,6 +192,8 @@ export class ProductController {
         }
     }
 
+    // Returns complete details about one available product and its printing house
+    // This is for product details page
     async getProductDetails(req: express.Request, res: express.Response) {
         try {
             let productId = req.params.productId;
@@ -184,11 +221,21 @@ export class ProductController {
 
             let data = {
                 _id: product._id,
+                stamparijaId: product.stamparijaId,
+                sifra: product.sifra,
                 naziv: product.naziv,
+                opis: product.opis,
+                kategorija: product.kategorija,
+                potkategorija: product.potkategorija,
+                jedinicnaCena: product.jedinicnaCena,
+                kolicinaNaLageru: product.kolicinaNaLageru,
+                dostupneBoje: product.dostupneBoje.length > 0 ? product.dostupneBoje : ["Bela"],
                 nazivStamparije: product.nazivStamparije,
+                adresaStamparije: printer.institution?.address || "",
                 grad: printer.institution?.city || "",
                 slikaUrl: product.slikaUrl,
                 dodatneSlike: product.dodatneSlike,
+                uslugeStampe: product.uslugeStampe,
                 brojSvidjanja: product.svidjanja.length,
                 brojNesvidjanja: product.nesvidjanja.length
             };

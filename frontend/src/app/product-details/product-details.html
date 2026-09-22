@@ -10,6 +10,65 @@
   <p>Likes: {{product.brojSvidjanja}}</p>
   <p>Dislikes: {{product.brojNesvidjanja}}</p>
 
+  @if (isClient) {
+    <h3>Product information</h3>
+
+    <p>Description: {{product.opis}}</p>
+    <p>Category: {{product.kategorija}}</p>
+    <p>Subcategory: {{product.potkategorija}}</p>
+    <p>Unit price: {{product.jedinicnaCena}} RSD</p>
+    <p>Available quantity: {{product.kolicinaNaLageru}}</p>
+
+    <div>
+      Color:
+      <select name="productColor" [(ngModel)]="selectedColor">
+        @for (color of product.dostupneBoje; track color) {
+          <option [value]="color">{{color}}</option>
+        }
+      </select>
+    </div>
+
+    <h3>Printing services</h3>
+
+    @if (product.uslugeStampe.length === 0) {
+      <p>There are no printing services for this product.</p>
+    } @else {
+      <table>
+        <thead>
+        <tr>
+          <th>Printing type</th>
+          <th>Maximum width</th>
+          <th>Maximum height</th>
+          <th>Additional price per item</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (printingService of product.uslugeStampe; track printingService.idUsluge) {
+            <tr>
+              <td>{{printingService.tipStampe}}</td>
+              <td>{{printingService.maxSirinaMm}} mm</td>
+              <td>{{printingService.maxVisinaMm}} mm</td>
+              <td>{{printingService.dodatnaCenaPoKomadu}} RSD</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    <h3>Printing house location</h3>
+
+    @if (mapUrl) {
+      <iframe [src]="mapUrl"
+              width="500"
+              height="300"
+              title="Printing house location">
+      </iframe>
+    } @else {
+      <p>The printing house location is not available.</p>
+    }
+  }
+
   <h3>Gallery</h3>
 
   @if (selectedImage) {
@@ -35,5 +94,7 @@
 }
 
 <p>
-  <a routerLink="/">Back to homepage</a>
+  <a [routerLink]="isClient ? '/client/products' : '/'">
+    {{isClient ? "Back to product search" : "Back to homepage"}}
+  </a>
 </p>

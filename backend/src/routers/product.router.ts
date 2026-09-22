@@ -8,6 +8,11 @@ productRouter.route("/homepage").get(
         new ProductController().getHomepageData(req, res)
 );
 
+productRouter.route("/categories").get(
+    (req, res) =>
+        new ProductController().getActiveCategories(req, res)
+);
+
 productRouter.route("/search").post(
     (req, res) =>
         new ProductController().searchProducts(req, res)
