@@ -1,0 +1,53 @@
+<h2>Shopping cart</h2>
+
+<p>
+  <a routerLink="/client/products">Continue product search</a>
+</p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (printingHouseCarts.length === 0) {
+  <p>The shopping cart is empty.</p>
+} @else {
+  @for (printingHouseCart of printingHouseCarts; track printingHouseCart.printingHouseId) {
+    <h3>{{printingHouseCart.printingHouseName}}</h3>
+
+    <table>
+      <thead>
+      <tr>
+        <th>Product</th>
+        <th>Color</th>
+        <th>Printing type</th>
+        <th>Quantity</th>
+        <th>Total price</th>
+      </tr>
+      </thead>
+
+      <tbody>
+        @for (cartItem of printingHouseCart.items; track $index) {
+          <tr>
+            <td>{{cartItem.productName}}</td>
+            <td>{{cartItem.color}}</td>
+            <td>{{cartItem.printingType}}</td>
+            <td>{{cartItem.quantity}}</td>
+            <td>{{cartItem.totalPrice}} RSD</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <p>Printing house total: {{printingHouseCart.totalPrice}} RSD</p>
+  }
+
+  <p>Cart total: {{totalPrice}} RSD</p>
+
+  @if (loggedUser?.role == "individualClient") {
+    <button type="button" [disabled]="isConfirming" (click)="confirmOrder()">
+      {{isConfirming ? "Confirming..." : "Confirm order"}}
+    </button>
+  } @else {
+    <p>Business client orders are created through public procurement.</p>
+  }
+}

@@ -10,6 +10,7 @@ import {ResetPassword} from './reset-password/reset-password';
 import {ProductDetails} from './product-details/product-details';
 import {ClientProducts} from './client-products/client-products';
 import {ProductPreparation} from './product-preparation/product-preparation';
+import {Cart} from './cart/cart';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
@@ -17,8 +18,9 @@ export const routes: Routes = [
   { path: "admin/login", component: AdminLogin },
   { path: "admin", component: Admin },
 
-  { path: "client", component: Client },
+  { path: "client/cart", component: Cart },
   { path: "client/products", component: ClientProducts },
+  { path: "client", component: Client },
   { path: "printer", component: Printer },
 
   { path: "forgot-password", component: ForgotPassword },
