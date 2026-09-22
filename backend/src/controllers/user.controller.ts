@@ -403,4 +403,172 @@ export class UserController{
             res.status(500).json({message: "Unexpected server error."})
         }
     }
+
+    async getUserProfile(req: express.Request, res: express.Response) {
+        try {
+            let userId = req.params.userId;
+
+            let user = await UserModel.findById(userId);
+
+            if (user == null) {
+                res.status(404).json({message: "User was not found."});
+                return;
+            }
+
+            if (user.role == "admin") {
+                res.status(403).json({
+                    message: "Administrator profile is not available here."
+                });
+                return;
+            }
+
+            res.json(user);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "User ID is not valid."});
+                return;
+            }
+
+            console.log("Error while getting user profile.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    async updateUserProfile(req: express.Request, res: express.Response) {
+        try {
+            let userId = req.body.userId;
+            let firstName = req.body.firstName;
+            let lastName = req.body.lastName;
+            let phone = req.body.phone;
+            let email = req.body.email?.trim().toLowerCase();
+            let profileImage = req.body.profileImage;
+            let institution = req.body.institution;
+
+            if (!userId || !firstName || !lastName || !phone || !email) {
+                res.status(400).json({message: "All personal information is required."});
+                return;
+            }
+
+            let user = await UserModel.findById(userId);
+
+            if (user == null) {
+                res.status(404).json({message: "User was not found."});
+                return;
+            }
+
+            if (user.role == "admin") {
+                res.status(403).json({message: "Administrator profile cannot be updated here."});
+                return;
+            }
+
+            let userWithSameEmail = await UserModel.findOne({
+                _id: {$ne: userId},
+                email: email
+            });
+
+            if (userWithSameEmail != null) {
+                res.status(409).json({message: "Email address is already in use."});
+                return;
+            }
+
+            if (user.role == "businessClient" || user.role == "printer") {
+                if (institution == null) {
+                    res.status(400).json({message: "Institution information is required."});
+                    return;
+                }
+
+                let userWithSameRegistrationNumber = await UserModel.findOne({
+                    _id: {$ne: userId},
+                    "institution.registrationNumber":
+                    institution.registrationNumber
+                });
+
+                if (userWithSameRegistrationNumber != null) {
+                    res.status(409).json({message: "Registration number is already in use."});
+                    return;
+                }
+
+                let userWithSameTaxId = await UserModel.findOne({
+                    _id: {$ne: userId},
+                    "institution.taxId": institution.taxId
+                });
+
+                if (userWithSameTaxId != null) {
+                    res.status(409).json({message: "Tax ID is already in use."});
+                    return;
+                }
+            }
+
+            if (profileImage) {
+                try {
+                    let imageMatch =
+                        profileImage.match(/^data:image\/(jpeg|png|gif);base64,(.+)$/);
+
+                    if (imageMatch == null) {
+                        res.status(400).json({message: "Profile image must be a JPG, PNG or GIF file."});
+                        return;
+                    }
+
+                    let imageFormat = imageMatch[1];
+                    let imageBuffer = Buffer.from(imageMatch[2], "base64");
+
+                    let dimensions = imageSize(imageBuffer);
+
+                    let expectedImageType =
+                        imageFormat == "jpeg" ? "jpg" : imageFormat;
+
+                    if (dimensions.type != expectedImageType) {
+                        res.status(400).json({message: "Profile image format is not valid."});
+                        return;
+                    }
+
+                    if (dimensions.width < 100 ||
+                        dimensions.height < 100 ||
+                        dimensions.width > 250 ||
+                        dimensions.height > 250) {
+                        res.status(400).json({message: "Profile image dimensions must be between 100x100 and 250x250 pixels."});
+                        return;
+                    }
+                } catch {
+                    res.status(400).json({
+                        message: "Profile image must be a valid JPG, PNG or GIF file."});
+                    return;
+                }
+            }
+
+            user.firstName = firstName;
+            user.lastName = lastName;
+            user.phone = phone;
+            user.email = email;
+
+            if (profileImage) {
+                user.profileImage = profileImage;
+            }
+
+            if (user.role == "businessClient" ||
+                user.role == "printer") {
+                user.institution = institution;
+            }
+
+            await user.save();
+
+            res.json(user);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "User ID is not valid."});
+                return;
+            }
+
+            if (e.name == "ValidationError") {
+                let firstErrorName = Object.keys(e.errors)[0];
+                let firstError = e.errors[firstErrorName];
+
+                res.status(400).json({message: firstError.message});
+                return;
+            }
+
+            console.log("Error while updating user profile.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
 }

@@ -18,6 +18,8 @@ userRouter.route("/admin/update-user-status").post(
         new UserController().updateUserStatus(req, res)
 )
 
+
+
 userRouter.route("/login").post(
     (req, res) =>
         new UserController().login(req, res)
@@ -37,5 +39,17 @@ userRouter.route("/reset-password").post(
     (req, res) =>
         new UserController().resetPassword(req, res)
 )
+
+
+
+userRouter.route("/profile/update").post(
+    (req, res) =>
+        new UserController().updateUserProfile(req, res)
+);
+
+userRouter.route("/profile/:userId").get(
+    (req, res) =>
+        new UserController().getUserProfile(req, res)
+);
 
 export default userRouter;

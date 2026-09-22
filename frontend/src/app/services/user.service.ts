@@ -88,4 +88,33 @@ export class UserService {
 
     return this.http.post<MessageModel>(`${this.apiUrl}/reset-password`, data);
   }
+
+  getUserProfile(userId: string) {
+    return this.http.get<UserModel>(`${this.apiUrl}/profile/${userId}`);
+  }
+
+  updateUserProfile(user: UserModel) {
+    const institution =
+      user.role === "individualClient" ? undefined :
+        {
+          name: user.institution?.name || "",
+          address: user.institution?.address || "",
+          city: user.institution?.city || "",
+          registrationNumber:
+            user.institution?.registrationNumber || "",
+          taxId: user.institution?.taxId || ""
+        };
+
+    const data = {
+      userId: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+      email: user.email,
+      profileImage: user.profileImage,
+      institution: institution
+    };
+
+    return this.http.post<UserModel>(`${this.apiUrl}/profile/update`, data);
+  }
 }

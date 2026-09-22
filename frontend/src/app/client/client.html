@@ -1,6 +1,132 @@
-<h2>Client page</h2>
+<h2>Client profile</h2>
 
-@if (loggedUser) {
-  <p>Welcome {{loggedUser.firstName}} {{loggedUser.lastName}}</p>
+@if (message) {
+  <p>{{message}}</p>
 }
 
+@if (loggedUser) {
+  <form #profileForm="ngForm">
+    <div>
+      <img [src]="loggedUser.profileImage"
+           alt="Profile image"
+           width="200">
+    </div>
+
+    <div>
+      Profile image:
+      <input #profileImageInput type="file"
+             accept=".jpg,.jpeg,.png,.gif"
+             (change)="selectProfileImage(profileImageInput)">
+
+      @if (profileImageError) {
+        <p>{{profileImageError}}</p>
+      }
+    </div>
+
+    <div>
+      Username:
+      <input disabled
+             type="text" name="username"
+             [(ngModel)]="loggedUser.username"
+             readonly>
+    </div>
+
+    <div>
+      First name:
+      <input type="text" name="firstName"
+             [(ngModel)]="loggedUser.firstName"
+             #firstName="ngModel" required>
+
+      @if (firstName.touched &&
+      firstName.errors?.["required"]) {
+        <p>First name is required.</p>
+      }
+    </div>
+
+    <div>
+      Last name:
+      <input type="text" name="lastName"
+             [(ngModel)]="loggedUser.lastName"
+             #lastName="ngModel" required>
+
+      @if (lastName.touched &&
+      lastName.errors?.["required"]) {
+        <p>Last name is required.</p>
+      }
+    </div>
+
+    <div>
+      Phone:
+      <input type="tel" name="phone"
+             [(ngModel)]="loggedUser.phone"
+             #phone="ngModel" required>
+
+      @if (phone.touched &&
+      phone.errors?.["required"]) {
+        <p>Phone number is required.</p>
+      }
+    </div>
+
+    <div>
+      Email:
+      <input type="email" name="email"
+             [(ngModel)]="loggedUser.email"
+             #email="ngModel" email required>
+
+      @if (email.touched &&
+      email.errors?.["required"]) {
+        <p>Email is required.</p>
+      }
+
+      @if (email.touched &&
+      email.errors?.["email"]) {
+        <p>Please enter a valid email address.</p>
+      }
+    </div>
+
+    @if (loggedUser.institution) {
+      <div>
+        Institution name:
+        <input type="text" name="institutionName"
+               [(ngModel)]="loggedUser.institution.name"
+               #institutionName="ngModel" required>
+      </div>
+
+      <div>
+        Institution address:
+        <input type="text" name="institutionAddress"
+               [(ngModel)]="loggedUser.institution.address"
+               #institutionAddress="ngModel" required>
+      </div>
+
+      <div>
+        Institution city:
+        <input type="text" name="institutionCity"
+               [(ngModel)]="loggedUser.institution.city"
+               #institutionCity="ngModel" required>
+      </div>
+
+      <div>
+        Registration number:
+        <input type="text" name="registrationNumber"
+               [(ngModel)]="loggedUser.institution.registrationNumber"
+               #registrationNumber="ngModel"
+               pattern="[0-9]{8}" maxlength="8" required>
+      </div>
+
+      <div>
+        Tax ID:
+        <input type="text" name="taxId"
+               [(ngModel)]="loggedUser.institution.taxId"
+               #taxId="ngModel"
+               pattern="[1-9][0-9]{8}"
+               maxlength="9" required>
+      </div>
+    }
+
+    <button type="button"
+            (click)="updateProfile(profileForm)">
+      Save changes
+    </button>
+  </form>
+}
