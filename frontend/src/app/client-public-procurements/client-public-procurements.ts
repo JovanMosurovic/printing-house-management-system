@@ -53,4 +53,24 @@ export class ClientPublicProcurements implements OnInit {
     return publicProcurement.winningOfferId == offerId;
   }
 
+  downloadReport(publicProcurementId: string) {
+    if (this.loggedUser == null) return;
+
+    this.message = "";
+
+    this.publicProcurementService.downloadPublicProcurementReport(this.loggedUser._id, publicProcurementId).subscribe({
+      next: data => {
+        let url = URL.createObjectURL(data);
+        let link = document.createElement("a");
+        link.href = url;
+        link.download = `public_procurement_${publicProcurementId}.pdf`;
+        link.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.message = "Unexpected error while downloading the public procurement report.";
+      }
+    });
+  }
+
 }

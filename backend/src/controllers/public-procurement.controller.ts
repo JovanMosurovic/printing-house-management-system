@@ -7,8 +7,47 @@ import UserModel from "../models/user";
 import InvoiceModel from "../models/invoice";
 import {EmailService} from "../services/email.service";
 import {InvoicePdfService} from "../services/invoice-pdf.service";
+import {PublicProcurementPdfService} from "../services/public-procurement-pdf.service";
 
 export class PublicProcurementController {
+
+    // Creates and downloads a report containing every offer and the selected winner
+    // Used by a business client after their public procurement has finished
+    async downloadPublicProcurementReport(req: express.Request, res: express.Response) {
+        try {
+            let clientId = req.params.clientId;
+            let publicProcurementId = req.params.publicProcurementId;
+
+            let publicProcurement = await PublicProcurementModel.findOne({
+                _id: publicProcurementId,
+                clientId: clientId
+            });
+
+            if (publicProcurement == null) {
+                res.status(404).json({message: "Public procurement was not found."});
+                return;
+            }
+
+            if (publicProcurement.status == "open") {
+                res.status(409).json({message: "The report is available after the public procurement has finished."});
+                return;
+            }
+
+            let pdf = await new PublicProcurementPdfService().createPublicProcurementReportPdf(publicProcurement);
+
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Disposition", `attachment; filename="public_procurement_${publicProcurement._id}.pdf"`);
+            res.send(pdf);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Entered ID is not valid."});
+                return;
+            }
+
+            console.log("Error while creating public procurement report.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
 
     // Returns all currently open public procurements for one approved printing house
     // Used on the printing house auctions page to list procurements and show whether an offer was submitted

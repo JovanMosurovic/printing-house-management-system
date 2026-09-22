@@ -81,6 +81,10 @@
           </tbody>
         </table>
       }
+
+      @if (publicProcurement.status != "open") {
+        <p><button type="button" (click)="downloadReport(publicProcurement._id)">Download PDF report</button></p>
+      }
     </div>
   }
 }

@@ -27,4 +27,8 @@ export class PublicProcurementService {
   getClientPublicProcurements(clientId: string) {
     return this.http.get<PublicProcurementModel[]>(`${this.apiUrl}/client/${clientId}`);
   }
+
+  downloadPublicProcurementReport(clientId: string, publicProcurementId: string) {
+    return this.http.get(`${this.apiUrl}/report/${clientId}/${publicProcurementId}`, {responseType: "blob"});
+  }
 }

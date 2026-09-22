@@ -3,6 +3,11 @@ import {PublicProcurementController} from "../controllers/public-procurement.con
 
 const publicProcurementRouter = express.Router();
 
+publicProcurementRouter.route("/report/:clientId/:publicProcurementId").get(
+    (req, res) =>
+        new PublicProcurementController().downloadPublicProcurementReport(req, res)
+);
+
 publicProcurementRouter.route("/client/:clientId").get(
     (req, res) =>
         new PublicProcurementController().getClientPublicProcurements(req, res)
