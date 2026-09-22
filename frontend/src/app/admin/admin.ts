@@ -1,12 +1,12 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {UserService} from '../services/user.service';
 import {UserModel} from '../models/user';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-admin',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './admin.html',
   styleUrl: './admin.css',
 })

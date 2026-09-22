@@ -1,0 +1,166 @@
+<h2>User accounts</h2>
+
+<p><a routerLink="/admin">Back to pending registrations</a></p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (users.length === 0) {
+  <p>There are no user accounts.</p>
+} @else {
+  <table>
+    <thead>
+    <tr>
+      <th>Image</th>
+      <th>Username</th>
+      <th>Name</th>
+      <th>Contact</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th>Institution</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @for (user of users; track user._id) {
+        <tr>
+          <td><img [src]="user.profileImage" alt="Profile image" width="60"></td>
+          <td>{{user.username}}</td>
+          <td>{{user.firstName}} {{user.lastName}}</td>
+          <td>{{user.email}}<br>{{user.phone}}</td>
+          <td>{{user.role}}</td>
+          <td>{{user.status}}</td>
+          <td>
+            @if (user.institution) {
+              {{user.institution.name}}<br>
+              {{user.institution.address}}, {{user.institution.city}}<br>
+              Registration number: {{user.institution.registrationNumber}}<br>
+              Tax ID: {{user.institution.taxId}}
+            } @else {
+              -
+            }
+          </td>
+          <td>
+            <button type="button" (click)="editUser(user)">Edit</button>
+            <button type="button" (click)="askToDeleteUser(user)">Delete</button>
+
+            @if (userToDelete?._id == user._id) {
+              <p>Delete this user account?</p>
+              <button type="button" (click)="deleteUser()">Confirm delete</button>
+              <button type="button" (click)="cancelDeleting()">Cancel</button>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@if (editingUser) {
+  <h3>Edit user</h3>
+
+  <form #userForm="ngForm">
+    <p>Role: {{editingUser.role}}</p>
+
+    <div>
+      Username:
+      <input type="text" name="username" [(ngModel)]="editingUser.username" #username="ngModel" required>
+      @if (username.touched && username.errors?.["required"]) {
+        <p>Username is required.</p>
+      }
+    </div>
+
+    <div>
+      First name:
+      <input type="text" name="firstName" [(ngModel)]="editingUser.firstName" #firstName="ngModel" required>
+      @if (firstName.touched && firstName.errors?.["required"]) {
+        <p>First name is required.</p>
+      }
+    </div>
+
+    <div>
+      Last name:
+      <input type="text" name="lastName" [(ngModel)]="editingUser.lastName" #lastName="ngModel" required>
+      @if (lastName.touched && lastName.errors?.["required"]) {
+        <p>Last name is required.</p>
+      }
+    </div>
+
+    <div>
+      Phone:
+      <input type="tel" name="phone" [(ngModel)]="editingUser.phone" #phone="ngModel" required>
+      @if (phone.touched && phone.errors?.["required"]) {
+        <p>Phone number is required.</p>
+      }
+    </div>
+
+    <div>
+      Email:
+      <input type="email" name="email" [(ngModel)]="editingUser.email" #email="ngModel" email required>
+      @if (email.touched && email.errors?.["required"]) {
+        <p>Email is required.</p>
+      }
+      @if (email.touched && email.errors?.["email"]) {
+        <p>Please enter a valid email address.</p>
+      }
+    </div>
+
+    <div>
+      Status:
+      <select name="status" [(ngModel)]="editingUser.status" required>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+
+    @if (editingUser.institution) {
+      <div>
+        Institution name:
+        <input type="text" name="institutionName" [(ngModel)]="editingUser.institution.name" #institutionName="ngModel" required>
+        @if (institutionName.touched && institutionName.errors?.["required"]) {
+          <p>Institution name is required.</p>
+        }
+      </div>
+
+      <div>
+        Institution address:
+        <input type="text" name="institutionAddress" [(ngModel)]="editingUser.institution.address" #institutionAddress="ngModel" required>
+        @if (institutionAddress.touched && institutionAddress.errors?.["required"]) {
+          <p>Institution address is required.</p>
+        }
+      </div>
+
+      <div>
+        Institution city:
+        <input type="text" name="institutionCity" [(ngModel)]="editingUser.institution.city" #institutionCity="ngModel" required>
+        @if (institutionCity.touched && institutionCity.errors?.["required"]) {
+          <p>Institution city is required.</p>
+        }
+      </div>
+
+      <div>
+        Registration number:
+        <input type="text" name="registrationNumber" [(ngModel)]="editingUser.institution.registrationNumber"
+               #registrationNumber="ngModel" pattern="[0-9]{8}" maxlength="8" required>
+        @if (registrationNumber.touched && registrationNumber.invalid) {
+          <p>Registration number must contain exactly 8 digits.</p>
+        }
+      </div>
+
+      <div>
+        Tax ID:
+        <input type="text" name="taxId" [(ngModel)]="editingUser.institution.taxId"
+               #taxId="ngModel" pattern="[1-9][0-9]{8}" maxlength="9" required>
+        @if (taxId.touched && taxId.invalid) {
+          <p>Tax ID must contain 9 digits and cannot start with zero.</p>
+        }
+      </div>
+    }
+
+    <button type="button" (click)="saveUser(userForm)">Save changes</button>
+    <button type="button" (click)="cancelEditing()">Cancel</button>
+  </form>
+}

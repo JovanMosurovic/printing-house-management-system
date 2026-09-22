@@ -16,11 +16,13 @@ import {PrinterProducts} from './printer-products/printer-products';
 import {ProductImport} from './product-import/product-import';
 import {PrinterAuctions} from './printer-auctions/printer-auctions';
 import {ClientPublicProcurements} from './client-public-procurements/client-public-procurements';
+import {AdminUsers} from './admin-users/admin-users';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
   { path: "register", component: Register },
   { path: "admin/login", component: AdminLogin },
+  { path: "admin/users", component: AdminUsers },
   { path: "admin", component: Admin },
 
   { path: "client/cart", component: Cart },

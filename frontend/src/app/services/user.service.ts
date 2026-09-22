@@ -45,6 +45,38 @@ export class UserService {
     return this.http.post<MessageModel>(`${this.apiUrl}/admin/update-user-status`, data);
   }
 
+  getAllUsers() {
+    return this.http.get<UserModel[]>(`${this.apiUrl}/admin/all`);
+  }
+
+  adminUpdateUser(user: UserModel) {
+    const institution = user.role === "individualClient" ? undefined : {
+      name: user.institution?.name || "",
+      address: user.institution?.address || "",
+      city: user.institution?.city || "",
+      registrationNumber: user.institution?.registrationNumber || "",
+      taxId: user.institution?.taxId || ""
+    };
+
+    const data = {
+      userId: user._id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
+      email: user.email,
+      status: user.status,
+      institution: institution
+    };
+
+    return this.http.post<UserModel>(`${this.apiUrl}/admin/update-user`, data);
+  }
+
+  deleteUser(userId: string) {
+    const data = {userId: userId};
+    return this.http.post<MessageModel>(`${this.apiUrl}/admin/delete-user`, data);
+  }
+
   register(registerUser: RegisterModel) {
     const institution =
       registerUser.role === "individualClient" ? undefined :

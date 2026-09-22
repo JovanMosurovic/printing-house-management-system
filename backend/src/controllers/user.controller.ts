@@ -11,6 +11,164 @@ import {PublicProcurementController} from './public-procurement.controller'
 
 export class UserController{
 
+    // Returns all client and printing house accounts
+    // Used on the administrator user management page
+    async getAllUsers(req: express.Request, res: express.Response) {
+        try {
+            let users = await UserModel.find({role: {$ne: "admin"}}).sort({role: 1, username: 1});
+            res.json(users);
+        } catch (e) {
+            console.log("Error while getting all users.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Validates and updates one client or printing house account
+    // Used by the administrator to edit user account information and status
+    async adminUpdateUser(req: express.Request, res: express.Response) {
+        try {
+            let userId = req.body.userId;
+            let username = req.body.username?.trim();
+            let firstName = req.body.firstName?.trim();
+            let lastName = req.body.lastName?.trim();
+            let phone = req.body.phone?.trim();
+            let email = req.body.email?.trim().toLowerCase();
+            let status = req.body.status;
+            let institution = req.body.institution;
+
+            if (!userId || !username || !firstName || !lastName || !phone || !email || !status) {
+                res.status(400).json({message: "All user information is required."});
+                return;
+            }
+
+            if (status != "pending" && status != "approved" && status != "rejected") {
+                res.status(400).json({message: "User status is not valid."});
+                return;
+            }
+
+            let user = await UserModel.findById(userId);
+
+            if (user == null) {
+                res.status(404).json({message: "User was not found."});
+                return;
+            }
+
+            if (user.role == "admin") {
+                res.status(403).json({message: "Administrator account cannot be updated here."});
+                return;
+            }
+
+            let userWithSameUsername = await UserModel.findOne({_id: {$ne: userId}, username: username});
+
+            if (userWithSameUsername != null) {
+                res.status(409).json({message: "Username is already in use."});
+                return;
+            }
+
+            let userWithSameEmail = await UserModel.findOne({_id: {$ne: userId}, email: email});
+
+            if (userWithSameEmail != null) {
+                res.status(409).json({message: "Email address is already in use."});
+                return;
+            }
+
+            if (user.role == "businessClient" || user.role == "printer") {
+                if (institution == null) {
+                    res.status(400).json({message: "Institution information is required."});
+                    return;
+                }
+
+                let userWithSameRegistrationNumber = await UserModel.findOne({
+                    _id: {$ne: userId},
+                    "institution.registrationNumber": institution.registrationNumber
+                });
+
+                if (userWithSameRegistrationNumber != null) {
+                    res.status(409).json({message: "Registration number is already in use."});
+                    return;
+                }
+
+                let userWithSameTaxId = await UserModel.findOne({
+                    _id: {$ne: userId},
+                    "institution.taxId": institution.taxId
+                });
+
+                if (userWithSameTaxId != null) {
+                    res.status(409).json({message: "Tax ID is already in use."});
+                    return;
+                }
+            }
+
+            user.username = username;
+            user.firstName = firstName;
+            user.lastName = lastName;
+            user.phone = phone;
+            user.email = email;
+            user.status = status;
+
+            if (user.role == "businessClient" || user.role == "printer") user.institution = institution;
+
+            await user.save();
+            res.json(user);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "User ID is not valid."});
+                return;
+            }
+
+            if (e.name == "ValidationError") {
+                let firstErrorName = Object.keys(e.errors)[0];
+                let firstError = e.errors[firstErrorName];
+                res.status(400).json({message: firstError.message});
+                return;
+            }
+
+            if (e.code == 11000) {
+                res.status(409).json({message: "Username or email address is already in use."});
+                return;
+            }
+
+            console.log("Error while updating user account.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Deletes one client or printing house account
+    // Used by the administrator to remove a user account from the system
+    async deleteUser(req: express.Request, res: express.Response) {
+        try {
+            let userId = req.body.userId;
+
+            if (!userId) {
+                res.status(400).json({message: "User ID is required."});
+                return;
+            }
+
+            let user = await UserModel.findById(userId);
+
+            if (user == null) {
+                res.status(404).json({message: "User was not found."});
+                return;
+            }
+
+            if (user.role == "admin") {
+                res.status(403).json({message: "Administrator account cannot be deleted."});
+                return;
+            }
+
+            await UserModel.deleteOne({_id: userId});
+            res.json({message: "User account was successfully deleted."});
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "User ID is not valid."});
+                return;
+            }
+
+            console.log("Error while deleting user account.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     // Used by the separate administrator login page and returns only an approved administrator
     async adminLogin(req: express.Request, res: express.Response) {
         try {

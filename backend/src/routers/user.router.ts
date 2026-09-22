@@ -3,6 +3,21 @@ import { UserController } from '../controllers/user.controller'
 
 const userRouter = express.Router()
 
+userRouter.route("/admin/all").get(
+    (req, res) =>
+        new UserController().getAllUsers(req, res)
+)
+
+userRouter.route("/admin/update-user").post(
+    (req, res) =>
+        new UserController().adminUpdateUser(req, res)
+)
+
+userRouter.route("/admin/delete-user").post(
+    (req, res) =>
+        new UserController().deleteUser(req, res)
+)
+
 userRouter.route("/admin/login").post(
     (req, res) =>
         new UserController().adminLogin(req, res)
