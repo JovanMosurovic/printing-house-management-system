@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {ProductService} from '../services/product.service';
-import {ActivatedRoute, RouterLink} from '@angular/router';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {ProductModel} from '../models/product';
 import {AuthService} from '../services/auth.service';
 import {FormsModule} from '@angular/forms';
@@ -15,6 +15,7 @@ import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 export class ProductDetails {
   private productService = inject(ProductService);
   private activatedRoute = inject(ActivatedRoute);
+  private router = inject(Router);
   private authService = inject(AuthService);
   private sanitizer = inject(DomSanitizer);
 
@@ -22,6 +23,7 @@ export class ProductDetails {
   images: string[] = [];
   selectedImage = "";
   selectedColor = "";
+  selectedPrintingServiceId = "";
   mapUrl: SafeResourceUrl | null = null;
   isClient = false;
   message = "";
@@ -42,6 +44,7 @@ export class ProductDetails {
       next: data => {
         this.product = data;
         this.selectedColor = data.dostupneBoje[0] || "Bela";
+        this.selectedPrintingServiceId = data.uslugeStampe[0]?.idUsluge || "";
         this.images = [];
 
         if (data.adresaStamparije || data.grad) {
@@ -86,6 +89,17 @@ export class ProductDetails {
 
     document.cookie =
       `${cookieName}=${imageIndex}; max-age=${60 * 60 * 24 * 30}; path=/`;
+  }
+
+  continueToPreparation() {
+    if (this.product == null) return;
+
+    this.router.navigate(["/product", this.product._id, "preparation"], {
+      queryParams: {
+        color: this.selectedColor,
+        printingServiceId: this.selectedPrintingServiceId
+      }
+    });
   }
 
   private getSavedImageIndex() {

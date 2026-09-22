@@ -33,6 +33,15 @@
     @if (product.uslugeStampe.length === 0) {
       <p>There are no printing services for this product.</p>
     } @else {
+      <div>
+        Printing service:
+        <select name="printingService" [(ngModel)]="selectedPrintingServiceId">
+          @for (printingService of product.uslugeStampe; track printingService.idUsluge) {
+            <option [value]="printingService.idUsluge">{{printingService.tipStampe}}</option>
+          }
+        </select>
+      </div>
+
       <table>
         <thead>
         <tr>
@@ -90,6 +99,10 @@
     </div>
   } @else {
     <p>This product currently has no images.</p>
+  }
+
+  @if (isClient) {
+    <button type="button" (click)="continueToPreparation()">Next</button>
   }
 }
 

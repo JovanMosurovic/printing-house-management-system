@@ -9,6 +9,7 @@ import {ForgotPassword} from './forgot-password/forgot-password';
 import {ResetPassword} from './reset-password/reset-password';
 import {ProductDetails} from './product-details/product-details';
 import {ClientProducts} from './client-products/client-products';
+import {ProductPreparation} from './product-preparation/product-preparation';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: "forgot-password", component: ForgotPassword },
   { path: "reset-password/:token", component: ResetPassword },
 
+  { path: "product/:productId/preparation", component: ProductPreparation },
   { path: "product/:productId", component: ProductDetails },
 
   { path: "**", redirectTo: "" } // wildcard route, for every route that is not defined

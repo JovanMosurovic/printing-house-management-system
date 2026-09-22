@@ -1,0 +1,93 @@
+<h2>Product preparation</h2>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (product) {
+  <h3>{{product.naziv}}</h3>
+
+  <p>Printing house: {{product.nazivStamparije}}</p>
+  <p>Color: {{selectedColor}}</p>
+
+  @if (selectedPrintingService) {
+    <p>Printing service: {{selectedPrintingService.tipStampe}}</p>
+    <p>Additional price per item: {{selectedPrintingService.dodatnaCenaPoKomadu}} RSD</p>
+  }
+
+  <div class="product-preview">
+    @if (product.slikaUrl) {
+      <img class="product-image" [src]="product.slikaUrl" [alt]="product.naziv">
+    } @else {
+      <div class="product-image-placeholder">Product image is not available.</div>
+    }
+
+    @if (preparationType == "text" && preparationText) {
+      <span class="preparation-text">{{preparationText}}</span>
+    }
+
+    @if (preparationType == "image" && preparationImage) {
+      <img class="preparation-image" [src]="preparationImage" alt="Preparation image">
+    }
+  </div>
+
+  <form #preparationForm="ngForm">
+    <div>
+      Preparation type:
+
+      <label>
+        <input type="radio" name="preparationType"
+               value="text" [(ngModel)]="preparationType"
+               (change)="changePreparationType()">
+        Text
+      </label>
+
+      <label>
+        <input type="radio" name="preparationType"
+               value="image" [(ngModel)]="preparationType"
+               (change)="changePreparationType()">
+        Image
+      </label>
+    </div>
+
+    @if (preparationType == "text") {
+      <div>
+        Text:
+        <input type="text" name="preparationText" [(ngModel)]="preparationText">
+      </div>
+    } @else {
+      <div>
+        Image:
+        <input #preparationImageInput type="file"
+               accept=".jpg,.jpeg,.png,.gif"
+               (change)="selectPreparationImage(preparationImageInput)">
+
+        @if (imageError) {
+          <p>{{imageError}}</p>
+        }
+      </div>
+    }
+
+    <div>
+      Quantity:
+      <input type="number" name="quantity"
+             [(ngModel)]="quantity" #quantityInput="ngModel"
+             min="1" [max]="product.kolicinaNaLageru" required>
+
+      @if (quantityInput.touched && quantityInput.errors?.["required"]) {
+        <p>Quantity is required.</p>
+      }
+
+      @if (quantityInput.touched && quantityInput.errors?.["min"]) {
+        <p>Quantity must be at least 1.</p>
+      }
+
+      @if (quantityInput.touched && quantityInput.errors?.["max"]) {
+        <p>There are not enough products currently in stock.</p>
+      }
+    </div>
+
+    <button type="button" (click)="resetPreparation()">Reset</button>
+    <button type="button" (click)="backToDetails()">Back</button>
+  </form>
+}
