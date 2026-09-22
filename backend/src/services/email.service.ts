@@ -33,6 +33,32 @@ export class EmailService {
         })
     }
 
+    async sendPublicProcurementEmail(emails: string[], publicProcurement: any) {
+        let transporter = this.createTransporter()
+        let productsText = ""
+        let productsHtml = "<ul>"
+
+        for (let item of publicProcurement.items) {
+            productsText += `- ${item.productName}, quantity: ${item.quantity}, printing type: ${item.printingType}\n`
+            productsHtml += `<li>${item.productName}, quantity: ${item.quantity}, printing type: ${item.printingType}</li>`
+        }
+
+        productsHtml += "</ul>"
+
+        await transporter.sendMail({
+            from: `"Printing House" <${process.env.EMAIL_USER}>`,
+            to: process.env.EMAIL_USER,
+            bcc: emails,
+            subject: "New public procurement",
+            text: `A new public procurement was opened by ${publicProcurement.institutionName}.\n\n${productsText}\nThe procurement is open until ${new Date(publicProcurement.expiresAt).toLocaleString("sr-RS")}.`,
+            html: `
+                <p>A new public procurement was opened by ${publicProcurement.institutionName}.</p>
+                ${productsHtml}
+                <p>The procurement is open until ${new Date(publicProcurement.expiresAt).toLocaleString("sr-RS")}.</p>
+            `
+        })
+    }
+
     private createTransporter() {
         if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
             throw new Error("Email credentials are not configured.")

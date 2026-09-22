@@ -14,6 +14,7 @@ import {Cart} from './cart/cart';
 import {ProductArchive} from './product-archive/product-archive';
 import {PrinterProducts} from './printer-products/printer-products';
 import {ProductImport} from './product-import/product-import';
+import {PrinterAuctions} from './printer-auctions/printer-auctions';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
@@ -27,6 +28,7 @@ export const routes: Routes = [
   { path: "client", component: Client },
   { path: "printer/products/import", component: ProductImport },
   { path: "printer/products", component: PrinterProducts },
+  { path: "printer/auctions", component: PrinterAuctions },
   { path: "printer", component: Printer },
 
   { path: "forgot-password", component: ForgotPassword },

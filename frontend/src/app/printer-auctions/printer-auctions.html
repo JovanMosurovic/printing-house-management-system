@@ -1,0 +1,68 @@
+<h2>Public procurement auctions</h2>
+
+<p><a routerLink="/printer">Back to printing house page</a></p>
+
+<p>
+  An offer is calculated from matching products and printing services currently available at your printing house.
+</p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (publicProcurements.length === 0) {
+  <p>There are no open public procurements.</p>
+} @else {
+  @for (publicProcurement of publicProcurements; track publicProcurement._id) {
+    <div>
+      <h3>Public procurement {{publicProcurement._id}}</h3>
+
+      <p>Institution: {{publicProcurement.institutionName}}</p>
+      <p>Opened: {{publicProcurement.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</p>
+      <p>Open until: {{publicProcurement.expiresAt | date:'dd.MM.yyyy HH:mm:ss'}}</p>
+      <p>Number of submitted offers: {{publicProcurement.numberOfOffers}}</p>
+
+      <table>
+        <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Color</th>
+          <th>Printing type</th>
+          <th>Quantity</th>
+          <th>Preparation</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (item of publicProcurement.items; track item._id) {
+            <tr>
+              <td>{{item.productName}}</td>
+              <td>{{item.category}} / {{item.subcategory}}</td>
+              <td>{{item.color}}</td>
+              <td>{{item.printingType}}</td>
+              <td>{{item.quantity}}</td>
+              <td>
+                @if (item.preparationType == "text") {
+                  {{item.preparationText}}
+                } @else {
+                  <img [src]="item.preparationImage" alt="Preparation image" width="100">
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (publicProcurement.hasSubmittedOffer) {
+        <p>Offer submitted.</p>
+      } @else {
+        <button type="button"
+                [disabled]="submittingPublicProcurementId == publicProcurement._id"
+                (click)="submitOffer(publicProcurement._id)">
+          {{submittingPublicProcurementId == publicProcurement._id ? "Submitting..." : "Submit offer"}}
+        </button>
+      }
+    </div>
+  }
+}

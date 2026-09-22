@@ -48,6 +48,8 @@
       {{isConfirming ? "Confirming..." : "Confirm order"}}
     </button>
   } @else {
-    <p>Business client orders are created through public procurement.</p>
+    <button type="button" [disabled]="isConfirming" (click)="createPublicProcurement()">
+      {{isConfirming ? "Opening..." : "Open public procurement"}}
+    </button>
   }
 }

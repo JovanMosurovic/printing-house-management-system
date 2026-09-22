@@ -5,6 +5,7 @@ import userRouter from './routers/user.router'
 import mongoose from 'mongoose'
 import productRouter from "./routers/product.router";
 import invoiceRouter from "./routers/invoice.router";
+import publicProcurementRouter from "./routers/public-procurement.router";
 
 const app = express()
 app.use(cors())
@@ -20,6 +21,7 @@ const router = express.Router()
 router.use("/api/users", userRouter)
 router.use("/api/products", productRouter);
 router.use("/api/invoices", invoiceRouter);
+router.use("/api/public-procurements", publicProcurementRouter);
 
 app.use("/", router)
 app.listen(4000, ()=> console.log("Express running on port 4000!"))

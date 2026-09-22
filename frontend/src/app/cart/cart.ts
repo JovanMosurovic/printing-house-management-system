@@ -5,6 +5,7 @@ import {UserModel} from '../models/user';
 import {AuthService} from '../services/auth.service';
 import {CartService} from '../services/cart.service';
 import {InvoiceService} from '../services/invoice.service';
+import {PublicProcurementService} from '../services/public-procurement.service';
 
 @Component({
   selector: 'app-cart',
@@ -16,6 +17,7 @@ export class Cart implements OnInit {
   private authService = inject(AuthService);
   private cartService = inject(CartService);
   private invoiceService = inject(InvoiceService);
+  private publicProcurementService = inject(PublicProcurementService);
   private router = inject(Router);
 
   loggedUser: UserModel | null = null;
@@ -96,6 +98,44 @@ export class Cart implements OnInit {
           this.message = error.error.message;
         } else {
           this.message = "Unexpected error while confirming the order.";
+        }
+
+        this.isConfirming = false;
+      }
+    });
+  }
+
+  createPublicProcurement() {
+    this.message = "";
+
+    if (this.loggedUser == null) return;
+
+    if (this.loggedUser.role != "businessClient") {
+      this.message = "Only a business client can create a public procurement.";
+      return;
+    }
+
+    let cartItems = this.cartService.getCartItems(this.loggedUser._id);
+
+    if (cartItems.length == 0) {
+      this.message = "The shopping cart is empty.";
+      return;
+    }
+
+    this.isConfirming = true;
+
+    this.publicProcurementService.createPublicProcurement(this.loggedUser._id, cartItems).subscribe({
+      next: data => {
+        this.cartService.clearCart(this.loggedUser!._id);
+        this.loadCart();
+        this.message = data.message;
+        this.isConfirming = false;
+      },
+      error: error => {
+        if (error.error?.message) {
+          this.message = error.error.message;
+        } else {
+          this.message = "Unexpected error while creating public procurement.";
         }
 
         this.isConfirming = false;
