@@ -8,6 +8,113 @@ import {EmailService} from "../services/email.service";
 
 export class InvoiceController {
 
+    // Returns all invoices that belong to one client
+    async getClientInvoices(req: express.Request, res: express.Response) {
+        try {
+            let clientId = req.params.clientId;
+            let client = await UserModel.findById(clientId);
+
+            if (client == null) {
+                res.status(404).json({message: "Client was not found."});
+                return;
+            }
+
+            if (client.role != "individualClient" && client.role != "businessClient") {
+                res.status(403).json({message: "Entered user is not a client."});
+                return;
+            }
+
+            let invoices = await InvoiceModel.find({
+                clientId: clientId,
+                status: {$ne: "cancelled"}
+            }).sort({createdAt: -1});
+            res.json(invoices);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Client ID is not valid."});
+                return;
+            }
+
+            console.log("Error while getting client invoices.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Cancels an ordered invoice and restores product quantities to stock
+    async cancelInvoice(req: express.Request, res: express.Response) {
+        try {
+            let clientId = req.body.clientId;
+            let invoiceId = req.body.invoiceId;
+
+            if (!clientId || !invoiceId) {
+                res.status(400).json({message: "Client ID and invoice ID are required."});
+                return;
+            }
+
+            let invoice = await InvoiceModel.findOne({_id: invoiceId, clientId: clientId});
+
+            if (invoice == null) {
+                res.status(404).json({message: "Invoice was not found."});
+                return;
+            }
+
+            if (invoice.status != "ordered") {
+                res.status(409).json({message: "Only an ordered invoice can be cancelled."});
+                return;
+            }
+
+            let productsToRestore: any[] = [];
+
+            for (let invoiceItem of invoice.items) {
+                let productToRestore: any = null;
+
+                for (let currentProductToRestore of productsToRestore) {
+                    if (currentProductToRestore.productId.toString() == invoiceItem.productId.toString()) {
+                        productToRestore = currentProductToRestore;
+                    }
+                }
+
+                if (productToRestore == null) {
+                    productToRestore = {
+                        productId: invoiceItem.productId,
+                        quantity: 0,
+                        product: null
+                    };
+                    productsToRestore.push(productToRestore);
+                }
+
+                productToRestore.quantity += invoiceItem.quantity;
+            }
+
+            for (let productToRestore of productsToRestore) {
+                productToRestore.product = await ProductModel.findById(productToRestore.productId);
+
+                if (productToRestore.product == null) {
+                    res.status(404).json({message: "One of the ordered products was not found."});
+                    return;
+                }
+            }
+
+            for (let productToRestore of productsToRestore) {
+                productToRestore.product.kolicinaNaLageru += productToRestore.quantity;
+                await productToRestore.product.save();
+            }
+
+            invoice.status = "cancelled";
+            await invoice.save();
+
+            res.json({message: "Order was successfully cancelled."});
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Entered ID is not valid."});
+                return;
+            }
+
+            console.log("Error while cancelling invoice.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     // Creates one invoice for each printing house represented in the shopping cart
     async confirmOrder(req: express.Request, res: express.Response) {
         try {

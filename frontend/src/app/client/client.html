@@ -135,4 +135,54 @@
       Save changes
     </button>
   </form>
+
+  <h2>Orders</h2>
+
+  @if (invoiceMessage) {
+    <p>{{invoiceMessage}}</p>
+  }
+
+  @if (invoices.length === 0) {
+    <p>There are no orders.</p>
+  } @else {
+    <table>
+      <thead>
+      <tr>
+        <th><button type="button" (click)="sortInvoices('invoiceId')">Invoice ID {{getInvoiceSortSymbol('invoiceId')}}</button></th>
+        <th><button type="button" (click)="sortInvoices('printingHouseName')">Printing house {{getInvoiceSortSymbol('printingHouseName')}}</button></th>
+        <th><button type="button" (click)="sortInvoices('printingHouseCity')">City {{getInvoiceSortSymbol('printingHouseCity')}}</button></th>
+        <th>Products</th>
+        <th><button type="button" (click)="sortInvoices('totalPrice')">Total price {{getInvoiceSortSymbol('totalPrice')}}</button></th>
+        <th><button type="button" (click)="sortInvoices('status')">Status {{getInvoiceSortSymbol('status')}}</button></th>
+        <th><button type="button" (click)="sortInvoices('createdAt')">Order date {{getInvoiceSortSymbol('createdAt')}}</button></th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+
+      <tbody>
+        @for (invoice of invoices; track invoice._id) {
+          <tr>
+            <td>{{invoice._id}}</td>
+            <td>{{invoice.printingHouseName}}</td>
+            <td>{{invoice.printingHouseCity}}</td>
+            <td>
+              <ol>
+                @for (invoiceItem of invoice.items; track $index) {
+                  <li>{{invoiceItem.productName}} ({{invoiceItem.quantity}})</li>
+                }
+              </ol>
+            </td>
+            <td>{{invoice.totalPrice}} RSD</td>
+            <td>{{invoice.status}}</td>
+            <td>{{invoice.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
+            <td>
+              @if (invoice.status == "ordered") {
+                <button type="button" (click)="cancelInvoice(invoice._id)">Cancel</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
 }

@@ -2,6 +2,8 @@ import {PreparationType} from './cart';
 
 export type InvoiceStatus = "ordered" | "inPrinting" | "delivered" | "received" | "cancelled";
 
+export type InvoiceSortField = "invoiceId" | "printingHouseName" | "printingHouseCity" | "totalPrice" | "status" | "createdAt";
+
 export class InvoiceItemModel {
   productId = "";
   productCode = "";

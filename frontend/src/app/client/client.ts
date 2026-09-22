@@ -4,22 +4,31 @@ import {Router, RouterLink} from '@angular/router';
 import {UserModel} from '../models/user';
 import {UserService} from '../services/user.service';
 import {FormsModule, NgForm} from '@angular/forms';
+import {InvoiceModel, InvoiceSortField} from '../models/invoice';
+import {InvoiceService} from '../services/invoice.service';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-client',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, DatePipe],
   templateUrl: './client.html',
   styleUrl: './client.css',
 })
 export class Client implements OnInit {
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  private invoiceService = inject(InvoiceService);
   private router = inject(Router);
 
   loggedUser: UserModel | null = null;
   message = "";
 
   profileImageError = "";
+
+  invoices: InvoiceModel[] = [];
+  invoiceMessage = "";
+  invoiceSortField: InvoiceSortField = "createdAt";
+  invoiceSortDirection: "asc" | "desc" = "desc";
 
   ngOnInit() {
     this.loggedUser = this.authService.getLoggedUser();
@@ -36,6 +45,76 @@ export class Client implements OnInit {
     }
 
     this.loadProfile();
+    this.loadInvoices();
+  }
+
+  loadInvoices() {
+    if (this.loggedUser == null) return;
+
+    this.invoiceService.getClientInvoices(this.loggedUser._id).subscribe({
+      next: data => {
+        this.invoices = data;
+        this.applyInvoiceSorting();
+      },
+      error: error => {
+        if (error.error?.message) {
+          this.invoiceMessage = error.error.message;
+        } else {
+          this.invoiceMessage = "Unexpected error while loading orders.";
+        }
+      }
+    });
+  }
+
+  sortInvoices(sortField: InvoiceSortField) {
+    if (this.invoiceSortField == sortField) {
+      this.invoiceSortDirection = this.invoiceSortDirection == "asc" ? "desc" : "asc";
+    } else {
+      this.invoiceSortField = sortField;
+      this.invoiceSortDirection = "asc";
+    }
+
+    this.applyInvoiceSorting();
+  }
+
+  applyInvoiceSorting() {
+    this.invoices.sort((firstInvoice, secondInvoice) => {
+      let comparison = 0;
+
+      if (this.invoiceSortField == "invoiceId") comparison = firstInvoice._id.localeCompare(secondInvoice._id);
+      if (this.invoiceSortField == "printingHouseName") comparison = firstInvoice.printingHouseName.localeCompare(secondInvoice.printingHouseName, "sr");
+      if (this.invoiceSortField == "printingHouseCity") comparison = firstInvoice.printingHouseCity.localeCompare(secondInvoice.printingHouseCity, "sr");
+      if (this.invoiceSortField == "totalPrice") comparison = firstInvoice.totalPrice - secondInvoice.totalPrice;
+      if (this.invoiceSortField == "status") comparison = firstInvoice.status.localeCompare(secondInvoice.status);
+      if (this.invoiceSortField == "createdAt") comparison = new Date(firstInvoice.createdAt).getTime() - new Date(secondInvoice.createdAt).getTime();
+
+      return this.invoiceSortDirection == "asc" ? comparison : -comparison;
+    });
+  }
+
+  getInvoiceSortSymbol(sortField: InvoiceSortField) {
+    if (this.invoiceSortField != sortField) return "";
+    return this.invoiceSortDirection == "asc" ? "▲" : "▼";
+  }
+
+  cancelInvoice(invoiceId: string) {
+    if (this.loggedUser == null) return;
+
+    this.invoiceMessage = "";
+
+    this.invoiceService.cancelInvoice(this.loggedUser._id, invoiceId).subscribe({
+      next: data => {
+        this.invoiceMessage = data.message;
+        this.loadInvoices();
+      },
+      error: error => {
+        if (error.error?.message) {
+          this.invoiceMessage = error.error.message;
+        } else {
+          this.invoiceMessage = "Unexpected error while cancelling the order.";
+        }
+      }
+    });
   }
 
   loadProfile() {
