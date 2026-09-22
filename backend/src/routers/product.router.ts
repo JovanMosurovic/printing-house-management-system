@@ -13,6 +13,11 @@ productRouter.route("/categories").get(
         new ProductController().getActiveCategories(req, res)
 );
 
+productRouter.route("/all-categories").get(
+    (req, res) =>
+        new ProductController().getAllCategories(req, res)
+);
+
 productRouter.route("/search").post(
     (req, res) =>
         new ProductController().searchProducts(req, res)
@@ -26,6 +31,21 @@ productRouter.route("/reaction").post(
 productRouter.route("/comment").post(
     (req, res) =>
         new ProductController().addComment(req, res)
+);
+
+productRouter.route("/printer/add").post(
+    (req, res) =>
+        new ProductController().addProduct(req, res)
+);
+
+productRouter.route("/printer/update-quantity").post(
+    (req, res) =>
+        new ProductController().updateProductQuantity(req, res)
+);
+
+productRouter.route("/printer/:printerId").get(
+    (req, res) =>
+        new ProductController().getPrintingHouseProducts(req, res)
 );
 
 productRouter.route("/:productId").get(

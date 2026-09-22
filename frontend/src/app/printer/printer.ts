@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {AuthService} from '../services/auth.service';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {UserModel} from '../models/user';
 import {InvoiceModel, InvoiceStatus} from '../models/invoice';
 import {InvoiceService} from '../services/invoice.service';
@@ -8,7 +8,7 @@ import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-printer',
-  imports: [DatePipe],
+  imports: [DatePipe, RouterLink],
   templateUrl: './printer.html',
   styleUrl: './printer.css',
 })

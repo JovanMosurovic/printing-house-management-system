@@ -1,5 +1,11 @@
 export type SortDirection = "asc" | "desc";
 
+export class CategoryModel {
+  _id = "";
+  naziv = "";
+  potkategorije: string[] = [];
+}
+
 export class PrintingServiceModel {
   idUsluge = "";
   tipStampe = "";

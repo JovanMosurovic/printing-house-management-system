@@ -1,0 +1,11 @@
+Service ID: USL-TEST-01
+Printing type: Digitalna stampa
+Additional price per item: 150
+Maximum width: 200
+Maximum height: 300
+
+Service ID: USL-TEST-02
+Printing type: Preslikac
+Additional price per item: 250
+Maximum width: 280
+Maximum height: 350

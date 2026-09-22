@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {HomepageDataModel, ProductModel, ProductSearchModel} from '../models/product';
+import {CategoryModel, HomepageDataModel, ProductModel, ProductSearchModel} from '../models/product';
 import {MessageModel} from '../models/message';
 
 @Injectable({
@@ -16,6 +16,10 @@ export class ProductService {
 
   getActiveCategories() {
     return this.http.get<string[]>(`${this.apiUrl}/categories`);
+  }
+
+  getAllCategories() {
+    return this.http.get<CategoryModel[]>(`${this.apiUrl}/all-categories`);
   }
 
   searchProducts(productSearch: ProductSearchModel) {
@@ -40,6 +44,34 @@ export class ProductService {
   addComment(clientId: string, productId: string, text: string) {
     const data = {clientId: clientId, productId: productId, text: text};
     return this.http.post<MessageModel>(`${this.apiUrl}/comment`, data);
+  }
+
+  getPrintingHouseProducts(printerId: string) {
+    return this.http.get<ProductModel[]>(`${this.apiUrl}/printer/${printerId}`);
+  }
+
+  addProduct(printerId: string, product: ProductModel) {
+    const data = {
+      printerId: printerId,
+      sifra: product.sifra,
+      naziv: product.naziv,
+      opis: product.opis,
+      kategorija: product.kategorija,
+      potkategorija: product.potkategorija,
+      jedinicnaCena: product.jedinicnaCena,
+      kolicinaNaLageru: product.kolicinaNaLageru,
+      dostupneBoje: product.dostupneBoje,
+      slikaUrl: product.slikaUrl,
+      dodatneSlike: product.dodatneSlike,
+      uslugeStampe: product.uslugeStampe
+    };
+
+    return this.http.post<MessageModel>(`${this.apiUrl}/printer/add`, data);
+  }
+
+  updateProductQuantity(printerId: string, productId: string, quantity: number) {
+    const data = {printerId: printerId, productId: productId, quantity: quantity};
+    return this.http.post<MessageModel>(`${this.apiUrl}/printer/update-quantity`, data);
   }
 
 }

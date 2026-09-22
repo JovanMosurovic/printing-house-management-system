@@ -1,0 +1,219 @@
+<h2>Products and services</h2>
+
+<p><a routerLink="/printer">Back to printing house page</a></p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+<h3>Existing products</h3>
+
+@if (products.length === 0) {
+  <p>There are no products.</p>
+} @else {
+  <table>
+    <thead>
+    <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Category</th>
+      <th>Unit price</th>
+      <th>Printing services</th>
+      <th>Quantity</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @for (product of products; track product._id) {
+        <tr>
+          <td>{{product.sifra}}</td>
+          <td>{{product.naziv}}</td>
+          <td>{{product.kategorija}} / {{product.potkategorija}}</td>
+          <td>{{product.jedinicnaCena}} RSD</td>
+          <td>
+            <ul>
+              @for (service of product.uslugeStampe; track service.idUsluge) {
+                <li>{{service.tipStampe}} (+{{service.dodatnaCenaPoKomadu}} RSD)</li>
+              }
+            </ul>
+          </td>
+          <td>
+            <input type="number" min="0" step="1"
+                   [(ngModel)]="product.kolicinaNaLageru"
+                   [name]="'quantity_' + product._id">
+          </td>
+          <td><button type="button" (click)="updateQuantity(product)">Update quantity</button></td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+<h3>Add product</h3>
+
+<form #productForm="ngForm">
+  <div>
+    Product code:
+    <input type="text" name="productCode" [(ngModel)]="newProduct.sifra" #productCode="ngModel" required>
+    @if (productCode.touched && productCode.errors?.["required"]) {
+      <p>Product code is required.</p>
+    }
+  </div>
+
+  <div>
+    Product name:
+    <input type="text" name="productName" [(ngModel)]="newProduct.naziv" #productName="ngModel" required>
+    @if (productName.touched && productName.errors?.["required"]) {
+      <p>Product name is required.</p>
+    }
+  </div>
+
+  <div>
+    Description:
+    <textarea name="description" [(ngModel)]="newProduct.opis" #description="ngModel" required></textarea>
+    @if (description.touched && description.errors?.["required"]) {
+      <p>Product description is required.</p>
+    }
+  </div>
+
+  <div>
+    Category:
+    <select name="category" [(ngModel)]="newProduct.kategorija" (change)="selectCategory()" #category="ngModel" required>
+      @for (currentCategory of categories; track currentCategory._id) {
+        <option [value]="currentCategory.naziv">{{currentCategory.naziv}}</option>
+      }
+    </select>
+  </div>
+
+  <div>
+    Subcategory:
+    <select name="subcategory" [(ngModel)]="newProduct.potkategorija" #subcategory="ngModel" required>
+      @for (subcategoryName of getSelectedSubcategories(); track subcategoryName) {
+        <option [value]="subcategoryName">{{subcategoryName}}</option>
+      }
+    </select>
+  </div>
+
+  <div>
+    Unit price:
+    <input type="number" name="unitPrice" min="0" [(ngModel)]="newProduct.jedinicnaCena" #unitPrice="ngModel" required>
+    @if (unitPrice.touched && unitPrice.errors?.["required"]) {
+      <p>Unit price is required.</p>
+    }
+    @if (unitPrice.touched && unitPrice.errors?.["min"]) {
+      <p>Unit price cannot be negative.</p>
+    }
+  </div>
+
+  <div>
+    Stock quantity:
+    <input type="number" name="stockQuantity" min="0" step="1" [(ngModel)]="newProduct.kolicinaNaLageru" #stockQuantity="ngModel" required>
+    @if (stockQuantity.touched && stockQuantity.errors?.["required"]) {
+      <p>Stock quantity is required.</p>
+    }
+    @if (stockQuantity.touched && stockQuantity.errors?.["min"]) {
+      <p>Stock quantity cannot be negative.</p>
+    }
+  </div>
+
+  <h4>Available colors</h4>
+
+  <ul>
+    @for (color of newProduct.dostupneBoje; track $index) {
+      <li>{{color}} <button type="button" (click)="removeColor($index)">Remove</button></li>
+    }
+  </ul>
+
+  <input type="text" name="newColor" [(ngModel)]="newColor" placeholder="Color">
+  <button type="button" (click)="addColor()">Add color</button>
+
+  <h4>Product images</h4>
+
+  <div>
+    Main image:
+    <input #mainImageInput type="file" accept=".jpg,.jpeg,.png,.gif" (change)="selectMainImage(mainImageInput)">
+    @if (mainImageError) {
+      <p>{{mainImageError}}</p>
+    }
+    @if (newProduct.slikaUrl) {
+      <img [src]="newProduct.slikaUrl" alt="Main product image" width="120">
+    }
+  </div>
+
+  <div>
+    Additional images (maximum 3):
+    <input #additionalImagesInput type="file" accept=".jpg,.jpeg,.png,.gif" (change)="selectAdditionalImages(additionalImagesInput)">
+    @if (additionalImagesError) {
+      <p>{{additionalImagesError}}</p>
+    }
+    @for (image of newProduct.dodatneSlike; track $index) {
+      <div>
+        <img [src]="image" alt="Additional product image" width="80">
+        <button type="button" (click)="removeAdditionalImage($index)">Remove</button>
+      </div>
+    }
+  </div>
+
+  <h4>Printing services</h4>
+
+  @if (newProduct.uslugeStampe.length === 0) {
+    <p>No printing services have been added.</p>
+  } @else {
+    <table>
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Additional price</th>
+        <th>Maximum width</th>
+        <th>Maximum height</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (service of newProduct.uslugeStampe; track service.idUsluge) {
+          <tr>
+            <td>{{service.idUsluge}}</td>
+            <td>{{service.tipStampe}}</td>
+            <td>{{service.dodatnaCenaPoKomadu}} RSD</td>
+            <td>{{service.maxSirinaMm}} mm</td>
+            <td>{{service.maxVisinaMm}} mm</td>
+            <td><button type="button" (click)="removePrintingService($index)">Remove</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <div>
+    Service ID:
+    <input type="text" name="serviceId" [(ngModel)]="newPrintingService.idUsluge">
+  </div>
+
+  <div>
+    Printing type:
+    <input type="text" name="printingType" [(ngModel)]="newPrintingService.tipStampe">
+  </div>
+
+  <div>
+    Additional price per item:
+    <input type="number" name="additionalPrice" [(ngModel)]="newPrintingService.dodatnaCenaPoKomadu">
+  </div>
+
+  <div>
+    Maximum width (mm):
+    <input type="number" name="maximumWidth" [(ngModel)]="newPrintingService.maxSirinaMm">
+  </div>
+
+  <div>
+    Maximum height (mm):
+    <input type="number" name="maximumHeight" [(ngModel)]="newPrintingService.maxVisinaMm">
+  </div>
+
+  <button type="button" (click)="addPrintingService()">Add printing service</button>
+
+  <div>
+    <button type="button" (click)="addProduct(productForm, mainImageInput, additionalImagesInput)">Add product</button>
+  </div>
+</form>
