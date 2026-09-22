@@ -1,24 +1,24 @@
 import { Routes } from '@angular/router';
-import {Homepage} from './homepage/homepage';
-import {Register} from './register/register';
-import {AdminLogin} from './admin-login/admin-login';
-import {Admin} from './admin/admin';
-import {Client} from './client/client';
-import {Printer} from './printer/printer';
-import {ForgotPassword} from './forgot-password/forgot-password';
-import {ResetPassword} from './reset-password/reset-password';
-import {ProductDetails} from './product-details/product-details';
-import {ClientProducts} from './client-products/client-products';
-import {ProductPreparation} from './product-preparation/product-preparation';
-import {Cart} from './cart/cart';
-import {ProductArchive} from './product-archive/product-archive';
-import {PrinterProducts} from './printer-products/printer-products';
-import {ProductImport} from './product-import/product-import';
-import {PrinterAuctions} from './printer-auctions/printer-auctions';
-import {ClientPublicProcurements} from './client-public-procurements/client-public-procurements';
-import {AdminUsers} from './admin-users/admin-users';
-import {AdminCategories} from './admin-categories/admin-categories';
-import {AdminStatistics} from './admin-statistics/admin-statistics';
+import {Homepage} from './public/homepage/homepage';
+import {Register} from './public/register/register';
+import {AdminLogin} from './admin/admin-login/admin-login';
+import {Admin} from './admin/admin/admin';
+import {Client} from './client/client/client';
+import {Printer} from './printer/printer/printer';
+import {ForgotPassword} from './public/forgot-password/forgot-password';
+import {ResetPassword} from './public/reset-password/reset-password';
+import {ProductDetails} from './product/product-details/product-details';
+import {ClientProducts} from './client/client-products/client-products';
+import {ProductPreparation} from './product/product-preparation/product-preparation';
+import {Cart} from './client/cart/cart';
+import {ProductArchive} from './client/product-archive/product-archive';
+import {PrinterProducts} from './printer/printer-products/printer-products';
+import {ProductImport} from './printer/product-import/product-import';
+import {PrinterAuctions} from './printer/printer-auctions/printer-auctions';
+import {ClientPublicProcurements} from './client/client-public-procurements/client-public-procurements';
+import {AdminUsers} from './admin/admin-users/admin-users';
+import {AdminCategories} from './admin/admin-categories/admin-categories';
+import {AdminStatistics} from './admin/admin-statistics/admin-statistics';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
