@@ -1,0 +1,83 @@
+<h2>Product categories</h2>
+
+<p><a routerLink="/admin">Back to administrator page</a></p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+<h3>Add category</h3>
+
+<form #categoryForm="ngForm">
+  <div>
+    Category name:
+    <input type="text" name="categoryName" [(ngModel)]="categoryName" #category="ngModel" required>
+    @if (category.touched && category.errors?.["required"]) {
+      <p>Category name is required.</p>
+    }
+  </div>
+
+  <button type="button" (click)="addCategory(categoryForm)">Add category</button>
+</form>
+
+<h3>Add subcategory</h3>
+
+@if (categories.length === 0) {
+  <p>Add a category before adding subcategories.</p>
+} @else {
+  <form #subcategoryForm="ngForm">
+    <div>
+      Category:
+      <select name="selectedCategoryId" [(ngModel)]="selectedCategoryId" #selectedCategory="ngModel" required>
+        <option value="">Select category</option>
+        @for (category of categories; track category._id) {
+          <option [value]="category._id">{{category.naziv}}</option>
+        }
+      </select>
+      @if (selectedCategory.touched && selectedCategory.errors?.["required"]) {
+        <p>Please select a category.</p>
+      }
+    </div>
+
+    <div>
+      Subcategory name:
+      <input type="text" name="subcategoryName" [(ngModel)]="subcategoryName" #subcategory="ngModel" required>
+      @if (subcategory.touched && subcategory.errors?.["required"]) {
+        <p>Subcategory name is required.</p>
+      }
+    </div>
+
+    <button type="button" (click)="addSubcategory(subcategoryForm)">Add subcategory</button>
+  </form>
+}
+
+<h3>Existing categories</h3>
+
+@if (categories.length === 0) {
+  <p>There are no product categories.</p>
+} @else {
+  <table>
+    <thead>
+    <tr>
+      <th>Category</th>
+      <th>Subcategories</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (category of categories; track category._id) {
+        <tr>
+          <td>{{category.naziv}}</td>
+          <td>
+            @if (category.potkategorije.length === 0) {
+              No subcategories
+            } @else {
+              @for (subcategory of category.potkategorije; track subcategory) {
+                <div>{{subcategory}}</div>
+              }
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

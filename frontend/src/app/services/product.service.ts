@@ -22,6 +22,16 @@ export class ProductService {
     return this.http.get<CategoryModel[]>(`${this.apiUrl}/all-categories`);
   }
 
+  addCategory(categoryName: string) {
+    const data = {categoryName: categoryName};
+    return this.http.post<CategoryModel>(`${this.apiUrl}/admin/add-category`, data);
+  }
+
+  addSubcategory(categoryId: string, subcategoryName: string) {
+    const data = {categoryId: categoryId, subcategoryName: subcategoryName};
+    return this.http.post<CategoryModel>(`${this.apiUrl}/admin/add-subcategory`, data);
+  }
+
   searchProducts(productSearch: ProductSearchModel) {
     const data = {
       naziv: productSearch.naziv,

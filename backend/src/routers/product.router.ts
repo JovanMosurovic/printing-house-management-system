@@ -3,6 +3,16 @@ import {ProductController} from "../controllers/product.controller";
 
 const productRouter = express.Router()
 
+productRouter.route("/admin/add-category").post(
+    (req, res) =>
+        new ProductController().addCategory(req, res)
+);
+
+productRouter.route("/admin/add-subcategory").post(
+    (req, res) =>
+        new ProductController().addSubcategory(req, res)
+);
+
 productRouter.route("/homepage").get(
     (req, res) =>
         new ProductController().getHomepageData(req, res)

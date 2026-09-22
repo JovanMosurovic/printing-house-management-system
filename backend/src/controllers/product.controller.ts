@@ -7,6 +7,92 @@ import {imageSize} from "image-size";
 
 export class ProductController {
 
+    // Creates a new product category without initial subcategories
+    // Used by the administrator on the product category management page
+    async addCategory(req: express.Request, res: express.Response) {
+        try {
+            let categoryName = req.body.categoryName?.trim();
+
+            if (!categoryName) {
+                res.status(400).json({message: "Category name is required."});
+                return;
+            }
+
+            let existingCategory = await CategoryModel.findOne({naziv: categoryName});
+
+            if (existingCategory != null) {
+                res.status(409).json({message: "Category already exists."});
+                return;
+            }
+
+            let category = new CategoryModel({naziv: categoryName, potkategorije: []});
+            await category.save();
+            res.status(201).json(category);
+        } catch (e: any) {
+            if (e.name == "ValidationError") {
+                let firstErrorName = Object.keys(e.errors)[0];
+                let firstError = e.errors[firstErrorName];
+                res.status(400).json({message: firstError.message});
+                return;
+            }
+
+            if (e.code == 11000) {
+                res.status(409).json({message: "Category already exists."});
+                return;
+            }
+
+            console.log("Error while adding product category.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Adds one subcategory to an existing product category
+    // Used by the administrator on the product category management page
+    async addSubcategory(req: express.Request, res: express.Response) {
+        try {
+            let categoryId = req.body.categoryId;
+            let subcategoryName = req.body.subcategoryName?.trim();
+
+            if (!categoryId || !subcategoryName) {
+                res.status(400).json({message: "Category ID and subcategory name are required."});
+                return;
+            }
+
+            let category = await CategoryModel.findById(categoryId);
+
+            if (category == null) {
+                res.status(404).json({message: "Category was not found."});
+                return;
+            }
+
+            for (let currentSubcategory of category.potkategorije) {
+                if (currentSubcategory.toLowerCase() == subcategoryName.toLowerCase()) {
+                    res.status(409).json({message: "Subcategory already exists in the selected category."});
+                    return;
+                }
+            }
+
+            category.potkategorije.push(subcategoryName);
+            await category.save();
+            res.status(201).json(category);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Category ID is not valid."});
+                return;
+            }
+
+            if (e.name == "ValidationError") {
+                let firstErrorName = Object.keys(e.errors)[0];
+                let firstError = e.errors[firstErrorName];
+                res.status(400).json({message: firstError.message});
+                return;
+            }
+
+            console.log("Error while adding product subcategory.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     // Returns homepage statistics, active categories and top five products
     // Used on the public homepage to return printing house count, active categories and top five products
     async getHomepageData(req: express.Request, res: express.Response) {
