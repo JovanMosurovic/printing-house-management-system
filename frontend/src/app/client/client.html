@@ -12,10 +12,10 @@
   <p>{{message}}</p>
 }
 
-@if (loggedUser) {
+@if (loggedUser && profileUser) {
   <form #profileForm="ngForm">
     <div>
-      <img [src]="loggedUser.profileImage"
+      <img [src]="profileUser.profileImage"
            alt="Profile image"
            width="200">
     </div>
@@ -35,14 +35,14 @@
       Username:
       <input disabled
              type="text" name="username"
-             [(ngModel)]="loggedUser.username"
+             [(ngModel)]="profileUser.username"
              readonly>
     </div>
 
     <div>
       First name:
       <input type="text" name="firstName"
-             [(ngModel)]="loggedUser.firstName"
+             [(ngModel)]="profileUser.firstName"
              #firstName="ngModel" required>
 
       @if (firstName.touched &&
@@ -54,7 +54,7 @@
     <div>
       Last name:
       <input type="text" name="lastName"
-             [(ngModel)]="loggedUser.lastName"
+             [(ngModel)]="profileUser.lastName"
              #lastName="ngModel" required>
 
       @if (lastName.touched &&
@@ -66,7 +66,7 @@
     <div>
       Phone:
       <input type="tel" name="phone"
-             [(ngModel)]="loggedUser.phone"
+             [(ngModel)]="profileUser.phone"
              #phone="ngModel" required>
 
       @if (phone.touched &&
@@ -78,7 +78,7 @@
     <div>
       Email:
       <input type="email" name="email"
-             [(ngModel)]="loggedUser.email"
+             [(ngModel)]="profileUser.email"
              #email="ngModel" email required>
 
       @if (email.touched &&
@@ -92,32 +92,32 @@
       }
     </div>
 
-    @if (loggedUser.institution) {
+    @if (profileUser.institution) {
       <div>
         Institution name:
         <input type="text" name="institutionName"
-               [(ngModel)]="loggedUser.institution.name"
+               [(ngModel)]="profileUser.institution.name"
                #institutionName="ngModel" required>
       </div>
 
       <div>
         Institution address:
         <input type="text" name="institutionAddress"
-               [(ngModel)]="loggedUser.institution.address"
+               [(ngModel)]="profileUser.institution.address"
                #institutionAddress="ngModel" required>
       </div>
 
       <div>
         Institution city:
         <input type="text" name="institutionCity"
-               [(ngModel)]="loggedUser.institution.city"
+               [(ngModel)]="profileUser.institution.city"
                #institutionCity="ngModel" required>
       </div>
 
       <div>
         Registration number:
         <input type="text" name="registrationNumber"
-               [(ngModel)]="loggedUser.institution.registrationNumber"
+               [(ngModel)]="profileUser.institution.registrationNumber"
                #registrationNumber="ngModel"
                pattern="[0-9]{8}" maxlength="8" required>
       </div>
@@ -125,7 +125,7 @@
       <div>
         Tax ID:
         <input type="text" name="taxId"
-               [(ngModel)]="loggedUser.institution.taxId"
+               [(ngModel)]="profileUser.institution.taxId"
                #taxId="ngModel"
                pattern="[1-9][0-9]{8}"
                maxlength="9" required>

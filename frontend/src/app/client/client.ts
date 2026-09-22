@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {Router, RouterLink} from '@angular/router';
-import {UserModel} from '../models/user';
+import {copyUser, UserModel} from '../models/user';
 import {UserService} from '../services/user.service';
 import {FormsModule, NgForm} from '@angular/forms';
 import {InvoiceModel, InvoiceSortField} from '../models/invoice';
@@ -21,6 +21,7 @@ export class Client implements OnInit {
   private router = inject(Router);
 
   loggedUser: UserModel | null = null;
+  profileUser: UserModel | null = null;
   message = "";
 
   profileImageError = "";
@@ -43,6 +44,8 @@ export class Client implements OnInit {
       this.router.navigate([""]);
       return;
     }
+
+    this.profileUser = copyUser(this.loggedUser);
 
     this.loadProfile();
     this.loadInvoices();
@@ -123,6 +126,7 @@ export class Client implements OnInit {
     this.userService.getUserProfile(this.loggedUser._id).subscribe({
       next: data => {
         this.loggedUser = data;
+        this.profileUser = copyUser(data);
         this.authService.setLoggedUser(data);
       },
       error: error => {
@@ -143,11 +147,12 @@ export class Client implements OnInit {
       return;
     }
 
-    if (this.loggedUser == null) return;
+    if (this.profileUser == null) return;
 
-    this.userService.updateUserProfile(this.loggedUser).subscribe({
+    this.userService.updateUserProfile(this.profileUser).subscribe({
       next: data => {
         this.loggedUser = data;
+        this.profileUser = copyUser(data);
         this.authService.setLoggedUser(data);
         this.message = "Profile was successfully updated.";
       },
@@ -166,7 +171,7 @@ export class Client implements OnInit {
 
     this.profileImageError = "";
 
-    if (!file || this.loggedUser == null) return;
+    if (!file || this.profileUser == null) return;
 
     if (file.type != "image/jpeg" && file.type != "image/png" && file.type != "image/gif") {
       this.profileImageError = "Profile image must be a JPG, PNG or GIF file.";
@@ -190,9 +195,7 @@ export class Client implements OnInit {
           return;
         }
 
-        if (this.loggedUser != null) {
-          this.loggedUser.profileImage = profileImageBase64;
-        }
+        if (this.profileUser != null) this.profileUser.profileImage = profileImageBase64;
       };
 
       image.onerror = () => {

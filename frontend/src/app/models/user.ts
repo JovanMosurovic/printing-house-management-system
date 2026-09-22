@@ -33,3 +33,33 @@ export class UserModel {
   createdAt = "";
   updatedAt = "";
 }
+
+export function copyUser(user: UserModel) {
+  let userCopy = new UserModel();
+
+  userCopy._id = user._id;
+  userCopy.username = user.username;
+  userCopy.firstName = user.firstName;
+  userCopy.lastName = user.lastName;
+  userCopy.phone = user.phone;
+  userCopy.email = user.email;
+  userCopy.profileImage = user.profileImage;
+  userCopy.role = user.role;
+  userCopy.status = user.status;
+  userCopy.lastLogin = user.lastLogin;
+  userCopy.createdAt = user.createdAt;
+  userCopy.updatedAt = user.updatedAt;
+
+  if (user.institution) {
+    let institutionCopy = new InstitutionModel();
+    institutionCopy._id = user.institution._id;
+    institutionCopy.name = user.institution.name;
+    institutionCopy.address = user.institution.address;
+    institutionCopy.city = user.institution.city;
+    institutionCopy.registrationNumber = user.institution.registrationNumber;
+    institutionCopy.taxId = user.institution.taxId;
+    userCopy.institution = institutionCopy;
+  }
+
+  return userCopy;
+}
