@@ -1,13 +1,13 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {ProductModel, ProductSearchModel} from '../../models/product';
 import {AuthService} from '../../services/auth.service';
 import {ProductService} from '../../services/product.service';
 
 @Component({
   selector: 'app-client-products',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './client-products.html',
   styleUrl: './client-products.css',
 })
@@ -20,6 +20,7 @@ export class ClientProducts implements OnInit {
   productSearch = new ProductSearchModel();
   products: ProductModel[] = [];
   message = "";
+  messageIsError = false;
 
   ngOnInit() {
     let loggedUser = this.authService.getLoggedUser();
@@ -39,6 +40,7 @@ export class ClientProducts implements OnInit {
         this.categories = data;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -50,6 +52,7 @@ export class ClientProducts implements OnInit {
 
   searchProducts() {
     this.message = "";
+    this.messageIsError = false;
 
     this.productService.searchProducts(this.productSearch).subscribe({
       next: data => {
@@ -57,6 +60,7 @@ export class ClientProducts implements OnInit {
         if (this.products.length === 0) this.message = "No products were found.";
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

@@ -1,7 +1,7 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {DatePipe} from '@angular/common';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {ArchivedProductModel, ProductArchiveSortField} from '../../models/invoice';
 import {UserModel} from '../../models/user';
 import {AuthService} from '../../services/auth.service';
@@ -10,7 +10,7 @@ import {ProductService} from '../../services/product.service';
 
 @Component({
   selector: 'app-product-archive',
-  imports: [FormsModule, DatePipe, RouterLink],
+  imports: [FormsModule, DatePipe],
   templateUrl: './product-archive.html',
   styleUrl: './product-archive.css',
 })
@@ -25,6 +25,7 @@ export class ProductArchive implements OnInit {
   sortField: ProductArchiveSortField = "orderDate";
   sortDirection: "asc" | "desc" = "desc";
   message = "";
+  messageIsError = false;
 
   ngOnInit() {
     this.loggedUser = this.authService.getLoggedUser();
@@ -46,6 +47,7 @@ export class ProductArchive implements OnInit {
         this.applySorting();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -96,6 +98,7 @@ export class ProductArchive implements OnInit {
     if (this.loggedUser == null) return;
 
     this.message = "";
+    this.messageIsError = false;
 
     this.invoiceService.markAsReceived(this.loggedUser._id, invoiceId).subscribe({
       next: data => {
@@ -103,6 +106,7 @@ export class ProductArchive implements OnInit {
         this.loadArchive();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -112,17 +116,18 @@ export class ProductArchive implements OnInit {
     });
   }
 
-  setReaction(productId: string, reaction: "like" | "dislike") {
+  setReaction(product: ArchivedProductModel, reaction: "like" | "dislike") {
     if (this.loggedUser == null) return;
 
     this.message = "";
+    this.messageIsError = false;
 
-    this.productService.setReaction(this.loggedUser._id, productId, reaction).subscribe({
-      next: data => {
-        this.message = data.message;
+    this.productService.setReaction(this.loggedUser._id, product.productId, reaction).subscribe({
+      next: () => {
         this.loadArchive();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -135,25 +140,30 @@ export class ProductArchive implements OnInit {
   addComment(product: ArchivedProductModel) {
     if (this.loggedUser == null) return;
 
+    product.commentMessage = "";
+    product.commentMessageIsError = false;
     let commentText = product.commentText?.trim() || "";
 
     if (!commentText) {
-      this.message = "Comment text is required.";
+      product.commentMessage = "Comment text is required.";
+      product.commentMessageIsError = true;
       return;
     }
 
-    this.message = "";
-
     this.productService.addComment(this.loggedUser._id, product.productId, commentText).subscribe({
       next: data => {
-        this.message = data.message;
+        product.commentMessage = data.message;
         product.commentText = "";
+        setTimeout(() => {
+          if (product.commentMessage == data.message) product.commentMessage = "";
+        }, 3500);
       },
       error: error => {
+        product.commentMessageIsError = true;
         if (error.error?.message) {
-          this.message = error.error.message;
+          product.commentMessage = error.error.message;
         } else {
-          this.message = "Unexpected error while adding the comment.";
+          product.commentMessage = "Unexpected error while adding the comment.";
         }
       }
     });

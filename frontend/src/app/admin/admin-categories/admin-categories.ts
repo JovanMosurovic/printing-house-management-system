@@ -1,13 +1,13 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {FormsModule, NgForm} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {CategoryModel} from '../../models/product';
 import {AuthService} from '../../services/auth.service';
 import {ProductService} from '../../services/product.service';
 
 @Component({
   selector: 'app-admin-categories',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule],
   templateUrl: './admin-categories.html',
   styleUrl: './admin-categories.css',
 })
@@ -21,6 +21,7 @@ export class AdminCategories implements OnInit {
   selectedCategoryId = "";
   subcategoryName = "";
   message = "";
+  messageIsError = false;
 
   ngOnInit() {
     let loggedUser = this.authService.getLoggedUser();
@@ -44,6 +45,7 @@ export class AdminCategories implements OnInit {
         this.categories = data;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -55,6 +57,7 @@ export class AdminCategories implements OnInit {
 
   addCategory(categoryForm: NgForm) {
     this.message = "";
+    this.messageIsError = false;
 
     if (categoryForm.invalid) {
       categoryForm.form.markAllAsTouched();
@@ -68,6 +71,7 @@ export class AdminCategories implements OnInit {
         this.loadCategories();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -79,6 +83,7 @@ export class AdminCategories implements OnInit {
 
   addSubcategory(subcategoryForm: NgForm) {
     this.message = "";
+    this.messageIsError = false;
 
     if (subcategoryForm.invalid) {
       subcategoryForm.form.markAllAsTouched();
@@ -92,6 +97,7 @@ export class AdminCategories implements OnInit {
         this.loadCategories();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

@@ -19,12 +19,11 @@
     }
   </div>
 
-  <button type="button" (click)="login(loginForm)">Login</button>
+  <div class="form-actions">
+    <button type="button" (click)="login(loginForm)">Login</button>
+    <p class="feedback-message feedback-error" aria-live="polite">{{message}}</p>
+  </div>
 </form>
-
-@if (message) {
-  <p>{{message}}</p>
-}
 
 <p>
   Don't have an account?
@@ -104,9 +103,7 @@
   <button type="button" (click)="searchProducts()">Search</button>
 </form>
 
-@if (productMessage) {
-  <p>{{productMessage}}</p>
-}
+<p class="feedback-message" [class.feedback-error]="productMessageIsError" aria-live="polite">{{productMessage}}</p>
 
 @if (products.length > 0) {
   <table>

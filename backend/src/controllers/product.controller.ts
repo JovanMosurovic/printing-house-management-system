@@ -918,8 +918,8 @@ export class ProductController {
         }
     }
 
-    // Adds or changes a client's reaction to a received product
-    // Used in the product archive to add or change a client's reaction to a received product
+    // Adds, changes or removes a client's reaction to a received product
+    // Used in the product archive to toggle a client's like or dislike
     async setReaction(req: express.Request, res: express.Response) {
         try {
             let clientId = req.body.clientId;
@@ -972,15 +972,15 @@ export class ProductController {
                 if (product.nesvidjanja[i].toString() == clientId) product.nesvidjanja.splice(i, 1);
             }
 
-            if (reaction == "like") product.svidjanja.push(clientId);
-            if (reaction == "dislike") product.nesvidjanja.push(clientId);
-
             if (previousReaction != reaction) {
-                product.ratingHistory.push({
-                    score: product.svidjanja.length - product.nesvidjanja.length,
-                    createdAt: new Date()
-                });
+                if (reaction == "like") product.svidjanja.push(clientId);
+                if (reaction == "dislike") product.nesvidjanja.push(clientId);
             }
+
+            product.ratingHistory.push({
+                score: product.svidjanja.length - product.nesvidjanja.length,
+                createdAt: new Date()
+            });
 
             await product.save();
             res.json({message: "Product reaction was successfully saved."});
@@ -1041,7 +1041,7 @@ export class ProductController {
             });
 
             await product.save();
-            res.json({message: "Comment was successfully added."});
+            res.json({message: "Comment posted."});
         } catch (e: any) {
             if (e.name == "CastError") {
                 res.status(400).json({message: "Entered ID is not valid."});

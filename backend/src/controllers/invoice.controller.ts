@@ -155,6 +155,17 @@ export class InvoiceController {
             for (let invoice of invoices) {
                 for (let invoiceItem of invoice.items) {
                     let product = await ProductModel.findById(invoiceItem.productId);
+                    let clientReaction = "";
+
+                    if (product != null) {
+                        for (let likeClientId of product.svidjanja) {
+                            if (likeClientId.toString() == clientId) clientReaction = "like";
+                        }
+
+                        for (let dislikeClientId of product.nesvidjanja) {
+                            if (dislikeClientId.toString() == clientId) clientReaction = "dislike";
+                        }
+                    }
 
                     let data = {
                         invoiceId: invoice._id,
@@ -165,7 +176,8 @@ export class InvoiceController {
                         status: invoice.status,
                         orderDate: invoice.createdAt,
                         numberOfLikes: product == null ? 0 : product.svidjanja.length,
-                        numberOfDislikes: product == null ? 0 : product.nesvidjanja.length
+                        numberOfDislikes: product == null ? 0 : product.nesvidjanja.length,
+                        clientReaction: clientReaction
                     };
 
                     archivedProducts.push(data);

@@ -1,7 +1,7 @@
 <h2>Product preparation</h2>
 
-@if (message) {
-  <p>{{message}}</p>
+@if (!product && message) {
+  <p class="feedback-message feedback-error" aria-live="polite">{{message}}</p>
 }
 
 @if (product) {
@@ -91,5 +91,7 @@
     <button type="button" (click)="resetPreparation()">Reset</button>
     <button type="button" (click)="backToDetails()">Back</button>
     <button type="button" (click)="openCart()">View cart</button>
+
+    <p class="feedback-message preparation-feedback" [class.feedback-error]="messageIsError" aria-live="polite">{{message}}</p>
   </form>
 }

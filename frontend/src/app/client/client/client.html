@@ -1,20 +1,12 @@
 <h2>Client profile</h2>
 
-<p>
-  <a routerLink="/client/products">Product search</a>
-  |
-  <a routerLink="/client/cart">Shopping cart</a>
-  |
-  <a routerLink="/client/archive">Product archive</a>
-  @if (loggedUser?.role == "businessClient") {
-    |
-    <a routerLink="/client/public-procurements">Public procurements</a>
+<div class="feedback-message floating-feedback" [class.feedback-visible]="message != ''"
+     [class.feedback-error]="messageIsError" [class.feedback-closing]="messageIsClosing" aria-live="polite">
+  @if (message) {
+    <span>{{message}}</span>
+    <button class="feedback-close" type="button" aria-label="Close notification" (click)="closeMessage()">×</button>
   }
-</p>
-
-@if (message) {
-  <p>{{message}}</p>
-}
+</div>
 
 @if (loggedUser && profileUser) {
   <form #profileForm="ngForm">
@@ -71,11 +63,18 @@
       Phone:
       <input type="tel" name="phone"
              [(ngModel)]="profileUser.phone"
-             #phone="ngModel" required>
+             #phone="ngModel"
+             pattern="(?=.{6,25}$)(?=(?:[^0-9]*[0-9]){6,15}[^0-9]*$)[+]?[0-9][0-9 ()/-]*[0-9]"
+             maxlength="25" required>
 
       @if (phone.touched &&
       phone.errors?.["required"]) {
         <p>Phone number is required.</p>
+      }
+
+      @if (phone.touched &&
+      phone.errors?.["pattern"]) {
+        <p>Phone number must contain 6-15 digits and can use +, spaces, parentheses, / or -.</p>
       }
     </div>
 
@@ -136,7 +135,7 @@
       </div>
     }
 
-    <button type="button"
+    <button type="button" [disabled]="!hasProfileChanges()"
             (click)="updateProfile(profileForm)">
       Save changes
     </button>
@@ -144,9 +143,7 @@
 
   <h2>Orders</h2>
 
-  @if (invoiceMessage) {
-    <p>{{invoiceMessage}}</p>
-  }
+  <p class="feedback-message" [class.feedback-error]="invoiceMessageIsError" aria-live="polite">{{invoiceMessage}}</p>
 
   @if (invoices.length === 0) {
     <p>There are no orders.</p>
@@ -179,11 +176,13 @@
               </ol>
             </td>
             <td>{{invoice.totalPrice}} RSD</td>
-            <td>{{invoice.status}}</td>
+            <td><span class="order-status-text">{{invoice.status == "inPrinting" ? "in printing" : invoice.status}}</span></td>
             <td>{{invoice.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
             <td>
               @if (invoice.status == "ordered") {
                 <button type="button" (click)="cancelInvoice(invoice._id)">Cancel</button>
+              } @else {
+                -
               }
             </td>
           </tr>

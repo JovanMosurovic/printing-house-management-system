@@ -59,5 +59,8 @@ export class ArchivedProductModel {
   orderDate = "";
   numberOfLikes = 0;
   numberOfDislikes = 0;
+  clientReaction: "" | "like" | "dislike" = "";
   commentText = "";
+  commentMessage = "";
+  commentMessageIsError = false;
 }

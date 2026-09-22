@@ -1,12 +1,13 @@
 <h2>Printing house page</h2>
 
-<p><a routerLink="/printer/products">Products and services</a></p>
-<p><a routerLink="/printer/auctions">Public procurement auctions</a></p>
-
 @if (loggedUser && profileUser) {
-  @if (message) {
-    <p>{{message}}</p>
-  }
+  <div class="feedback-message floating-feedback" [class.feedback-visible]="message != ''"
+       [class.feedback-error]="messageIsError" [class.feedback-closing]="messageIsClosing" aria-live="polite">
+    @if (message) {
+      <span>{{message}}</span>
+      <button class="feedback-close" type="button" aria-label="Close notification" (click)="closeMessage()">×</button>
+    }
+  </div>
 
   <h2>Profile</h2>
 
@@ -49,9 +50,13 @@
 
     <div>
       Phone:
-      <input type="tel" name="phone" [(ngModel)]="profileUser.phone" #phone="ngModel" required>
+      <input type="tel" name="phone" [(ngModel)]="profileUser.phone" #phone="ngModel"
+             pattern="(?=.{6,25}$)(?=(?:[^0-9]*[0-9]){6,15}[^0-9]*$)[+]?[0-9][0-9 ()/-]*[0-9]" maxlength="25" required>
       @if (phone.touched && phone.errors?.["required"]) {
         <p>Phone number is required.</p>
+      }
+      @if (phone.touched && phone.errors?.["pattern"]) {
+        <p>Phone number must contain 6-15 digits and can use +, spaces, parentheses, / or -.</p>
       }
     </div>
 
@@ -110,7 +115,7 @@
       </div>
     }
 
-    <button type="button" (click)="updateProfile(profileForm)">Save changes</button>
+    <button type="button" [disabled]="!hasProfileChanges()" (click)="updateProfile(profileForm)">Save changes</button>
   </form>
 
   <h2>Ordered products</h2>
@@ -158,7 +163,7 @@
               </ol>
             </td>
             <td>{{invoice.totalPrice}} RSD</td>
-            <td>{{invoice.status}}</td>
+            <td><span class="order-status-text">{{invoice.status == "inPrinting" ? "in printing" : invoice.status}}</span></td>
             <td>{{invoice.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
             <td>
               @if (invoice.status == "ordered") {

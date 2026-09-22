@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {copyUser, UserModel} from '../../models/user';
 import {UserService} from '../../services/user.service';
 import {FormsModule, NgForm} from '@angular/forms';
@@ -10,7 +10,7 @@ import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-client',
-  imports: [FormsModule, RouterLink, DatePipe],
+  imports: [FormsModule, DatePipe],
   templateUrl: './client.html',
   styleUrl: './client.css',
 })
@@ -22,12 +22,16 @@ export class Client implements OnInit {
 
   loggedUser: UserModel | null = null;
   profileUser: UserModel | null = null;
+  originalProfileUser: UserModel | null = null;
   message = "";
+  messageIsError = false;
+  messageIsClosing = false;
 
   profileImageError = "";
 
   invoices: InvoiceModel[] = [];
   invoiceMessage = "";
+  invoiceMessageIsError = false;
   invoiceSortField: InvoiceSortField = "createdAt";
   invoiceSortDirection: "asc" | "desc" = "desc";
 
@@ -60,6 +64,7 @@ export class Client implements OnInit {
         this.applyInvoiceSorting();
       },
       error: error => {
+        this.invoiceMessageIsError = true;
         if (error.error?.message) {
           this.invoiceMessage = error.error.message;
         } else {
@@ -104,6 +109,7 @@ export class Client implements OnInit {
     if (this.loggedUser == null) return;
 
     this.invoiceMessage = "";
+    this.invoiceMessageIsError = false;
 
     this.invoiceService.cancelInvoice(this.loggedUser._id, invoiceId).subscribe({
       next: data => {
@@ -111,6 +117,7 @@ export class Client implements OnInit {
         this.loadInvoices();
       },
       error: error => {
+        this.invoiceMessageIsError = true;
         if (error.error?.message) {
           this.invoiceMessage = error.error.message;
         } else {
@@ -127,9 +134,11 @@ export class Client implements OnInit {
       next: data => {
         this.loggedUser = data;
         this.profileUser = copyUser(data);
+        this.originalProfileUser = copyUser(data);
         this.authService.setLoggedUser(data);
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -141,22 +150,26 @@ export class Client implements OnInit {
 
   updateProfile(profileForm: NgForm) {
     this.message = "";
+    this.messageIsError = false;
+    this.messageIsClosing = false;
 
     if (profileForm.invalid || this.profileImageError) {
       profileForm.form.markAllAsTouched();
       return;
     }
 
-    if (this.profileUser == null) return;
+    if (this.profileUser == null || !this.hasProfileChanges()) return;
 
     this.userService.updateUserProfile(this.profileUser).subscribe({
       next: data => {
         this.loggedUser = data;
         this.profileUser = copyUser(data);
+        this.originalProfileUser = copyUser(data);
         this.authService.setLoggedUser(data);
-        this.message = "Profile was successfully updated.";
+        this.showTemporaryMessage("Profile was successfully updated.");
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -213,6 +226,31 @@ export class Client implements OnInit {
     };
 
     reader.readAsDataURL(file);
+  }
+
+  showTemporaryMessage(message: string) {
+    this.messageIsClosing = false;
+    this.message = message;
+    setTimeout(() => {
+      if (this.message == message) this.closeMessage();
+    }, 3500);
+  }
+
+  closeMessage() {
+    if (!this.message || this.messageIsClosing) return;
+
+    let messageToClose = this.message;
+    this.messageIsClosing = true;
+
+    setTimeout(() => {
+      if (this.message == messageToClose) this.message = "";
+      this.messageIsClosing = false;
+    }, 220);
+  }
+
+  hasProfileChanges() {
+    if (this.profileUser == null || this.originalProfileUser == null) return false;
+    return JSON.stringify(this.profileUser) != JSON.stringify(this.originalProfileUser);
   }
 
 }

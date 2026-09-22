@@ -19,9 +19,8 @@
     }
   </div>
 
-  <button type="button" (click)="login(adminLoginForm)">Login</button>
+  <div class="form-actions">
+    <button type="button" (click)="login(adminLoginForm)">Login</button>
+    <p class="feedback-message feedback-error" aria-live="polite">{{message}}</p>
+  </div>
 </form>
-
-@if (message) {
-  <p>{{message}}</p>
-}

@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {copyUser, UserModel} from '../../models/user';
 import {InvoiceModel, InvoiceStatus} from '../../models/invoice';
 import {InvoiceService} from '../../services/invoice.service';
@@ -10,7 +10,7 @@ import {FormsModule, NgForm} from '@angular/forms';
 
 @Component({
   selector: 'app-printer',
-  imports: [DatePipe, RouterLink, FormsModule],
+  imports: [DatePipe, FormsModule],
   templateUrl: './printer.html',
   styleUrl: './printer.css',
 })
@@ -22,8 +22,11 @@ export class Printer implements OnInit {
 
   loggedUser: UserModel | null = null;
   profileUser: UserModel | null = null;
+  originalProfileUser: UserModel | null = null;
   invoices: InvoiceModel[] = [];
   message = "";
+  messageIsError = false;
+  messageIsClosing = false;
   profileImageError = "";
 
   ngOnInit() {
@@ -52,9 +55,11 @@ export class Printer implements OnInit {
       next: data => {
         this.loggedUser = data;
         this.profileUser = copyUser(data);
+        this.originalProfileUser = copyUser(data);
         this.authService.setLoggedUser(data);
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -66,22 +71,26 @@ export class Printer implements OnInit {
 
   updateProfile(profileForm: NgForm) {
     this.message = "";
+    this.messageIsError = false;
+    this.messageIsClosing = false;
 
     if (profileForm.invalid || this.profileImageError) {
       profileForm.form.markAllAsTouched();
       return;
     }
 
-    if (this.profileUser == null) return;
+    if (this.profileUser == null || !this.hasProfileChanges()) return;
 
     this.userService.updateUserProfile(this.profileUser).subscribe({
       next: data => {
         this.loggedUser = data;
         this.profileUser = copyUser(data);
+        this.originalProfileUser = copyUser(data);
         this.authService.setLoggedUser(data);
-        this.message = "Profile was successfully updated.";
+        this.showTemporaryMessage("Profile was successfully updated.");
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -144,6 +153,7 @@ export class Printer implements OnInit {
         this.invoices = data;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -157,13 +167,16 @@ export class Printer implements OnInit {
     if (this.loggedUser == null) return;
 
     this.message = "";
+    this.messageIsError = false;
+    this.messageIsClosing = false;
 
     this.invoiceService.updateInvoiceStatus(this.loggedUser._id, invoiceId, status).subscribe({
       next: data => {
-        this.message = data.message;
+        this.showTemporaryMessage(data.message);
         this.loadInvoices();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -171,6 +184,31 @@ export class Printer implements OnInit {
         }
       }
     });
+  }
+
+  showTemporaryMessage(message: string) {
+    this.messageIsClosing = false;
+    this.message = message;
+    setTimeout(() => {
+      if (this.message == message) this.closeMessage();
+    }, 3500);
+  }
+
+  closeMessage() {
+    if (!this.message || this.messageIsClosing) return;
+
+    let messageToClose = this.message;
+    this.messageIsClosing = true;
+
+    setTimeout(() => {
+      if (this.message == messageToClose) this.message = "";
+      this.messageIsClosing = false;
+    }, 220);
+  }
+
+  hasProfileChanges() {
+    if (this.profileUser == null || this.originalProfileUser == null) return false;
+    return JSON.stringify(this.profileUser) != JSON.stringify(this.originalProfileUser);
   }
 
 }

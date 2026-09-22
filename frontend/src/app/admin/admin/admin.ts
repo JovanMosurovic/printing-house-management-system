@@ -1,12 +1,12 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {UserService} from '../../services/user.service';
 import {UserModel} from '../../models/user';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin',
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './admin.html',
   styleUrl: './admin.css',
 })
@@ -17,6 +17,7 @@ export class Admin implements OnInit {
 
   pendingUsers: UserModel[] = [];
   message = "";
+  messageIsError = false;
 
   ngOnInit() {
     let loggedUser = this.authService.getLoggedUser();
@@ -40,6 +41,7 @@ export class Admin implements OnInit {
         this.pendingUsers = data;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -51,6 +53,7 @@ export class Admin implements OnInit {
 
   updateUserStatus(userId: string, status: "approved" | "rejected") {
     this.message = "";
+    this.messageIsError = false;
 
     this.userService.updateUserStatus(userId, status).subscribe({
       next: data => {
@@ -58,6 +61,7 @@ export class Admin implements OnInit {
         this.loadPendingUsers();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

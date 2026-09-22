@@ -21,6 +21,7 @@ export class ProductImport implements OnInit {
   imageErrors: string[] = [];
   selectedFileName = "";
   message = "";
+  messageIsError = false;
 
   ngOnInit() {
     this.loggedUser = this.authService.getLoggedUser();
@@ -34,6 +35,7 @@ export class ProductImport implements OnInit {
     let file = input.files?.[0];
 
     this.message = "";
+    this.messageIsError = false;
     this.selectedFileName = "";
     this.importedProducts = [];
     this.imageErrors = [];
@@ -42,6 +44,7 @@ export class ProductImport implements OnInit {
 
     if (!file.name.toLowerCase().endsWith(".json")) {
       this.message = "Please select a JSON file.";
+      this.messageIsError = true;
       input.value = "";
       return;
     }
@@ -54,6 +57,7 @@ export class ProductImport implements OnInit {
 
         if (!Array.isArray(importedData.proizvodi) || importedData.proizvodi.length == 0) {
           this.message = "The JSON file must contain a non-empty proizvodi array.";
+          this.messageIsError = true;
           input.value = "";
           return;
         }
@@ -95,12 +99,14 @@ export class ProductImport implements OnInit {
         this.selectedFileName = file.name;
       } catch {
         this.message = "The selected file does not contain valid JSON.";
+        this.messageIsError = true;
         input.value = "";
       }
     };
 
     reader.onerror = () => {
       this.message = "The JSON file could not be read.";
+      this.messageIsError = true;
       input.value = "";
     };
 
@@ -179,15 +185,18 @@ export class ProductImport implements OnInit {
     if (this.loggedUser == null || this.importedProducts.length == 0) return;
 
     this.message = "";
+    this.messageIsError = false;
 
     for (let i = 0; i < this.importedProducts.length; i++) {
       if (!this.importedProducts[i].slikaUrl) {
         this.message = `Add a main image for product ${this.importedProducts[i].naziv}.`;
+        this.messageIsError = true;
         return;
       }
 
       if (this.imageErrors[i]) {
         this.message = "Correct the product image errors before importing.";
+        this.messageIsError = true;
         return;
       }
     }
@@ -201,6 +210,7 @@ export class ProductImport implements OnInit {
         jsonFileInput.value = "";
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

@@ -16,6 +16,7 @@ export class ResetPassword {
 
   resetPasswordData = new ResetPasswordModel();
   message = "";
+  messageIsError = false;
 
   constructor() {
     this.resetPasswordData.token = this.activatedRoute.snapshot.paramMap.get("token") || "";
@@ -23,6 +24,7 @@ export class ResetPassword {
 
   resetPassword(resetPasswordForm: NgForm) {
     this.message = "";
+    this.messageIsError = false;
 
     if (resetPasswordForm.invalid) {
       resetPasswordForm.form.markAllAsTouched();
@@ -31,6 +33,7 @@ export class ResetPassword {
 
     if (this.resetPasswordData.newPassword != this.resetPasswordData.confirmPassword) {
       this.message = "Passwords do not match.";
+      this.messageIsError = true;
       return;
     }
 
@@ -39,6 +42,7 @@ export class ResetPassword {
         this.message = data.message;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

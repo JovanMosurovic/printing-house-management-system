@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {AdminStatisticsModel, ProductRatingStatisticsModel} from '../../models/statistics';
 import {AuthService} from '../../services/auth.service';
 import {ProductService} from '../../services/product.service';
@@ -7,7 +7,7 @@ import {DecimalPipe} from '@angular/common';
 
 @Component({
   selector: 'app-admin-statistics',
-  imports: [RouterLink, DecimalPipe],
+  imports: [DecimalPipe],
   templateUrl: './admin-statistics.html',
   styleUrl: './admin-statistics.css',
 })

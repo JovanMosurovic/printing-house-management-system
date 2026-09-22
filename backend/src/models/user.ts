@@ -68,7 +68,11 @@ let UserSchema = new Schema({
     phone: {
         type: String,
         required: [true, "Phone number is required"],
-        trim: true
+        trim: true,
+        match: [
+            /^(?=.{6,25}$)(?=(?:\D*\d){6,15}\D*$)\+?\d[\d ()/-]*\d$/,
+            "Phone number must contain 6-15 digits and can use +, spaces, parentheses, / or -"
+        ]
     },
     email: {
         type: String,

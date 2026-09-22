@@ -1,14 +1,10 @@
 <h2>Public procurement auctions</h2>
 
-<p><a routerLink="/printer">Back to printing house page</a></p>
-
 <p>
   An offer is calculated from matching products and printing services currently available at your printing house.
 </p>
 
-@if (message) {
-  <p>{{message}}</p>
-}
+<p class="feedback-message" [class.feedback-error]="messageIsError" aria-live="polite">{{message}}</p>
 
 @if (publicProcurements.length === 0) {
   <p>There are no open public procurements.</p>

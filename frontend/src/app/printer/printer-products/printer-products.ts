@@ -26,6 +26,7 @@ export class PrinterProducts implements OnInit {
   newColor = "";
 
   message = "";
+  messageIsError = false;
   mainImageError = "";
   additionalImagesError = "";
 
@@ -53,6 +54,7 @@ export class PrinterProducts implements OnInit {
         }
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -70,6 +72,7 @@ export class PrinterProducts implements OnInit {
         this.products = data;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -103,12 +106,14 @@ export class PrinterProducts implements OnInit {
 
     if (!color) {
       this.message = "Enter a color before adding it.";
+      this.messageIsError = true;
       return;
     }
 
     for (let existingColor of this.newProduct.dostupneBoje) {
       if (existingColor.toLowerCase() == color.toLowerCase()) {
         this.message = "This color has already been added.";
+        this.messageIsError = true;
         return;
       }
     }
@@ -116,6 +121,7 @@ export class PrinterProducts implements OnInit {
     this.newProduct.dostupneBoje.push(color);
     this.newColor = "";
     this.message = "";
+    this.messageIsError = false;
   }
 
   removeColor(colorIndex: number) {
@@ -127,17 +133,20 @@ export class PrinterProducts implements OnInit {
 
     if (!printingService.idUsluge.trim() || !printingService.tipStampe.trim()) {
       this.message = "Printing service ID and type are required.";
+      this.messageIsError = true;
       return;
     }
 
     if (printingService.dodatnaCenaPoKomadu < 0 || printingService.maxSirinaMm < 1 || printingService.maxVisinaMm < 1) {
       this.message = "Printing service price and dimensions are not valid.";
+      this.messageIsError = true;
       return;
     }
 
     for (let existingService of this.newProduct.uslugeStampe) {
       if (existingService.idUsluge == printingService.idUsluge) {
         this.message = "A printing service with this ID has already been added.";
+        this.messageIsError = true;
         return;
       }
     }
@@ -152,6 +161,7 @@ export class PrinterProducts implements OnInit {
     this.newProduct.uslugeStampe.push(serviceToAdd);
     this.newPrintingService = new PrintingServiceModel();
     this.message = "";
+    this.messageIsError = false;
   }
 
   removePrintingService(serviceIndex: number) {
@@ -227,6 +237,7 @@ export class PrinterProducts implements OnInit {
 
   addProduct(productForm: NgForm, mainImageInput: HTMLInputElement, additionalImagesInput: HTMLInputElement) {
     this.message = "";
+    this.messageIsError = false;
 
     if (productForm.invalid || this.mainImageError || this.additionalImagesError) {
       productForm.form.markAllAsTouched();
@@ -235,11 +246,13 @@ export class PrinterProducts implements OnInit {
 
     if (!this.newProduct.slikaUrl) {
       this.message = "Main product image is required.";
+      this.messageIsError = true;
       return;
     }
 
     if (this.newProduct.uslugeStampe.length == 0) {
       this.message = "Add at least one printing service.";
+      this.messageIsError = true;
       return;
     }
 
@@ -266,6 +279,7 @@ export class PrinterProducts implements OnInit {
         this.loadProducts();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -280,10 +294,12 @@ export class PrinterProducts implements OnInit {
 
     if (!Number.isInteger(product.kolicinaNaLageru) || product.kolicinaNaLageru < 0) {
       this.message = "Stock quantity must be a non-negative integer.";
+      this.messageIsError = true;
       return;
     }
 
     this.message = "";
+    this.messageIsError = false;
 
     this.productService.updateProductQuantity(this.loggedUser._id, product._id, product.kolicinaNaLageru).subscribe({
       next: data => {
@@ -291,6 +307,7 @@ export class PrinterProducts implements OnInit {
         this.loadProducts();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

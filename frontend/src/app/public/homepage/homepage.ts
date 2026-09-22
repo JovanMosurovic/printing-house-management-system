@@ -29,6 +29,7 @@ export class Homepage implements OnInit {
   productSearch = new ProductSearchModel();
   products: ProductModel[] = [];
   productMessage = "";
+  productMessageIsError = false;
 
   ngOnInit() {
     this.loadHomepageData();
@@ -41,6 +42,7 @@ export class Homepage implements OnInit {
         this.homepageData = data;
       },
       error: error => {
+        this.productMessageIsError = true;
         if (error.error?.message) {
           this.productMessage = error.error.message;
         } else {
@@ -52,6 +54,7 @@ export class Homepage implements OnInit {
 
   searchProducts() {
     this.productMessage = "";
+    this.productMessageIsError = false;
 
     this.productService.searchProducts(this.productSearch).subscribe({
       next: data => {
@@ -62,6 +65,7 @@ export class Homepage implements OnInit {
         }
       },
       error: error => {
+        this.productMessageIsError = true;
         if (error.error?.message) {
           this.productMessage = error.error.message;
         } else {

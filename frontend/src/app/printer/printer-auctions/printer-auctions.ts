@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {DatePipe} from '@angular/common';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {PublicProcurementModel} from '../../models/public-procurement';
 import {UserModel} from '../../models/user';
 import {AuthService} from '../../services/auth.service';
@@ -8,7 +8,7 @@ import {PublicProcurementService} from '../../services/public-procurement.servic
 
 @Component({
   selector: 'app-printer-auctions',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe],
   templateUrl: './printer-auctions.html',
   styleUrl: './printer-auctions.css',
 })
@@ -21,6 +21,7 @@ export class PrinterAuctions implements OnInit {
   publicProcurements: PublicProcurementModel[] = [];
   submittingPublicProcurementId = "";
   message = "";
+  messageIsError = false;
 
   ngOnInit() {
     this.loggedUser = this.authService.getLoggedUser();
@@ -41,6 +42,7 @@ export class PrinterAuctions implements OnInit {
         this.publicProcurements = data;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -54,6 +56,7 @@ export class PrinterAuctions implements OnInit {
     if (this.loggedUser == null) return;
 
     this.message = "";
+    this.messageIsError = false;
     this.submittingPublicProcurementId = publicProcurementId;
 
     this.publicProcurementService.submitOffer(this.loggedUser._id, publicProcurementId).subscribe({
@@ -63,6 +66,7 @@ export class PrinterAuctions implements OnInit {
         this.loadPublicProcurements();
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

@@ -1,11 +1,5 @@
 <h2>Product search</h2>
 
-<p>
-  <a routerLink="/client">Back to profile</a>
-  |
-  <a routerLink="/client/cart">Shopping cart</a>
-</p>
-
 <form>
   <div>
     Product name:
@@ -26,9 +20,7 @@
   <button type="button" (click)="searchProducts()">Search</button>
 </form>
 
-@if (message) {
-  <p>{{message}}</p>
-}
+<p class="feedback-message" [class.feedback-error]="messageIsError" aria-live="polite">{{message}}</p>
 
 @if (products.length > 0) {
   <table>

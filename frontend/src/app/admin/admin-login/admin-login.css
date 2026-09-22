@@ -1,0 +1,10 @@
+:host > h2,
+:host > p {
+  text-align: center;
+}
+
+:host form {
+  max-width: 480px;
+  margin-right: auto;
+  margin-left: auto;
+}

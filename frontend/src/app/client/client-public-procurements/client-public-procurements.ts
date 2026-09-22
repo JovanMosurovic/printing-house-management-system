@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {DatePipe} from '@angular/common';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {PublicProcurementModel} from '../../models/public-procurement';
 import {UserModel} from '../../models/user';
 import {AuthService} from '../../services/auth.service';
@@ -8,7 +8,7 @@ import {PublicProcurementService} from '../../services/public-procurement.servic
 
 @Component({
   selector: 'app-client-public-procurements',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe],
   templateUrl: './client-public-procurements.html',
   styleUrl: './client-public-procurements.css',
 })

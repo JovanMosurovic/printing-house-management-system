@@ -1,10 +1,6 @@
 <h2>Public procurements</h2>
 
-<p><a routerLink="/client">Back to client profile</a></p>
-
-@if (message) {
-  <p>{{message}}</p>
-}
+<p class="feedback-message feedback-error" aria-live="polite">{{message}}</p>
 
 @if (publicProcurements.length === 0) {
   <p>There are no public procurements.</p>

@@ -1,0 +1,162 @@
+:host > p:has(> a) {
+  display: none;
+}
+
+:host th:last-child,
+:host .actions-cell {
+  min-width: 180px;
+}
+
+:host table {
+  min-width: 1240px;
+}
+
+:host th,
+:host td {
+  padding-right: 12px;
+  padding-left: 12px;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+:host th:first-child,
+:host td:first-child {
+  width: 160px;
+}
+
+:host th:nth-child(2),
+:host td:nth-child(2),
+:host th:nth-child(5),
+:host td:nth-child(5),
+:host th:nth-child(6),
+:host td:nth-child(6) {
+  white-space: nowrap;
+}
+
+:host th:nth-child(4),
+:host td:nth-child(4) {
+  min-width: 205px;
+  white-space: nowrap;
+}
+
+:host th:nth-child(7),
+:host td:nth-child(7) {
+  min-width: 230px;
+}
+
+.institution-identifiers {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: center;
+  gap: 2px 22px;
+}
+
+.identifier-label {
+  color: var(--color-muted);
+  font-weight: 600;
+  text-align: center;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.table-actions button {
+  min-width: 68px;
+  margin: 0;
+}
+
+.delete-button {
+  min-width: 82px !important;
+  color: #c82f3d;
+  background: rgba(215, 58, 73, 0.08);
+  border: 1px solid rgba(215, 58, 73, 0.12);
+  box-shadow: none;
+}
+
+.delete-button:hover:not(:disabled) {
+  color: #b4232f;
+  background: rgba(215, 58, 73, 0.14);
+  border-color: rgba(215, 58, 73, 0.2);
+  box-shadow: none;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  background: rgba(29, 29, 31, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.confirmation-modal {
+  width: min(420px, 100%);
+  margin: 0;
+  padding: 28px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+}
+
+.confirmation-modal h3 {
+  margin: 0 0 10px;
+  font-size: 1.55rem;
+}
+
+.confirmation-modal p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.modal-actions {
+  margin-top: 26px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-actions button {
+  margin: 0;
+}
+
+.cancel-delete-button {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+.cancel-delete-button:hover:not(:disabled) {
+  color: var(--color-text);
+  background: #eaeaef;
+  border-color: var(--color-border-strong);
+  box-shadow: none;
+}
+
+.confirm-delete-button {
+  color: #ffffff;
+  background: var(--color-danger);
+  box-shadow: 0 5px 12px rgba(215, 58, 73, 0.18);
+}
+
+.confirm-delete-button:hover:not(:disabled) {
+  color: #ffffff;
+  background: #b4232f;
+  box-shadow: 0 7px 16px rgba(215, 58, 73, 0.22);
+}
+
+@media (max-width: 560px) {
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+}

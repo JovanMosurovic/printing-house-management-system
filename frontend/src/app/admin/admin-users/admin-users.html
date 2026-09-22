@@ -1,10 +1,12 @@
 <h2>User accounts</h2>
 
-<p><a routerLink="/admin">Back to pending registrations</a></p>
-
-@if (message) {
-  <p>{{message}}</p>
-}
+<div class="feedback-message floating-feedback" [class.feedback-visible]="message != ''"
+     [class.feedback-error]="messageIsError" [class.feedback-closing]="messageIsClosing" aria-live="polite">
+  @if (message) {
+    <span>{{message}}</span>
+    <button class="feedback-close" type="button" aria-label="Close notification" (click)="closeMessage()">×</button>
+  }
+</div>
 
 @if (users.length === 0) {
   <p>There are no user accounts.</p>
@@ -30,27 +32,28 @@
           <td>{{user.username}}</td>
           <td>{{user.firstName}} {{user.lastName}}</td>
           <td>{{user.email}}<br>{{user.phone}}</td>
-          <td>{{user.role}}</td>
+          <td>{{getRoleName(user.role)}}</td>
           <td>{{user.status}}</td>
           <td>
             @if (user.institution) {
               {{user.institution.name}}<br>
-              {{user.institution.address}}, {{user.institution.city}}<br>
-              Registration number: {{user.institution.registrationNumber}}<br>
-              Tax ID: {{user.institution.taxId}}
+              {{user.institution.address}}<br>
+              {{user.institution.city}}
+              <div class="institution-identifiers">
+                <span class="identifier-label">REG. NO.</span>
+                <span class="identifier-label">TAX ID</span>
+                <span>{{user.institution.registrationNumber}}</span>
+                <span>{{user.institution.taxId}}</span>
+              </div>
             } @else {
               -
             }
           </td>
-          <td>
-            <button type="button" (click)="editUser(user)">Edit</button>
-            <button type="button" (click)="askToDeleteUser(user)">Delete</button>
-
-            @if (userToDelete?._id == user._id) {
-              <p>Delete this user account?</p>
-              <button type="button" (click)="deleteUser()">Confirm delete</button>
-              <button type="button" (click)="cancelDeleting()">Cancel</button>
-            }
+          <td class="actions-cell">
+            <div class="table-actions">
+              <button type="button" (click)="editUser(user)">Edit</button>
+              <button class="delete-button" type="button" (click)="askToDeleteUser(user)">Delete</button>
+            </div>
           </td>
         </tr>
       }
@@ -62,7 +65,10 @@
   <h3>Edit user</h3>
 
   <form #userForm="ngForm">
-    <p>Role: {{editingUser.role}}</p>
+    <div>
+      Role:
+      <input type="text" name="role" [value]="getRoleName(editingUser.role)" readonly disabled>
+    </div>
 
     <div>
       Username:
@@ -90,9 +96,13 @@
 
     <div>
       Phone:
-      <input type="tel" name="phone" [(ngModel)]="editingUser.phone" #phone="ngModel" required>
+      <input type="tel" name="phone" [(ngModel)]="editingUser.phone" #phone="ngModel"
+             pattern="(?=.{6,25}$)(?=(?:[^0-9]*[0-9]){6,15}[^0-9]*$)[+]?[0-9][0-9 ()/-]*[0-9]" maxlength="25" required>
       @if (phone.touched && phone.errors?.["required"]) {
         <p>Phone number is required.</p>
+      }
+      @if (phone.touched && phone.errors?.["pattern"]) {
+        <p>Phone number must contain 6-15 digits and can use +, spaces, parentheses, / or -.</p>
       }
     </div>
 
@@ -160,7 +170,26 @@
       </div>
     }
 
-    <button type="button" (click)="saveUser(userForm)">Save changes</button>
+    <button type="button" [disabled]="!hasUserChanges()" (click)="saveUser(userForm)">Save changes</button>
     <button type="button" (click)="cancelEditing()">Cancel</button>
   </form>
+}
+
+@if (userToDelete) {
+  <div class="modal-backdrop" (click)="cancelDeleting()">
+    <section class="confirmation-modal" role="alertdialog" aria-modal="true"
+             aria-labelledby="delete-user-title" aria-describedby="delete-user-description"
+             (click)="$event.stopPropagation()">
+      <h3 id="delete-user-title">Delete user?</h3>
+      <p id="delete-user-description">
+        Are you sure you want to delete <strong>{{userToDelete.username}}</strong>?
+        This action cannot be undone.
+      </p>
+
+      <div class="modal-actions">
+        <button class="cancel-delete-button" type="button" (click)="cancelDeleting()">Cancel</button>
+        <button class="confirm-delete-button" type="button" (click)="deleteUser()">Delete</button>
+      </div>
+    </section>
+  </div>
 }

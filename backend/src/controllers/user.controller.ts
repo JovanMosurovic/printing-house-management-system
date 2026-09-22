@@ -499,7 +499,7 @@ export class UserController{
             })
 
             if (user == null) {
-                res.status(404).json({message: "User with entered username or email was not found."})
+                res.status(404).json({message: "User was not found."})
                 return
             }
 
@@ -515,9 +515,7 @@ export class UserController{
 
             await new EmailService().sendPasswordResetEmail(user.email, resetLink)
 
-            res.json({
-                message: "Password reset link was sent to your email address."
-            })
+            res.json({message: "Reset link was sent to your email."})
         } catch (e) {
             console.log("Error while creating password reset link.")
             res.status(500).json({message: "Unexpected server error."})

@@ -44,10 +44,15 @@
 
   <div>
     Phone:
-    <input type="tel" name="phone" [(ngModel)]="registerUser.phone" #phone="ngModel" required>
+    <input type="tel" name="phone" [(ngModel)]="registerUser.phone" #phone="ngModel"
+           pattern="(?=.{6,25}$)(?=(?:[^0-9]*[0-9]){6,15}[^0-9]*$)[+]?[0-9][0-9 ()/-]*[0-9]" maxlength="25" required>
 
     @if (phone.touched && phone.errors?.["required"]) {
       <p>Phone number is required.</p>
+    }
+
+    @if (phone.touched && phone.errors?.["pattern"]) {
+      <p>Enter a valid phone number (6-15 digits).</p>
     }
   </div>
 
@@ -133,7 +138,7 @@
     </div>
   }
 
-  <div>
+  <div class="profile-image-field">
     Profile image:
     <input #profileImageInput type="file" accept=".jpg,.jpeg,.png,.gif" (change)="selectProfileImage(profileImageInput)">
 
@@ -142,9 +147,10 @@
     }
   </div>
 
-  <button type="button" (click)="register(registerForm, profileImageInput)">Register</button>
+  <div class="form-actions">
+    <button type="button" (click)="register(registerForm, profileImageInput)">Register</button>
+    <p class="feedback-message" [class.feedback-error]="messageIsError" aria-live="polite">{{message}}</p>
+  </div>
 </form>
 
-@if (message) {
-  <p>{{message}}</p>
-}
+<p class="login-link">Already have an account? <a routerLink="/">Log in</a></p>

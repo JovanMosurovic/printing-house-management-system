@@ -15,9 +15,11 @@ export class ForgotPassword {
 
   forgotPasswordData = new ForgotPasswordModel();
   message = "";
+  messageIsError = false;
 
   sendResetLink(forgotPasswordForm: NgForm) {
     this.message = "";
+    this.messageIsError = false;
 
     if (forgotPasswordForm.invalid) {
       forgotPasswordForm.form.markAllAsTouched();
@@ -29,6 +31,7 @@ export class ForgotPassword {
         this.message = data.message;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

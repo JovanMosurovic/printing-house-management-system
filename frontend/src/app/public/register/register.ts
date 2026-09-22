@@ -2,11 +2,13 @@ import {Component, inject} from '@angular/core';
 import {UserService} from '../../services/user.service';
 import {RegisterModel} from '../../models/register';
 import {FormsModule, NgForm} from '@angular/forms';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-register',
   imports: [
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './register.html',
   styleUrl: './register.css',
@@ -16,10 +18,12 @@ export class Register {
 
   registerUser = new RegisterModel();
   message = "";
+  messageIsError = false;
   profileImageError = "";
 
   register(registerForm: NgForm, profileImageInput: HTMLInputElement) {
     this.message = "";
+    this.messageIsError = false;
 
     if (registerForm.invalid || this.profileImageError) {
       registerForm.form.markAllAsTouched();
@@ -38,6 +42,7 @@ export class Register {
         }
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {

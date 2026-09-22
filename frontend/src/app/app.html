@@ -1,5 +1,71 @@
-@if (isLoggedIn()) {
-  <button type="button" (click)="logout()">Logout</button>
-}
+<div class="app-shell">
+  <header class="app-header">
+    <div class="menu-bar">
+      <a class="brand" [routerLink]="getHomeRoute()" aria-label="Printing House home">
+        <span class="brand-mark"><img src="/app-icon.png?v=1" alt=""></span>
+        <span class="brand-copy">
+          <strong>Printing House</strong>
+          <small>Management System</small>
+        </span>
+      </a>
 
-<router-outlet></router-outlet>
+      <nav class="main-navigation" aria-label="Main navigation">
+        @if (getLoggedUser(); as loggedUser) {
+          @if (loggedUser.role == "admin") {
+            <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Overview</a>
+            <a routerLink="/admin/users" routerLinkActive="active">Users</a>
+            <a routerLink="/admin/categories" routerLinkActive="active">Categories</a>
+            <a routerLink="/admin/statistics" routerLinkActive="active">Analytics</a>
+          }
+
+          @if (loggedUser.role == "individualClient" || loggedUser.role == "businessClient") {
+            <a routerLink="/client" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Profile</a>
+            <a routerLink="/client/products" routerLinkActive="active">Products</a>
+            <a routerLink="/client/cart" routerLinkActive="active">Cart</a>
+            <a routerLink="/client/archive" routerLinkActive="active">Archive</a>
+            @if (loggedUser.role == "businessClient") {
+              <a routerLink="/client/public-procurements" routerLinkActive="active">Procurements</a>
+            }
+          }
+
+          @if (loggedUser.role == "printer") {
+            <a routerLink="/printer" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Profile</a>
+            <a routerLink="/printer/products" routerLinkActive="active">Products</a>
+            <a routerLink="/printer/auctions" routerLinkActive="active">Auctions</a>
+          }
+        } @else {
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+          <a routerLink="/register" routerLinkActive="active">Create account</a>
+        }
+      </nav>
+
+      <div class="account-area">
+        @if (getLoggedUser(); as loggedUser) {
+          <a class="user-chip" [routerLink]="getHomeRoute()" aria-label="Open profile">
+            @if (loggedUser.profileImage) {
+              <img class="user-avatar" [src]="loggedUser.profileImage" [alt]="loggedUser.firstName + ' ' + loggedUser.lastName">
+            } @else {
+              <span class="user-avatar-placeholder" aria-hidden="true"></span>
+            }
+            <span class="user-name">{{loggedUser.firstName}} {{loggedUser.lastName}}</span>
+          </a>
+          <button class="logout-button" type="button" aria-label="Logout" title="Logout" (click)="logout()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H5v14h4M13 8l4 4-4 4M17 12H9"></path></svg>
+          </button>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="app-footer">
+    <div>
+      <strong>© 2026 Jovan Mosurovic · 2022/0589</strong>
+      <span>Project developed for the Faculty of Electrical Engineering, University of Belgrade</span>
+    </div>
+    <span>IR3PIA / SI4PIA · 2025/26</span>
+  </footer>
+</div>

@@ -1,15 +1,11 @@
 <h2>Product archive</h2>
 
-<p><a routerLink="/client">Back to client profile</a></p>
-
-@if (message) {
-  <p>{{message}}</p>
-}
+<p class="feedback-message" [class.feedback-error]="messageIsError" aria-live="polite">{{message}}</p>
 
 @if (archivedProducts.length === 0) {
   <p>There are no delivered or received products.</p>
 } @else {
-  <table>
+  <table class="archive-table">
     <thead>
     <tr>
       <th><button type="button" (click)="sortProducts('productName')">Product {{getSortSymbol('productName')}}</button></th>
@@ -25,28 +21,51 @@
     <tbody>
       @for (product of archivedProducts; track $index) {
         <tr>
-          <td>{{product.productName}}</td>
-          <td>{{product.quantity}}</td>
-          <td>{{product.printingHouseName}}</td>
-          <td>{{product.orderDate | date:'dd.MM.yyyy HH:mm'}}</td>
-          <td>{{product.status}}</td>
-          <td>{{product.numberOfLikes}} likes / {{product.numberOfDislikes}} dislikes</td>
-          <td>
+          <td class="product-cell">{{product.productName}}</td>
+          <td class="quantity-cell">{{product.quantity}}</td>
+          <td class="printing-house-cell">{{product.printingHouseName}}</td>
+          <td class="order-date-cell">
+            <span>{{product.orderDate | date:'dd.MM.yyyy'}}</span>
+            <span>{{product.orderDate | date:'HH:mm'}}</span>
+          </td>
+          <td class="status-cell"><span class="order-status-text">{{product.status}}</span></td>
+          <td class="rating-cell">
+            <div class="rating-values">
+              <span class="like-rating"><strong>{{product.numberOfLikes}}</strong> Likes</span>
+              <span class="dislike-rating"><strong>{{product.numberOfDislikes}}</strong> Dislikes</span>
+            </div>
+          </td>
+          <td class="actions-cell">
             @if (product.status == "delivered" && showMarkAsReceivedButton(product.invoiceId, $index)) {
               <button type="button" (click)="markAsReceived(product.invoiceId)">Mark as received</button>
             }
 
             @if (product.status == "received") {
-              <div>
-                <button type="button" (click)="setReaction(product.productId, 'like')">Like</button>
-                <button type="button" (click)="setReaction(product.productId, 'dislike')">Dislike</button>
+              <div class="reaction-actions">
+                <span class="action-label">Rate product</span>
+                <div class="reaction-buttons">
+                  <button class="like-button" [class.selected-reaction]="product.clientReaction == 'like'" [attr.aria-pressed]="product.clientReaction == 'like'" type="button" (click)="setReaction(product, 'like')">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
+                    Like
+                  </button>
+                  <button class="dislike-button" [class.selected-reaction]="product.clientReaction == 'dislike'" [attr.aria-pressed]="product.clientReaction == 'dislike'" type="button" (click)="setReaction(product, 'dislike')">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 14V2M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+                    Dislike
+                  </button>
+                </div>
               </div>
 
-              <div>
+              <div class="comment-editor">
+                <label [for]="'comment_' + $index">Write a comment</label>
                 <textarea [(ngModel)]="product.commentText"
+                          [id]="'comment_' + $index"
                           [name]="'comment_' + $index"
-                          placeholder="Write a comment"></textarea>
-                <button type="button" (click)="addComment(product)">Add comment</button>
+                          rows="3"
+                          placeholder="Share your experience"></textarea>
+                <div class="comment-actions">
+                  <button class="comment-button" type="button" (click)="addComment(product)">Post comment</button>
+                  <p class="feedback-message comment-feedback" [class.feedback-error]="product.commentMessageIsError" aria-live="polite">{{product.commentMessage}}</p>
+                </div>
               </div>
             }
           </td>

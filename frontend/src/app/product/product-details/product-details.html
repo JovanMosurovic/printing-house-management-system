@@ -1,126 +1,189 @@
-@if (message) {
-  <p>{{message}}</p>
-}
+<p class="feedback-message feedback-error" aria-live="polite">{{message}}</p>
 
 @if (product) {
-  <h2>{{product.naziv}}</h2>
+  <header class="product-header">
+    <p class="product-eyebrow">Product details</p>
+    <h2>{{product.naziv}}</h2>
 
-  <p>Printing house: {{product.nazivStamparije}}</p>
-  <p>City: {{product.grad}}</p>
-  <p>Likes: {{product.brojSvidjanja}}</p>
-  <p>Dislikes: {{product.brojNesvidjanja}}</p>
-
-  <h3>Latest comments</h3>
-
-  @if (product.comments.length === 0) {
-    <p>There are no comments for this product.</p>
-  } @else {
-    @for (comment of product.comments; track comment._id) {
-      <div [class.own-comment]="comment.clientId == loggedUserId">
-        <p>{{comment.username}} - {{comment.createdAt | date:'dd.MM.yyyy HH:mm'}}</p>
-        <p>{{comment.text}}</p>
+    <div class="product-summary">
+      <div class="printing-house-summary">
+        <span class="summary-label">Offered by</span>
+        <strong class="printing-house-name">{{product.nazivStamparije}}</strong>
+        <span class="summary-city">{{product.grad}}</span>
       </div>
-    }
-  }
 
-  @if (isClient) {
-    <h3>Product information</h3>
+      <div class="product-rating">
+        <span class="summary-label">Product reactions</span>
+        <div class="rating-summary">
+          <div>
+            <strong>{{product.brojSvidjanja}}</strong>
+            <span>Likes</span>
+          </div>
+          <div>
+            <strong>{{product.brojNesvidjanja}}</strong>
+            <span>Dislikes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    <p>Description: {{product.opis}}</p>
-    <p>Category: {{product.kategorija}}</p>
-    <p>Subcategory: {{product.potkategorija}}</p>
-    <p>Unit price: {{product.jedinicnaCena}} RSD</p>
-    <p>Available quantity: {{product.kolicinaNaLageru}}</p>
+  <section class="details-section gallery-section">
+    <h3>Gallery</h3>
 
-    <div>
-      Color:
-      <select name="productColor" [(ngModel)]="selectedColor">
-        @for (color of product.dostupneBoje; track color) {
-          <option [value]="color">{{color}}</option>
+    @if (selectedImage) {
+      <div class="main-product-image">
+        <img [src]="selectedImage"
+             [alt]="product.naziv"
+             width="250">
+      </div>
+
+      <div class="thumbnail-list">
+        @for (image of images; track $index) {
+          <button type="button"
+                  (click)="selectImage($index)">
+            <img [src]="image"
+                 [alt]="product.naziv"
+                 width="80">
+          </button>
         }
-      </select>
-    </div>
-
-    <h3>Printing services</h3>
-
-    @if (product.uslugeStampe.length === 0) {
-      <p>There are no printing services for this product.</p>
-    } @else {
-      <div>
-        Printing service:
-        <select name="printingService" [(ngModel)]="selectedPrintingServiceId">
-          @for (printingService of product.uslugeStampe; track printingService.idUsluge) {
-            <option [value]="printingService.idUsluge">{{printingService.tipStampe}}</option>
-          }
-        </select>
       </div>
-
-      <table>
-        <thead>
-        <tr>
-          <th>Printing type</th>
-          <th>Maximum width</th>
-          <th>Maximum height</th>
-          <th>Additional price per item</th>
-        </tr>
-        </thead>
-
-        <tbody>
-          @for (printingService of product.uslugeStampe; track printingService.idUsluge) {
-            <tr>
-              <td>{{printingService.tipStampe}}</td>
-              <td>{{printingService.maxSirinaMm}} mm</td>
-              <td>{{printingService.maxVisinaMm}} mm</td>
-              <td>{{printingService.dodatnaCenaPoKomadu}} RSD</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    }
-
-    <h3>Printing house location</h3>
-
-    @if (mapUrl) {
-      <iframe [src]="mapUrl"
-              width="500"
-              height="300"
-              title="Printing house location">
-      </iframe>
     } @else {
-      <p>The printing house location is not available.</p>
+      <p>This product currently has no images.</p>
     }
+  </section>
+
+  @if (isClient) {
+    <section class="details-section">
+      <h3>Product information</h3>
+
+      <dl class="information-list">
+        <div class="description-information">
+          <dt>Description</dt>
+          <dd>{{product.opis}}</dd>
+        </div>
+        <div>
+          <dt>Category</dt>
+          <dd>{{product.kategorija}}</dd>
+        </div>
+        <div>
+          <dt>Subcategory</dt>
+          <dd>{{product.potkategorija}}</dd>
+        </div>
+        <div>
+          <dt>Unit price</dt>
+          <dd>{{product.jedinicnaCena}} RSD</dd>
+        </div>
+        <div>
+          <dt>Available quantity</dt>
+          <dd>{{product.kolicinaNaLageru}}</dd>
+        </div>
+      </dl>
+
+      @if (product.dostupneBoje.length === 1) {
+        <div class="field-control">
+          <span>Color</span>
+          <div class="single-choice">{{product.dostupneBoje[0]}}</div>
+        </div>
+      } @else if (product.dostupneBoje.length > 1) {
+        <label class="field-control">
+          <span>Color</span>
+          <select name="productColor" [(ngModel)]="selectedColor">
+            @for (color of product.dostupneBoje; track color) {
+              <option [value]="color">{{color}}</option>
+            }
+          </select>
+        </label>
+      }
+    </section>
+
+    <section class="details-section">
+      <h3>Printing services</h3>
+
+      @if (product.uslugeStampe.length === 0) {
+        <p>There are no printing services for this product.</p>
+      } @else {
+        @if (product.uslugeStampe.length === 1) {
+          <div class="field-control">
+            <span>Printing service</span>
+            <div class="single-choice">{{product.uslugeStampe[0].tipStampe}}</div>
+          </div>
+        } @else {
+          <label class="field-control">
+            <span>Printing service</span>
+            <select name="printingService" [(ngModel)]="selectedPrintingServiceId">
+              @for (printingService of product.uslugeStampe; track printingService.idUsluge) {
+                <option [value]="printingService.idUsluge">{{printingService.tipStampe}}</option>
+              }
+            </select>
+          </label>
+        }
+
+        <table>
+          <thead>
+          <tr>
+            <th>Printing type</th>
+            <th>Maximum width</th>
+            <th>Maximum height</th>
+            <th>Additional price per item</th>
+          </tr>
+          </thead>
+
+          <tbody>
+            @for (printingService of product.uslugeStampe; track printingService.idUsluge) {
+              <tr>
+                <td>{{printingService.tipStampe}}</td>
+                <td>{{printingService.maxSirinaMm}} mm</td>
+                <td>{{printingService.maxVisinaMm}} mm</td>
+                <td>{{printingService.dodatnaCenaPoKomadu}} RSD</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
   }
 
-  <h3>Gallery</h3>
+  <section class="details-section comments-section">
+    <h3>Latest comments</h3>
 
-  @if (selectedImage) {
-    <div>
-      <img [src]="selectedImage"
-           [alt]="product.naziv"
-           width="250">
-    </div>
-
-    <div>
-      @for (image of images; track $index) {
-        <button type="button"
-                (click)="selectImage($index)">
-          <img [src]="image"
-               [alt]="product.naziv"
-               width="80">
-        </button>
+    @if (product.comments.length === 0) {
+      <p>There are no comments for this product.</p>
+    } @else {
+      @for (comment of product.comments; track comment._id) {
+        <div class="comment" [class.own-comment]="comment.clientId == loggedUserId">
+          <p>{{comment.username}} - {{comment.createdAt | date:'dd.MM.yyyy HH:mm'}}</p>
+          <p>{{comment.text}}</p>
+        </div>
       }
-    </div>
-  } @else {
-    <p>This product currently has no images.</p>
+    }
+  </section>
+
+  @if (isClient) {
+    <section class="details-section">
+      <h3>Printing house location</h3>
+
+      @if (mapUrl) {
+        <iframe [src]="mapUrl"
+                width="500"
+                height="300"
+                title="Printing house location">
+        </iframe>
+      } @else {
+        <p>The printing house location is not available.</p>
+      }
+    </section>
   }
 
   @if (isClient) {
-    <button type="button" (click)="continueToPreparation()">Next</button>
+    <div class="product-actions">
+      <button type="button" (click)="continueToPreparation()">Next</button>
+    </div>
   }
 }
 
 <p>
-  <a [routerLink]="isClient ? '/client/products' : '/'">
+  <a class="back-link" [routerLink]="isClient ? '/client/products' : '/'">
     {{isClient ? "Back to product search" : "Back to homepage"}}
   </a>
 </p>

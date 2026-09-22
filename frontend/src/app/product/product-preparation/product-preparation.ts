@@ -33,6 +33,7 @@ export class ProductPreparation implements OnInit {
 
   imageError = "";
   message = "";
+  messageIsError = false;
 
   ngOnInit() {
     this.loggedUser = this.authService.getLoggedUser();
@@ -47,6 +48,7 @@ export class ProductPreparation implements OnInit {
 
     if (productId == null) {
       this.message = "Product ID is missing.";
+      this.messageIsError = true;
       return;
     }
 
@@ -74,6 +76,7 @@ export class ProductPreparation implements OnInit {
         }
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -128,10 +131,12 @@ export class ProductPreparation implements OnInit {
     this.quantity = 1;
     this.imageError = "";
     this.message = "";
+    this.messageIsError = false;
   }
 
   addToCart(preparationForm: NgForm) {
     this.message = "";
+    this.messageIsError = false;
 
     if (preparationForm.invalid || this.imageError) {
       preparationForm.form.markAllAsTouched();
@@ -140,16 +145,19 @@ export class ProductPreparation implements OnInit {
 
     if (!Number.isInteger(this.quantity)) {
       this.message = "Quantity must be a whole number.";
+      this.messageIsError = true;
       return;
     }
 
     if (this.preparationType == "text" && !this.preparationText.trim()) {
       this.message = "Please enter the text that should be printed.";
+      this.messageIsError = true;
       return;
     }
 
     if (this.preparationType == "image" && !this.preparationImage) {
       this.message = "Please select the image that should be printed.";
+      this.messageIsError = true;
       return;
     }
 
@@ -157,6 +165,7 @@ export class ProductPreparation implements OnInit {
 
     if (this.selectedPrintingService == null) {
       this.message = "A printing service is required.";
+      this.messageIsError = true;
       return;
     }
 
@@ -169,6 +178,7 @@ export class ProductPreparation implements OnInit {
 
     if (quantityInCart + this.quantity > this.product.kolicinaNaLageru) {
       this.message = "There are not enough products currently in stock.";
+      this.messageIsError = true;
       return;
     }
 

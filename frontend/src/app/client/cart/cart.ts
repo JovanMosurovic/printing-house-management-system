@@ -1,5 +1,5 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
+import {Router} from '@angular/router';
 import {PrintingHouseCartModel} from '../../models/cart';
 import {UserModel} from '../../models/user';
 import {AuthService} from '../../services/auth.service';
@@ -9,7 +9,7 @@ import {PublicProcurementService} from '../../services/public-procurement.servic
 
 @Component({
   selector: 'app-cart',
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
 })
@@ -24,6 +24,7 @@ export class Cart implements OnInit {
   printingHouseCarts: PrintingHouseCartModel[] = [];
   totalPrice = 0;
   message = "";
+  messageIsError = false;
   isConfirming = false;
 
   ngOnInit() {
@@ -69,11 +70,13 @@ export class Cart implements OnInit {
 
   confirmOrder() {
     this.message = "";
+    this.messageIsError = false;
 
     if (this.loggedUser == null) return;
 
     if (this.loggedUser.role != "individualClient") {
       this.message = "Business client orders must be created through public procurement.";
+      this.messageIsError = true;
       return;
     }
 
@@ -81,6 +84,7 @@ export class Cart implements OnInit {
 
     if (cartItems.length == 0) {
       this.message = "The shopping cart is empty.";
+      this.messageIsError = true;
       return;
     }
 
@@ -94,6 +98,7 @@ export class Cart implements OnInit {
         this.isConfirming = false;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
@@ -107,11 +112,13 @@ export class Cart implements OnInit {
 
   createPublicProcurement() {
     this.message = "";
+    this.messageIsError = false;
 
     if (this.loggedUser == null) return;
 
     if (this.loggedUser.role != "businessClient") {
       this.message = "Only a business client can create a public procurement.";
+      this.messageIsError = true;
       return;
     }
 
@@ -119,6 +126,7 @@ export class Cart implements OnInit {
 
     if (cartItems.length == 0) {
       this.message = "The shopping cart is empty.";
+      this.messageIsError = true;
       return;
     }
 
@@ -132,6 +140,7 @@ export class Cart implements OnInit {
         this.isConfirming = false;
       },
       error: error => {
+        this.messageIsError = true;
         if (error.error?.message) {
           this.message = error.error.message;
         } else {
