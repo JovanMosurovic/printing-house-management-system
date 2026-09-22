@@ -32,7 +32,7 @@
           <td>{{product.status}}</td>
           <td>{{product.numberOfLikes}} likes / {{product.numberOfDislikes}} dislikes</td>
           <td>
-            @if (product.status == "delivered") {
+            @if (product.status == "delivered" && showMarkAsReceivedButton(product.invoiceId, $index)) {
               <button type="button" (click)="markAsReceived(product.invoiceId)">Mark as received</button>
             }
 

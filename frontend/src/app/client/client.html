@@ -6,6 +6,10 @@
   <a routerLink="/client/cart">Shopping cart</a>
   |
   <a routerLink="/client/archive">Product archive</a>
+  @if (loggedUser?.role == "businessClient") {
+    |
+    <a routerLink="/client/public-procurements">Public procurements</a>
+  }
 </p>
 
 @if (message) {

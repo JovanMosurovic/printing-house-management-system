@@ -1,0 +1,86 @@
+<h2>Public procurements</h2>
+
+<p><a routerLink="/client">Back to client profile</a></p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (publicProcurements.length === 0) {
+  <p>There are no public procurements.</p>
+} @else {
+  @for (publicProcurement of publicProcurements; track publicProcurement._id) {
+    <div>
+      <h3>Public procurement {{publicProcurement._id}}</h3>
+
+      <p>Status: {{publicProcurement.status}}</p>
+      <p>Opened: {{publicProcurement.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</p>
+      <p>Open until: {{publicProcurement.expiresAt | date:'dd.MM.yyyy HH:mm:ss'}}</p>
+      <p>Number of submitted offers: {{publicProcurement.offers.length}}</p>
+
+      <h4>Requested products</h4>
+
+      <table>
+        <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Color</th>
+          <th>Printing type</th>
+          <th>Quantity</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (item of publicProcurement.items; track item._id) {
+            <tr>
+              <td>{{item.productName}}</td>
+              <td>{{item.category}} / {{item.subcategory}}</td>
+              <td>{{item.color}}</td>
+              <td>{{item.printingType}}</td>
+              <td>{{item.quantity}}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      @if (publicProcurement.status == "open") {
+        <p>The public procurement is still open.</p>
+      }
+
+      @if (publicProcurement.status == "unsuccessful") {
+        <p>The public procurement ended without a valid offer.</p>
+      }
+
+      @if (publicProcurement.status == "completed") {
+        <p>Invoice ID: {{publicProcurement.invoiceId}}</p>
+
+        <h4>Submitted offers</h4>
+
+        <table>
+          <thead>
+          <tr>
+            <th>Printing house</th>
+            <th>City</th>
+            <th>Total price</th>
+            <th>Submitted</th>
+            <th>Result</th>
+          </tr>
+          </thead>
+
+          <tbody>
+            @for (offer of publicProcurement.offers; track offer._id) {
+              <tr>
+                <td>{{offer.printingHouseName}}</td>
+                <td>{{offer.printingHouseCity}}</td>
+                <td>{{offer.totalPrice}} RSD</td>
+                <td>{{offer.createdAt | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td>{{isWinningOffer(publicProcurement, offer._id) ? "Winning offer" : "Not selected"}}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+}

@@ -15,6 +15,7 @@ import {ProductArchive} from './product-archive/product-archive';
 import {PrinterProducts} from './printer-products/printer-products';
 import {ProductImport} from './product-import/product-import';
 import {PrinterAuctions} from './printer-auctions/printer-auctions';
+import {ClientPublicProcurements} from './client-public-procurements/client-public-procurements';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
@@ -25,6 +26,7 @@ export const routes: Routes = [
   { path: "client/cart", component: Cart },
   { path: "client/archive", component: ProductArchive },
   { path: "client/products", component: ClientProducts },
+  { path: "client/public-procurements", component: ClientPublicProcurements },
   { path: "client", component: Client },
   { path: "printer/products/import", component: ProductImport },
   { path: "printer/products", component: PrinterProducts },

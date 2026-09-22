@@ -84,6 +84,14 @@ export class ProductArchive implements OnInit {
     return this.sortDirection == "asc" ? "▲" : "▼";
   }
 
+  showMarkAsReceivedButton(invoiceId: string, productIndex: number) {
+    for (let i = 0; i < productIndex; i++) {
+      if (this.archivedProducts[i].invoiceId == invoiceId) return false;
+    }
+
+    return true;
+  }
+
   markAsReceived(invoiceId: string) {
     if (this.loggedUser == null) return;
 

@@ -7,6 +7,7 @@ import crypto from 'crypto'
 
 import UserModel from '../models/user';
 import {EmailService} from '../services/email.service'
+import {PublicProcurementController} from './public-procurement.controller'
 
 export class UserController{
 
@@ -103,6 +104,10 @@ export class UserController{
             if (user.status == "rejected") {
                 res.status(403).json({message: "Your registration has been rejected."});
                 return;
+            }
+
+            if (user.role == "businessClient") {
+                await new PublicProcurementController().finishExpiredPublicProcurements(user._id.toString());
             }
 
             user.lastLogin = new Date();

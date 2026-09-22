@@ -4,7 +4,9 @@ import {imageSize} from "image-size";
 import PublicProcurementModel from "../models/public-procurement";
 import ProductModel from "../models/product";
 import UserModel from "../models/user";
+import InvoiceModel from "../models/invoice";
 import {EmailService} from "../services/email.service";
+import {InvoicePdfService} from "../services/invoice-pdf.service";
 
 export class PublicProcurementController {
 
@@ -186,6 +188,196 @@ export class PublicProcurementController {
 
             console.log("Error while submitting public procurement offer.");
             res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Returns all public procurements created by one approved business client
+    // Used on the business client public procurements page after finishing all expired procurements
+    async getClientPublicProcurements(req: express.Request, res: express.Response) {
+        try {
+            let clientId = req.params.clientId as string;
+            let client = await UserModel.findOne({_id: clientId, role: "businessClient", status: "approved"});
+
+            if (client == null) {
+                res.status(404).json({message: "Approved business client was not found."});
+                return;
+            }
+
+            await this.finishExpiredPublicProcurements(clientId);
+
+            let publicProcurements = await PublicProcurementModel.find({clientId: clientId}).sort({createdAt: -1});
+            res.json(publicProcurements);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Client ID is not valid."});
+                return;
+            }
+
+            console.log("Error while getting client public procurements.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Finishes all expired public procurements created by one business client
+    // Used during the client's next login and when opening the public procurements page
+    async finishExpiredPublicProcurements(clientId: string) {
+        let publicProcurements = await PublicProcurementModel.find({
+            clientId: clientId,
+            status: "open",
+            expiresAt: {$lte: new Date()}
+        });
+
+        for (let publicProcurement of publicProcurements) {
+            let sortedOffers = [];
+
+            for (let offer of publicProcurement.offers) sortedOffers.push(offer);
+
+            sortedOffers.sort((firstOffer, secondOffer) => firstOffer.totalPrice - secondOffer.totalPrice);
+
+            let winningOffer: any = null;
+            let winningPrinter: any = null;
+            let winningProducts: any[] = [];
+            let invoiceItems: any[] = [];
+
+            for (let offer of sortedOffers) {
+                if (winningOffer != null) continue;
+
+                let printer = await UserModel.findOne({_id: offer.printerId, role: "printer", status: "approved"});
+
+                if (printer == null || offer.items.length != publicProcurement.items.length) continue;
+
+                let offerIsValid = true;
+                let currentProducts: any[] = [];
+                let currentInvoiceItems: any[] = [];
+
+                for (let procurementItem of publicProcurement.items) {
+                    let offerItem: any = null;
+
+                    for (let currentOfferItem of offer.items) {
+                        if (currentOfferItem.procurementItemId.toString() == procurementItem._id.toString()) {
+                            offerItem = currentOfferItem;
+                        }
+                    }
+
+                    if (offerItem == null || offerItem.quantity != procurementItem.quantity) {
+                        offerIsValid = false;
+                        continue;
+                    }
+
+                    let product = await ProductModel.findOne({_id: offerItem.productId, stamparijaId: offer.printerId});
+
+                    if (product == null || product.naziv != procurementItem.productName ||
+                        product.kategorija != procurementItem.category ||
+                        product.potkategorija != procurementItem.subcategory) {
+                        offerIsValid = false;
+                        continue;
+                    }
+
+                    let availableColors = product.dostupneBoje.length > 0 ? product.dostupneBoje : ["Bela"];
+
+                    if (!availableColors.includes(procurementItem.color)) {
+                        offerIsValid = false;
+                        continue;
+                    }
+
+                    let printingServiceIsAvailable = false;
+
+                    for (let printingService of product.uslugeStampe) {
+                        if (printingService.idUsluge == offerItem.printingServiceId &&
+                            printingService.tipStampe == procurementItem.printingType) {
+                            printingServiceIsAvailable = true;
+                        }
+                    }
+
+                    if (!printingServiceIsAvailable) {
+                        offerIsValid = false;
+                        continue;
+                    }
+
+                    let selectedProduct: any = null;
+
+                    for (let currentProduct of currentProducts) {
+                        if (currentProduct.product._id.toString() == product._id.toString()) selectedProduct = currentProduct;
+                    }
+
+                    if (selectedProduct == null) {
+                        selectedProduct = {product: product, quantity: 0};
+                        currentProducts.push(selectedProduct);
+                    }
+
+                    selectedProduct.quantity += offerItem.quantity;
+
+                    if (selectedProduct.quantity > product.kolicinaNaLageru) {
+                        offerIsValid = false;
+                        continue;
+                    }
+
+                    currentInvoiceItems.push({
+                        productId: product._id,
+                        productCode: offerItem.productCode,
+                        productName: offerItem.productName,
+                        color: procurementItem.color,
+                        printingServiceId: offerItem.printingServiceId,
+                        printingType: offerItem.printingType,
+                        unitPrice: offerItem.unitPrice,
+                        additionalPricePerItem: offerItem.additionalPricePerItem,
+                        quantity: offerItem.quantity,
+                        totalPrice: offerItem.totalPrice,
+                        preparationType: procurementItem.preparationType,
+                        preparationText: procurementItem.preparationText,
+                        preparationImage: procurementItem.preparationImage
+                    });
+                }
+
+                if (offerIsValid) {
+                    winningOffer = offer;
+                    winningPrinter = printer;
+                    winningProducts = currentProducts;
+                    invoiceItems = currentInvoiceItems;
+                }
+            }
+
+            if (winningOffer == null || winningPrinter == null) {
+                publicProcurement.status = "unsuccessful";
+                await publicProcurement.save();
+                continue;
+            }
+
+            for (let winningProduct of winningProducts) {
+                winningProduct.product.kolicinaNaLageru -= winningProduct.quantity;
+                await winningProduct.product.save();
+            }
+
+            let invoice = new InvoiceModel({
+                clientId: publicProcurement.clientId,
+                clientUsername: publicProcurement.clientUsername,
+                clientEmail: publicProcurement.clientEmail,
+                printingHouseId: winningPrinter._id,
+                printingHouseName: winningPrinter.institution?.name || "",
+                printingHouseCity: winningPrinter.institution?.city || "",
+                items: invoiceItems,
+                totalPrice: winningOffer.totalPrice,
+                status: "inPrinting"
+            });
+
+            await invoice.save();
+
+            publicProcurement.status = "completed";
+            publicProcurement.winningOfferId = winningOffer._id;
+            publicProcurement.winningPrinterId = winningPrinter._id;
+            publicProcurement.invoiceId = invoice._id;
+            await publicProcurement.save();
+
+            try {
+                let invoicePdf = await new InvoicePdfService().createInvoicePdf(invoice);
+
+                await new EmailService().sendInvoiceEmail(publicProcurement.clientEmail, [{
+                    filename: `invoice_${invoice._id}.pdf`,
+                    content: invoicePdf
+                }]);
+            } catch (emailError) {
+                console.log("Public procurement was completed, but the invoice email could not be sent.");
+            }
         }
     }
 

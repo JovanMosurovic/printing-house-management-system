@@ -23,4 +23,8 @@ export class PublicProcurementService {
     const data = {printerId: printerId, publicProcurementId: publicProcurementId};
     return this.http.post<SubmitPublicProcurementOfferResponseModel>(`${this.apiUrl}/offer`, data);
   }
+
+  getClientPublicProcurements(clientId: string) {
+    return this.http.get<PublicProcurementModel[]>(`${this.apiUrl}/client/${clientId}`);
+  }
 }
