@@ -8,6 +8,91 @@ import {EmailService} from "../services/email.service";
 
 export class InvoiceController {
 
+    // Returns all non-cancelled invoices that belong to one printing house
+    async getPrintingHouseInvoices(req: express.Request, res: express.Response) {
+        try {
+            let printerId = req.params.printerId;
+            let printer = await UserModel.findOne({_id: printerId, role: "printer", status: "approved"});
+
+            if (printer == null) {
+                res.status(404).json({message: "Approved printing house was not found."});
+                return;
+            }
+
+            let invoices = await InvoiceModel.find({
+                printingHouseId: printerId,
+                status: {$ne: "cancelled"}
+            }).sort({createdAt: -1});
+
+            res.json(invoices);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Printing house ID is not valid."});
+                return;
+            }
+
+            console.log("Error while getting printing house invoices.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Changes an invoice from ordered to in printing or from in printing to delivered
+    async updateInvoiceStatus(req: express.Request, res: express.Response) {
+        try {
+            let printerId = req.body.printerId;
+            let invoiceId = req.body.invoiceId;
+            let newStatus = req.body.status;
+
+            if (!printerId || !invoiceId || !newStatus) {
+                res.status(400).json({message: "Printing house ID, invoice ID and status are required."});
+                return;
+            }
+
+            let printer = await UserModel.findOne({_id: printerId, role: "printer", status: "approved"});
+
+            if (printer == null) {
+                res.status(404).json({message: "Approved printing house was not found."});
+                return;
+            }
+
+            let invoice = await InvoiceModel.findOne({_id: invoiceId, printingHouseId: printerId});
+
+            if (invoice == null) {
+                res.status(404).json({message: "Invoice was not found."});
+                return;
+            }
+
+            let validTransition =
+                (invoice.status == "ordered" && newStatus == "inPrinting") ||
+                (invoice.status == "inPrinting" && newStatus == "delivered");
+
+            if (!validTransition) {
+                res.status(409).json({message: "Requested order status change is not allowed."});
+                return;
+            }
+
+            invoice.status = newStatus;
+            await invoice.save();
+
+            res.json({message: "Order status was successfully updated."});
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Entered ID is not valid."});
+                return;
+            }
+
+            if (e.name == "ValidationError") {
+                let firstErrorName = Object.keys(e.errors)[0];
+                let firstError = e.errors[firstErrorName];
+                res.status(400).json({message: firstError.message});
+                return;
+            }
+
+            console.log("Error while updating invoice status.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     // Returns all invoices that belong to one client
     async getClientInvoices(req: express.Request, res: express.Response) {
         try {

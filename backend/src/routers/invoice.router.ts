@@ -3,6 +3,16 @@ import {InvoiceController} from "../controllers/invoice.controller";
 
 const invoiceRouter = express.Router();
 
+invoiceRouter.route("/printer/update-status").post(
+    (req, res) =>
+        new InvoiceController().updateInvoiceStatus(req, res)
+);
+
+invoiceRouter.route("/printer/:printerId").get(
+    (req, res) =>
+        new InvoiceController().getPrintingHouseInvoices(req, res)
+);
+
 invoiceRouter.route("/cancel").post(
     (req, res) =>
         new InvoiceController().cancelInvoice(req, res)

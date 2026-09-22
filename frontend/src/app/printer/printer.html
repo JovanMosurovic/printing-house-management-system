@@ -2,5 +2,74 @@
 
 @if (loggedUser) {
   <p>Welcome {{loggedUser.firstName}} {{loggedUser.lastName}}</p>
-}
 
+  @if (message) {
+    <p>{{message}}</p>
+  }
+
+  <h2>Ordered products</h2>
+
+  @if (invoices.length === 0) {
+    <p>There are no orders.</p>
+  } @else {
+    <table>
+      <thead>
+      <tr>
+        <th>Invoice ID</th>
+        <th>Client</th>
+        <th>Products</th>
+        <th>Total price</th>
+        <th>Status</th>
+        <th>Order date</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+
+      <tbody>
+        @for (invoice of invoices; track invoice._id) {
+          <tr>
+            <td>{{invoice._id}}</td>
+            <td>
+              {{invoice.clientUsername}}<br>
+              {{invoice.clientEmail}}
+            </td>
+            <td>
+              <ol>
+                @for (invoiceItem of invoice.items; track $index) {
+                  <li>
+                    <p>{{invoiceItem.productName}} ({{invoiceItem.quantity}})</p>
+                    <p>Color: {{invoiceItem.color}}</p>
+                    <p>Printing type: {{invoiceItem.printingType}}</p>
+
+                    @if (invoiceItem.preparationType == "text") {
+                      <p>Text: {{invoiceItem.preparationText}}</p>
+                    } @else {
+                      <p>Preparation image:</p>
+                      <img [src]="invoiceItem.preparationImage" alt="Preparation image" width="100">
+                    }
+                  </li>
+                }
+              </ol>
+            </td>
+            <td>{{invoice.totalPrice}} RSD</td>
+            <td>{{invoice.status}}</td>
+            <td>{{invoice.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
+            <td>
+              @if (invoice.status == "ordered") {
+                <button type="button" (click)="updateInvoiceStatus(invoice._id, 'inPrinting')">
+                  Start printing
+                </button>
+              }
+
+              @if (invoice.status == "inPrinting") {
+                <button type="button" (click)="updateInvoiceStatus(invoice._id, 'delivered')">
+                  Mark as delivered
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+}
