@@ -613,13 +613,16 @@ export class UserController{
             let email = req.body.email?.trim().toLowerCase();
             let profileImage = req.body.profileImage;
             let institution = req.body.institution;
+            let currentPassword = typeof req.body.currentPassword == "string" ? req.body.currentPassword : "";
+            let newPassword = typeof req.body.newPassword == "string" ? req.body.newPassword : "";
+            let confirmPassword = typeof req.body.confirmPassword == "string" ? req.body.confirmPassword : "";
 
             if (!userId || !firstName || !lastName || !phone || !email) {
                 res.status(400).json({message: "All personal information is required."});
                 return;
             }
 
-            let user = await UserModel.findById(userId);
+            let user = await UserModel.findById(userId).select("+passwordHash");
 
             if (user == null) {
                 res.status(404).json({message: "User was not found."});
@@ -629,6 +632,34 @@ export class UserController{
             if (user.role == "admin") {
                 res.status(403).json({message: "Administrator profile cannot be updated here."});
                 return;
+            }
+
+            let passwordChangeRequested = currentPassword != "" || newPassword != "" || confirmPassword != "";
+
+            if (passwordChangeRequested) {
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    res.status(400).json({message: "Current password, new password and password confirmation are required."});
+                    return;
+                }
+
+                if (newPassword != confirmPassword) {
+                    res.status(400).json({message: "Passwords do not match."});
+                    return;
+                }
+
+                let passwordRegex = /^(?=[A-Za-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,12}$/;
+
+                if (!passwordRegex.test(newPassword)) {
+                    res.status(400).json({message: "Password must start with a letter, contain 8-12 characters, one uppercase letter, one number and one special character."});
+                    return;
+                }
+
+                let correctPassword = await bcrypt.compare(currentPassword, user.passwordHash);
+
+                if (!correctPassword) {
+                    res.status(401).json({message: "Current password is not correct."});
+                    return;
+                }
             }
 
             let userWithSameEmail = await UserModel.findOne({
@@ -719,6 +750,8 @@ export class UserController{
                 user.role == "printer") {
                 user.institution = institution;
             }
+
+            if (passwordChangeRequested) user.passwordHash = await bcrypt.hash(newPassword, 8);
 
             await user.save();
 

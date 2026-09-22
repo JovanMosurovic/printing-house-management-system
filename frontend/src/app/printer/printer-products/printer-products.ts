@@ -230,6 +230,12 @@ export class PrinterProducts implements OnInit {
     reader.readAsDataURL(file);
   }
 
+  removeMainImage(input: HTMLInputElement) {
+    this.newProduct.slikaUrl = "";
+    this.mainImageError = "";
+    input.value = "";
+  }
+
   removeAdditionalImage(imageIndex: number) {
     this.newProduct.dodatneSlike.splice(imageIndex, 1);
     this.additionalImagesError = "";

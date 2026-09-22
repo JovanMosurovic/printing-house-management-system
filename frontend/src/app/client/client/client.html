@@ -95,6 +95,48 @@
       }
     </div>
 
+    <div>
+      Current password:
+      <input type="password" name="currentPassword" [(ngModel)]="currentPassword"
+             #currentPasswordInput="ngModel" [required]="passwordChangeRequested()"
+             autocomplete="current-password" placeholder="Leave blank to keep the current password">
+
+      @if (currentPasswordInput.touched && currentPasswordInput.errors?.["required"]) {
+        <p>Current password is required to change the password.</p>
+      }
+    </div>
+
+    <div>
+      New password:
+      <input type="password" name="newPassword" [(ngModel)]="newPassword"
+             #newPasswordInput="ngModel" [required]="passwordChangeRequested()"
+             pattern="^(?=[A-Za-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,12}$"
+             autocomplete="new-password" placeholder="Leave blank to keep the current password">
+
+      @if (newPasswordInput.touched && newPasswordInput.errors?.["required"]) {
+        <p>New password is required.</p>
+      }
+
+      @if (newPasswordInput.touched && newPasswordInput.errors?.["pattern"]) {
+        <p>Password must start with a letter, contain 8-12 characters, one uppercase letter, one number and one special character.</p>
+      }
+    </div>
+
+    <div>
+      Confirm new password:
+      <input type="password" name="confirmPassword" [(ngModel)]="confirmPassword"
+             #confirmPasswordInput="ngModel" [required]="passwordChangeRequested()"
+             autocomplete="new-password" placeholder="Leave blank to keep the current password">
+
+      @if (confirmPasswordInput.touched && confirmPasswordInput.errors?.["required"]) {
+        <p>Password confirmation is required.</p>
+      }
+
+      @if (confirmPasswordInput.touched && !confirmPasswordInput.errors?.["required"] && newPassword != confirmPassword) {
+        <p>Passwords do not match.</p>
+      }
+    </div>
+
     @if (profileUser.institution) {
       <div>
         Institution name:

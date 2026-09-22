@@ -125,7 +125,7 @@ export class UserService {
     return this.http.get<UserModel>(`${this.apiUrl}/profile/${userId}`);
   }
 
-  updateUserProfile(user: UserModel) {
+  updateUserProfile(user: UserModel, currentPassword = "", newPassword = "", confirmPassword = "") {
     const institution =
       user.role === "individualClient" ? undefined :
         {
@@ -144,7 +144,10 @@ export class UserService {
       phone: user.phone,
       email: user.email,
       profileImage: user.profileImage,
-      institution: institution
+      institution: institution,
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword
     };
 
     return this.http.post<UserModel>(`${this.apiUrl}/profile/update`, data);

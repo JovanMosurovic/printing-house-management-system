@@ -144,20 +144,22 @@
     </section>
   }
 
-  <section class="details-section comments-section">
-    <h3>Latest comments</h3>
+  @if (isClient) {
+    <section class="details-section comments-section">
+      <h3>Latest comments</h3>
 
-    @if (product.comments.length === 0) {
-      <p>There are no comments for this product.</p>
-    } @else {
-      @for (comment of product.comments; track comment._id) {
-        <div class="comment" [class.own-comment]="comment.clientId == loggedUserId">
-          <p>{{comment.username}} - {{comment.createdAt | date:'dd.MM.yyyy HH:mm'}}</p>
-          <p>{{comment.text}}</p>
-        </div>
+      @if (product.comments.length === 0) {
+        <p>There are no comments for this product.</p>
+      } @else {
+        @for (comment of product.comments; track comment._id) {
+          <div class="comment" [class.own-comment]="comment.clientId == loggedUserId">
+            <p>{{comment.username}} - {{comment.createdAt | date:'dd.MM.yyyy HH:mm'}}</p>
+            <p>{{comment.text}}</p>
+          </div>
+        }
       }
-    }
-  </section>
+    </section>
+  }
 
   @if (isClient) {
     <section class="details-section">

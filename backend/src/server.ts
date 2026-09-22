@@ -9,7 +9,7 @@ import publicProcurementRouter from "./routers/public-procurement.router";
 
 const app = express()
 app.use(cors())
-app.use(express.json({limit: "10mb"}))
+app.use(express.json({limit: "25mb"}))
 
 mongoose.connect("mongodb://127.0.0.1:27017/printing-house-management-system");
 

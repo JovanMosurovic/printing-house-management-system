@@ -28,6 +28,9 @@ export class Printer implements OnInit {
   messageIsError = false;
   messageIsClosing = false;
   profileImageError = "";
+  currentPassword = "";
+  newPassword = "";
+  confirmPassword = "";
 
   ngOnInit() {
     this.loggedUser = this.authService.getLoggedUser();
@@ -79,13 +82,22 @@ export class Printer implements OnInit {
       return;
     }
 
+    if (this.passwordChangeRequested() && this.newPassword != this.confirmPassword) {
+      this.message = "Passwords do not match.";
+      this.messageIsError = true;
+      return;
+    }
+
     if (this.profileUser == null || !this.hasProfileChanges()) return;
 
-    this.userService.updateUserProfile(this.profileUser).subscribe({
+    this.userService.updateUserProfile(this.profileUser, this.currentPassword, this.newPassword, this.confirmPassword).subscribe({
       next: data => {
         this.loggedUser = data;
         this.profileUser = copyUser(data);
         this.originalProfileUser = copyUser(data);
+        this.currentPassword = "";
+        this.newPassword = "";
+        this.confirmPassword = "";
         this.authService.setLoggedUser(data);
         this.showTemporaryMessage("Profile was successfully updated.");
       },
@@ -208,7 +220,11 @@ export class Printer implements OnInit {
 
   hasProfileChanges() {
     if (this.profileUser == null || this.originalProfileUser == null) return false;
-    return JSON.stringify(this.profileUser) != JSON.stringify(this.originalProfileUser);
+    return JSON.stringify(this.profileUser) != JSON.stringify(this.originalProfileUser) || this.passwordChangeRequested();
+  }
+
+  passwordChangeRequested() {
+    return this.currentPassword != "" || this.newPassword != "" || this.confirmPassword != "";
   }
 
 }
