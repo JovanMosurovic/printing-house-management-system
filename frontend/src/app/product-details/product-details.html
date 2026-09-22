@@ -10,6 +10,19 @@
   <p>Likes: {{product.brojSvidjanja}}</p>
   <p>Dislikes: {{product.brojNesvidjanja}}</p>
 
+  <h3>Latest comments</h3>
+
+  @if (product.comments.length === 0) {
+    <p>There are no comments for this product.</p>
+  } @else {
+    @for (comment of product.comments; track comment._id) {
+      <div [class.own-comment]="comment.clientId == loggedUserId">
+        <p>{{comment.username}} - {{comment.createdAt | date:'dd.MM.yyyy HH:mm'}}</p>
+        <p>{{comment.text}}</p>
+      </div>
+    }
+  }
+
   @if (isClient) {
     <h3>Product information</h3>
 

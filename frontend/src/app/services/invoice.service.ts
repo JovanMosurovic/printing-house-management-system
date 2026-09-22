@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CartItemModel} from '../models/cart';
-import {ConfirmOrderResponseModel, InvoiceModel, InvoiceStatus} from '../models/invoice';
+import {ArchivedProductModel, ConfirmOrderResponseModel, InvoiceModel, InvoiceStatus} from '../models/invoice';
 import {MessageModel} from '../models/message';
 
 @Injectable({
@@ -23,6 +23,15 @@ export class InvoiceService {
   cancelInvoice(clientId: string, invoiceId: string) {
     const data = {clientId: clientId, invoiceId: invoiceId};
     return this.http.post<MessageModel>(`${this.apiUrl}/cancel`, data);
+  }
+
+  getProductArchive(clientId: string) {
+    return this.http.get<ArchivedProductModel[]>(`${this.apiUrl}/archive/${clientId}`);
+  }
+
+  markAsReceived(clientId: string, invoiceId: string) {
+    const data = {clientId: clientId, invoiceId: invoiceId};
+    return this.http.post<MessageModel>(`${this.apiUrl}/mark-received`, data);
   }
 
   getPrintingHouseInvoices(printerId: string) {

@@ -11,6 +11,7 @@ import {ProductDetails} from './product-details/product-details';
 import {ClientProducts} from './client-products/client-products';
 import {ProductPreparation} from './product-preparation/product-preparation';
 import {Cart} from './cart/cart';
+import {ProductArchive} from './product-archive/product-archive';
 
 export const routes: Routes = [
   { path: "", component: Homepage },
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: "admin", component: Admin },
 
   { path: "client/cart", component: Cart },
+  { path: "client/archive", component: ProductArchive },
   { path: "client/products", component: ClientProducts },
   { path: "client", component: Client },
   { path: "printer", component: Printer },

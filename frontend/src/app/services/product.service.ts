@@ -1,6 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {HomepageDataModel, ProductModel, ProductSearchModel} from '../models/product';
+import {MessageModel} from '../models/message';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +30,16 @@ export class ProductService {
 
   getProductDetails(productId: string) {
     return this.http.get<ProductModel>(`${this.apiUrl}/${productId}`);
+  }
+
+  setReaction(clientId: string, productId: string, reaction: "like" | "dislike") {
+    const data = {clientId: clientId, productId: productId, reaction: reaction};
+    return this.http.post<MessageModel>(`${this.apiUrl}/reaction`, data);
+  }
+
+  addComment(clientId: string, productId: string, text: string) {
+    const data = {clientId: clientId, productId: productId, text: text};
+    return this.http.post<MessageModel>(`${this.apiUrl}/comment`, data);
   }
 
 }

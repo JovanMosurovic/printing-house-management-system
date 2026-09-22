@@ -1,0 +1,57 @@
+<h2>Product archive</h2>
+
+<p><a routerLink="/client">Back to client profile</a></p>
+
+@if (message) {
+  <p>{{message}}</p>
+}
+
+@if (archivedProducts.length === 0) {
+  <p>There are no delivered or received products.</p>
+} @else {
+  <table>
+    <thead>
+    <tr>
+      <th><button type="button" (click)="sortProducts('productName')">Product {{getSortSymbol('productName')}}</button></th>
+      <th><button type="button" (click)="sortProducts('quantity')">Quantity {{getSortSymbol('quantity')}}</button></th>
+      <th><button type="button" (click)="sortProducts('printingHouseName')">Printing house {{getSortSymbol('printingHouseName')}}</button></th>
+      <th><button type="button" (click)="sortProducts('orderDate')">Order date {{getSortSymbol('orderDate')}}</button></th>
+      <th>Status</th>
+      <th>Rating</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      @for (product of archivedProducts; track $index) {
+        <tr>
+          <td>{{product.productName}}</td>
+          <td>{{product.quantity}}</td>
+          <td>{{product.printingHouseName}}</td>
+          <td>{{product.orderDate | date:'dd.MM.yyyy HH:mm'}}</td>
+          <td>{{product.status}}</td>
+          <td>{{product.numberOfLikes}} likes / {{product.numberOfDislikes}} dislikes</td>
+          <td>
+            @if (product.status == "delivered") {
+              <button type="button" (click)="markAsReceived(product.invoiceId)">Mark as received</button>
+            }
+
+            @if (product.status == "received") {
+              <div>
+                <button type="button" (click)="setReaction(product.productId, 'like')">Like</button>
+                <button type="button" (click)="setReaction(product.productId, 'dislike')">Dislike</button>
+              </div>
+
+              <div>
+                <textarea [(ngModel)]="product.commentText"
+                          [name]="'comment_' + $index"
+                          placeholder="Write a comment"></textarea>
+                <button type="button" (click)="addComment(product)">Add comment</button>
+              </div>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

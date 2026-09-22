@@ -5,10 +5,11 @@ import {ProductModel} from '../models/product';
 import {AuthService} from '../services/auth.service';
 import {FormsModule} from '@angular/forms';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-product-details',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, DatePipe],
   templateUrl: './product-details.html',
   styleUrl: './product-details.css',
 })
@@ -26,11 +27,13 @@ export class ProductDetails {
   selectedPrintingServiceId = "";
   mapUrl: SafeResourceUrl | null = null;
   isClient = false;
+  loggedUserId = "";
   message = "";
 
   ngOnInit() {
     let loggedUser = this.authService.getLoggedUser();
     this.isClient = loggedUser?.role == "individualClient" || loggedUser?.role == "businessClient";
+    this.loggedUserId = loggedUser?._id || "";
 
     let productId =
       this.activatedRoute.snapshot.paramMap.get("productId");

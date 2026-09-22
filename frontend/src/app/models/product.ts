@@ -8,6 +8,14 @@ export class PrintingServiceModel {
   maxVisinaMm = 0;
 }
 
+export class ProductCommentModel {
+  _id = "";
+  clientId = "";
+  username = "";
+  text = "";
+  createdAt = "";
+}
+
 export class ProductModel {
   _id = "";
   stamparijaId = "";
@@ -31,6 +39,7 @@ export class ProductModel {
 
   brojSvidjanja = 0;
   brojNesvidjanja = 0;
+  comments: ProductCommentModel[] = [];
 }
 
 export class HomepageDataModel {

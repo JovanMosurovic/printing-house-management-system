@@ -125,6 +125,99 @@ export class InvoiceController {
         }
     }
 
+    // Returns delivered and received products that belong to one client
+    async getProductArchive(req: express.Request, res: express.Response) {
+        try {
+            let clientId = req.params.clientId;
+            let client = await UserModel.findById(clientId);
+
+            if (client == null) {
+                res.status(404).json({message: "Client was not found."});
+                return;
+            }
+
+            if (client.role != "individualClient" && client.role != "businessClient") {
+                res.status(403).json({message: "Entered user is not a client."});
+                return;
+            }
+
+            let invoices = await InvoiceModel.find({
+                clientId: clientId,
+                status: {$in: ["delivered", "received"]}
+            }).sort({createdAt: -1});
+
+            let archivedProducts = [];
+
+            for (let invoice of invoices) {
+                for (let invoiceItem of invoice.items) {
+                    let product = await ProductModel.findById(invoiceItem.productId);
+
+                    let data = {
+                        invoiceId: invoice._id,
+                        productId: invoiceItem.productId,
+                        productName: invoiceItem.productName,
+                        quantity: invoiceItem.quantity,
+                        printingHouseName: invoice.printingHouseName,
+                        status: invoice.status,
+                        orderDate: invoice.createdAt,
+                        numberOfLikes: product == null ? 0 : product.svidjanja.length,
+                        numberOfDislikes: product == null ? 0 : product.nesvidjanja.length
+                    };
+
+                    archivedProducts.push(data);
+                }
+            }
+
+            res.json(archivedProducts);
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Client ID is not valid."});
+                return;
+            }
+
+            console.log("Error while getting product archive.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
+    // Changes a delivered invoice to received
+    async markAsReceived(req: express.Request, res: express.Response) {
+        try {
+            let clientId = req.body.clientId;
+            let invoiceId = req.body.invoiceId;
+
+            if (!clientId || !invoiceId) {
+                res.status(400).json({message: "Client ID and invoice ID are required."});
+                return;
+            }
+
+            let invoice = await InvoiceModel.findOne({_id: invoiceId, clientId: clientId});
+
+            if (invoice == null) {
+                res.status(404).json({message: "Invoice was not found."});
+                return;
+            }
+
+            if (invoice.status != "delivered") {
+                res.status(409).json({message: "Only a delivered order can be marked as received."});
+                return;
+            }
+
+            invoice.status = "received";
+            await invoice.save();
+
+            res.json({message: "Order was successfully marked as received."});
+        } catch (e: any) {
+            if (e.name == "CastError") {
+                res.status(400).json({message: "Entered ID is not valid."});
+                return;
+            }
+
+            console.log("Error while marking invoice as received.");
+            res.status(500).json({message: "Unexpected server error."});
+        }
+    }
+
     // Cancels an ordered invoice and restores product quantities to stock
     async cancelInvoice(req: express.Request, res: express.Response) {
         try {

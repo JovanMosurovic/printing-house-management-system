@@ -4,6 +4,8 @@ export type InvoiceStatus = "ordered" | "inPrinting" | "delivered" | "received" 
 
 export type InvoiceSortField = "invoiceId" | "printingHouseName" | "printingHouseCity" | "totalPrice" | "status" | "createdAt";
 
+export type ProductArchiveSortField = "productName" | "quantity" | "printingHouseName" | "orderDate";
+
 export class InvoiceItemModel {
   productId = "";
   productCode = "";
@@ -45,4 +47,17 @@ export class ConfirmOrderResponseModel {
   message = "";
   invoices: InvoiceModel[] = [];
   emailSent = false;
+}
+
+export class ArchivedProductModel {
+  invoiceId = "";
+  productId = "";
+  productName = "";
+  quantity = 0;
+  printingHouseName = "";
+  status: InvoiceStatus = "delivered";
+  orderDate = "";
+  numberOfLikes = 0;
+  numberOfDislikes = 0;
+  commentText = "";
 }

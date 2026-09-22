@@ -32,6 +32,26 @@ const PrintingServiceSchema = new Schema({
     _id: false
 });
 
+const ProductCommentSchema = new Schema({
+    clientId: {
+        type: Schema.Types.ObjectId,
+        required: [true, "Client ID is required"]
+    },
+    username: {
+        type: String,
+        required: [true, "Username is required"]
+    },
+    text: {
+        type: String,
+        required: [true, "Comment text is required"],
+        trim: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+});
+
 let ProductSchema = new Schema({
     stamparijaId: {
         type: Schema.Types.ObjectId,
@@ -108,7 +128,11 @@ let ProductSchema = new Schema({
     }],
     nesvidjanja: [{
         type: Schema.Types.ObjectId
-    }]
+    }],
+    comments: {
+        type: [ProductCommentSchema],
+        default: []
+    }
 }, {
     timestamps: true
 });
