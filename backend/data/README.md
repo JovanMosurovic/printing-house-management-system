@@ -1,9 +1,12 @@
 # Test users
 
-| Username     | Password    | Role              |
-|--------------|-------------|-------------------|
-| newclient1   | Test123!    | Individual client |
-| newbusiness1 | Business1!  | Business client   |
-| newprinter1  | Printer1!   | Printing house    |
-| admin        | Admin123!   | Administrator     |
-| mojTest      | mojTest123. | Individual client |
+| Username     | Password     | Type              |
+|--------------|--------------|-------------------|
+| admin        | Admin123!    | Administrator     |
+| acaAkic      | acaAkic123.  | Individual client |
+| johnTest     | johnTest123. | Individual client |
+| jingMin      | jingMin123.  | Business client   |
+| gerryTailor  | gerryT123.   | Business client   |
+| printOne     | printO123.   | Printing house    |
+| wowPrinters  | wowP123.     | Printing house    |
+| somePrinter  | someP123.    | Printing house    |

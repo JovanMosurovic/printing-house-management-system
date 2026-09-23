@@ -1,0 +1,83 @@
+{
+  "stamparijaId": "",
+  "nazivStamparije": "Some Printing",
+  "proizvodi": [
+    {
+      "sifra": "SP-003",
+      "naziv": "Mat poster A2",
+      "opis": "Mat poster A2 formata sa jasnim prikazom boja, pogodan za promocije, izložbe i unutrašnje oglašavanje.",
+      "kategorija": "Štampa velikih formata",
+      "potkategorija": "Posteri",
+      "jedinicnaCena": 600,
+      "kolicinaNaLageru": 75,
+      "dostupneBoje": ["Bela"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "SP-USL-01",
+          "tipStampe": "Eko-solventna štampa",
+          "dodatnaCenaPoKomadu": 230,
+          "maxSirinaMm": 420,
+          "maxVisinaMm": 594
+        }
+      ]
+    },
+    {
+      "sifra": "SP-004",
+      "naziv": "Pamučni duks sa kapuljačom",
+      "opis": "Kvalitetan pamučni duks sa kapuljačom namenjen korporativnom, promotivnom i personalizovanom dizajnu.",
+      "kategorija": "Kreativne štampe",
+      "potkategorija": "Štampa na duksevima",
+      "jedinicnaCena": 2650,
+      "kolicinaNaLageru": 60,
+      "dostupneBoje": ["Crna", "Tamno plava", "Siva"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "SP-USL-02",
+          "tipStampe": "DTF štampa",
+          "dodatnaCenaPoKomadu": 380,
+          "maxSirinaMm": 300,
+          "maxVisinaMm": 400
+        },
+        {
+          "idUsluge": "SP-USL-03",
+          "tipStampe": "Direktna štampa na tekstil (DTG)",
+          "dodatnaCenaPoKomadu": 520,
+          "maxSirinaMm": 350,
+          "maxVisinaMm": 450
+        }
+      ]
+    },
+    {
+      "sifra": "SP-005",
+      "naziv": "Pamučni ceger",
+      "opis": "Višekratni pamučni ceger sa velikom površinom za štampu, pogodan za promotivne događaje i svakodnevnu upotrebu.",
+      "kategorija": "Kreativne štampe",
+      "potkategorija": "Štampa na cegerima",
+      "jedinicnaCena": 450,
+      "kolicinaNaLageru": 200,
+      "dostupneBoje": ["Prirodna", "Crna"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "SP-USL-04",
+          "tipStampe": "Sito štampa",
+          "dodatnaCenaPoKomadu": 180,
+          "maxSirinaMm": 280,
+          "maxVisinaMm": 320
+        },
+        {
+          "idUsluge": "SP-USL-05",
+          "tipStampe": "DTF štampa",
+          "dodatnaCenaPoKomadu": 260,
+          "maxSirinaMm": 280,
+          "maxVisinaMm": 320
+        }
+      ]
+    }
+  ]
+}

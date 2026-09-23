@@ -1,0 +1,90 @@
+{
+  "stamparijaId": "",
+  "nazivStamparije": "Wow Printers",
+  "proizvodi": [
+    {
+      "sifra": "WP-001",
+      "naziv": "Metalna hemijska olovka",
+      "opis": "Izdržljiva metalna hemijska olovka modernog izgleda, namenjena štampi logotipa i promotivnih poruka.",
+      "kategorija": "Štampa malih formata",
+      "potkategorija": "Olovke",
+      "jedinicnaCena": 175,
+      "kolicinaNaLageru": 350,
+      "dostupneBoje": ["Srebrna", "Crna", "Plava"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "WP-USL-01",
+          "tipStampe": "Tampon štampa",
+          "dodatnaCenaPoKomadu": 50,
+          "maxSirinaMm": 45,
+          "maxVisinaMm": 8
+        },
+        {
+          "idUsluge": "WP-USL-02",
+          "tipStampe": "UV štampa",
+          "dodatnaCenaPoKomadu": 85,
+          "maxSirinaMm": 50,
+          "maxVisinaMm": 8
+        }
+      ]
+    },
+    {
+      "sifra": "WP-002",
+      "naziv": "Premium vizit karte 350g",
+      "opis": "Profesionalne vizit karte od mat papira gramature 350g sa preciznom štampom i kvalitetnom završnom obradom.",
+      "kategorija": "Štampa malih formata",
+      "potkategorija": "Vizit karte",
+      "jedinicnaCena": 16,
+      "kolicinaNaLageru": 3000,
+      "dostupneBoje": ["Bela"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "WP-USL-03",
+          "tipStampe": "Digitalna štampa",
+          "dodatnaCenaPoKomadu": 6,
+          "maxSirinaMm": 90,
+          "maxVisinaMm": 50
+        },
+        {
+          "idUsluge": "WP-USL-04",
+          "tipStampe": "Foliotisak",
+          "dodatnaCenaPoKomadu": 18,
+          "maxSirinaMm": 80,
+          "maxVisinaMm": 40
+        }
+      ]
+    },
+    {
+      "sifra": "WP-004",
+      "naziv": "Pamučni duks sa kapuljačom",
+      "opis": "Udoban pamučni duks sa kapuljačom i prostranom površinom za personalizovanu štampu sa prednje ili zadnje strane.",
+      "kategorija": "Kreativne štampe",
+      "potkategorija": "Štampa na duksevima",
+      "jedinicnaCena": 2800,
+      "kolicinaNaLageru": 80,
+      "dostupneBoje": ["Crna", "Tamno plava", "Siva"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "WP-USL-05",
+          "tipStampe": "DTF štampa",
+          "dodatnaCenaPoKomadu": 400,
+          "maxSirinaMm": 300,
+          "maxVisinaMm": 400
+        },
+        {
+          "idUsluge": "WP-USL-06",
+          "tipStampe": "Direktna štampa na tekstil (DTG)",
+          "dodatnaCenaPoKomadu": 550,
+          "maxSirinaMm": 350,
+          "maxVisinaMm": 450
+        }
+      ]
+    }
+  ]
+}

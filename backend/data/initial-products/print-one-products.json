@@ -1,0 +1,83 @@
+{
+  "stamparijaId": "",
+  "nazivStamparije": "PrintOne",
+  "proizvodi": [
+    {
+      "sifra": "PO-001",
+      "naziv": "Metalna hemijska olovka",
+      "opis": "Elegantna metalna hemijska olovka sa glatkom površinom pogodnom za poslovno brendiranje i promotivne kampanje.",
+      "kategorija": "Štampa malih formata",
+      "potkategorija": "Olovke",
+      "jedinicnaCena": 190,
+      "kolicinaNaLageru": 500,
+      "dostupneBoje": ["Srebrna", "Crna", "Plava"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "PO-USL-01",
+          "tipStampe": "Tampon štampa",
+          "dodatnaCenaPoKomadu": 55,
+          "maxSirinaMm": 45,
+          "maxVisinaMm": 8
+        },
+        {
+          "idUsluge": "PO-USL-02",
+          "tipStampe": "UV štampa",
+          "dodatnaCenaPoKomadu": 90,
+          "maxSirinaMm": 50,
+          "maxVisinaMm": 8
+        }
+      ]
+    },
+    {
+      "sifra": "PO-002",
+      "naziv": "Premium vizit karte 350g",
+      "opis": "Premium vizit karte izrađene od čvrstog mat papira gramature 350g, pogodne za profesionalno predstavljanje firme.",
+      "kategorija": "Štampa malih formata",
+      "potkategorija": "Vizit karte",
+      "jedinicnaCena": 18,
+      "kolicinaNaLageru": 2500,
+      "dostupneBoje": ["Bela"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "PO-USL-03",
+          "tipStampe": "Digitalna štampa",
+          "dodatnaCenaPoKomadu": 7,
+          "maxSirinaMm": 90,
+          "maxVisinaMm": 50
+        },
+        {
+          "idUsluge": "PO-USL-04",
+          "tipStampe": "Foliotisak",
+          "dodatnaCenaPoKomadu": 20,
+          "maxSirinaMm": 80,
+          "maxVisinaMm": 40
+        }
+      ]
+    },
+    {
+      "sifra": "PO-003",
+      "naziv": "Mat poster A2",
+      "opis": "Poster A2 formata na kvalitetnom mat papiru, namenjen reklamnim kampanjama, događajima i uređenju poslovnog prostora.",
+      "kategorija": "Štampa velikih formata",
+      "potkategorija": "Posteri",
+      "jedinicnaCena": 650,
+      "kolicinaNaLageru": 100,
+      "dostupneBoje": ["Bela"],
+      "slikaUrl": "",
+      "dodatneSlike": [],
+      "uslugeStampe": [
+        {
+          "idUsluge": "PO-USL-05",
+          "tipStampe": "Eko-solventna štampa",
+          "dodatnaCenaPoKomadu": 250,
+          "maxSirinaMm": 420,
+          "maxVisinaMm": 594
+        }
+      ]
+    }
+  ]
+}
