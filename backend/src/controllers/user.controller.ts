@@ -327,7 +327,7 @@ export class UserController{
             let profileImage = req.body.profileImage
 
             if (!profileImage) {
-                let defaultImagePath = path.join(__dirname, "../../uploads/profiles/default_profile_image.jpg")
+                let defaultImagePath = path.join(__dirname, "../../data/images/profiles/default_profile_image.jpg")
                 let defaultImageBase64 = fs.readFileSync(defaultImagePath).toString("base64")
 
                 profileImage = `data:image/jpeg;base64,${defaultImageBase64}`

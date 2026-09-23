@@ -1,0 +1,155 @@
+[{
+  "_id": {
+    "$oid": "6ab3b47138ba6adfece0c54a"
+  },
+  "clientId": {
+    "$oid": "6ab39031e0a935dcc0da8cb5"
+  },
+  "clientUsername": "acaAkic",
+  "clientEmail": "acaakic@test.com",
+  "printingHouseId": {
+    "$oid": "6ab39c89e0a935dcc0da8ce1"
+  },
+  "printingHouseName": "Some Printing",
+  "printingHouseCity": "Printer city",
+  "items": [
+    {
+      "productId": {
+        "$oid": "6ab3a23b8d44103778f291a3"
+      },
+      "productCode": "SP-003",
+      "productName": "Mat poster A2",
+      "color": "Bela",
+      "printingServiceId": "SP-USL-01",
+      "printingType": "Eko-solventna štampa",
+      "unitPrice": 600,
+      "additionalPricePerItem": 230,
+      "quantity": 2,
+      "totalPrice": 1660,
+      "preparationType": "text",
+      "preparationText": "test",
+      "preparationImage": ""
+    }
+  ],
+  "totalPrice": 1660,
+  "status": "received",
+  "paymentMethod": "card",
+  "paymentStatus": "paid",
+  "cardLastFour": "4242",
+  "createdAt": {
+    "$date": "2026-09-23T11:13:53.932Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-23T11:16:14.243Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6ab3b47138ba6adfece0c54c"
+  },
+  "clientId": {
+    "$oid": "6ab39031e0a935dcc0da8cb5"
+  },
+  "clientUsername": "acaAkic",
+  "clientEmail": "acaakic@test.com",
+  "printingHouseId": {
+    "$oid": "6ab39c3be0a935dcc0da8cd6"
+  },
+  "printingHouseName": "Wow Printers",
+  "printingHouseCity": "Wow city",
+  "items": [
+    {
+      "productId": {
+        "$oid": "6ab3a2b58d44103778f291c3"
+      },
+      "productCode": "WP-004",
+      "productName": "Pamučni duks sa kapuljačom",
+      "color": "Tamno plava",
+      "printingServiceId": "WP-USL-06",
+      "printingType": "Direktna štampa na tekstil (DTG)",
+      "unitPrice": 2800,
+      "additionalPricePerItem": 550,
+      "quantity": 1,
+      "totalPrice": 3350,
+      "preparationType": "text",
+      "preparationText": "Aca",
+      "preparationImage": ""
+    }
+  ],
+  "totalPrice": 3350,
+  "status": "received",
+  "paymentMethod": "card",
+  "paymentStatus": "paid",
+  "cardLastFour": "4242",
+  "createdAt": {
+    "$date": "2026-09-23T11:13:53.934Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-23T11:15:34.594Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6ab3b9ea38ba6adfece0c6ca"
+  },
+  "clientId": {
+    "$oid": "6ab3912ae0a935dcc0da8cbd"
+  },
+  "clientUsername": "jingMin",
+  "clientEmail": "jingmin@test.com",
+  "printingHouseId": {
+    "$oid": "6ab39c3be0a935dcc0da8cd6"
+  },
+  "printingHouseName": "Wow Printers",
+  "printingHouseCity": "Belgrade",
+  "items": [
+    {
+      "productId": {
+        "$oid": "6ab3a2b58d44103778f291c3"
+      },
+      "productCode": "WP-004",
+      "productName": "Pamučni duks sa kapuljačom",
+      "color": "Crna",
+      "printingServiceId": "WP-USL-05",
+      "printingType": "DTF štampa",
+      "unitPrice": 2800,
+      "additionalPricePerItem": 400,
+      "quantity": 5,
+      "totalPrice": 16000,
+      "preparationType": "text",
+      "preparationText": "jing",
+      "preparationImage": ""
+    },
+    {
+      "productId": {
+        "$oid": "6ab3a2b58d44103778f291c1"
+      },
+      "productCode": "WP-002",
+      "productName": "Premium vizit karte 350g",
+      "color": "Bela",
+      "printingServiceId": "WP-USL-03",
+      "printingType": "Digitalna štampa",
+      "unitPrice": 16,
+      "additionalPricePerItem": 6,
+      "quantity": 15,
+      "totalPrice": 330,
+      "preparationType": "text",
+      "preparationText": "a",
+      "preparationImage": ""
+    }
+  ],
+  "totalPrice": 16330,
+  "status": "received",
+  "paymentMethod": "publicProcurement",
+  "paymentStatus": "notApplicable",
+  "cardLastFour": "",
+  "createdAt": {
+    "$date": "2026-09-23T11:37:14.256Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-23T11:38:52.699Z"
+  },
+  "__v": 0
+}]

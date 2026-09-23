@@ -1,0 +1,167 @@
+[{
+  "_id": {
+    "$oid": "6ab3b56538ba6adfece0c5fc"
+  },
+  "clientId": {
+    "$oid": "6ab3912ae0a935dcc0da8cbd"
+  },
+  "clientUsername": "jingMin",
+  "clientEmail": "jingmin@test.com",
+  "institutionName": "JingMin Institution",
+  "items": [
+    {
+      "productName": "Metalna hemijska olovka",
+      "category": "Štampa malih formata",
+      "subcategory": "Olovke",
+      "color": "Srebrna",
+      "printingType": "Tampon štampa",
+      "quantity": 5,
+      "preparationType": "text",
+      "preparationText": "wow",
+      "preparationImage": "",
+      "_id": {
+        "$oid": "6ab3b56538ba6adfece0c5fd"
+      }
+    },
+    {
+      "productName": "Pamučni ceger",
+      "category": "Kreativne štampe",
+      "subcategory": "Štampa na cegerima",
+      "color": "Prirodna",
+      "printingType": "DTF štampa",
+      "quantity": 100,
+      "preparationType": "text",
+      "preparationText": "jing",
+      "preparationImage": "",
+      "_id": {
+        "$oid": "6ab3b56538ba6adfece0c5fe"
+      }
+    }
+  ],
+  "expiresAt": {
+    "$date": "2026-09-23T11:27:57.535Z"
+  },
+  "status": "unsuccessful",
+  "winningOfferId": null,
+  "winningPrinterId": null,
+  "invoiceId": null,
+  "offers": [],
+  "createdAt": {
+    "$date": "2026-09-23T11:17:57.536Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-23T11:37:14.242Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6ab3b60a38ba6adfece0c646"
+  },
+  "clientId": {
+    "$oid": "6ab3912ae0a935dcc0da8cbd"
+  },
+  "clientUsername": "jingMin",
+  "clientEmail": "jingmin@test.com",
+  "institutionName": "JingMin Institution",
+  "items": [
+    {
+      "productName": "Pamučni duks sa kapuljačom",
+      "category": "Kreativne štampe",
+      "subcategory": "Štampa na duksevima",
+      "color": "Crna",
+      "printingType": "DTF štampa",
+      "quantity": 5,
+      "preparationType": "text",
+      "preparationText": "jing",
+      "preparationImage": "",
+      "_id": {
+        "$oid": "6ab3b60a38ba6adfece0c647"
+      }
+    },
+    {
+      "productName": "Premium vizit karte 350g",
+      "category": "Štampa malih formata",
+      "subcategory": "Vizit karte",
+      "color": "Bela",
+      "printingType": "Digitalna štampa",
+      "quantity": 15,
+      "preparationType": "text",
+      "preparationText": "a",
+      "preparationImage": "",
+      "_id": {
+        "$oid": "6ab3b60a38ba6adfece0c648"
+      }
+    }
+  ],
+  "expiresAt": {
+    "$date": "2026-09-23T11:30:42.391Z"
+  },
+  "status": "completed",
+  "winningOfferId": {
+    "$oid": "6ab3b68b38ba6adfece0c661"
+  },
+  "winningPrinterId": {
+    "$oid": "6ab39c3be0a935dcc0da8cd6"
+  },
+  "invoiceId": {
+    "$oid": "6ab3b9ea38ba6adfece0c6ca"
+  },
+  "offers": [
+    {
+      "printerId": {
+        "$oid": "6ab39c3be0a935dcc0da8cd6"
+      },
+      "printingHouseName": "Wow Printers",
+      "printingHouseCity": "Wow city",
+      "items": [
+        {
+          "procurementItemId": {
+            "$oid": "6ab3b60a38ba6adfece0c647"
+          },
+          "productId": {
+            "$oid": "6ab3a2b58d44103778f291c3"
+          },
+          "productCode": "WP-004",
+          "productName": "Pamučni duks sa kapuljačom",
+          "printingServiceId": "WP-USL-05",
+          "printingType": "DTF štampa",
+          "unitPrice": 2800,
+          "additionalPricePerItem": 400,
+          "quantity": 5,
+          "totalPrice": 16000
+        },
+        {
+          "procurementItemId": {
+            "$oid": "6ab3b60a38ba6adfece0c648"
+          },
+          "productId": {
+            "$oid": "6ab3a2b58d44103778f291c1"
+          },
+          "productCode": "WP-002",
+          "productName": "Premium vizit karte 350g",
+          "printingServiceId": "WP-USL-03",
+          "printingType": "Digitalna štampa",
+          "unitPrice": 16,
+          "additionalPricePerItem": 6,
+          "quantity": 15,
+          "totalPrice": 330
+        }
+      ],
+      "totalPrice": 16330,
+      "createdAt": {
+        "$date": "2026-09-23T11:22:51.250Z"
+      },
+      "_id": {
+        "$oid": "6ab3b68b38ba6adfece0c661"
+      }
+    }
+  ],
+  "createdAt": {
+    "$date": "2026-09-23T11:20:42.392Z"
+  },
+  "updatedAt": {
+    "$date": "2026-09-23T11:37:14.258Z"
+  },
+  "__v": 1
+}]
