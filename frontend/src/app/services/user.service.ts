@@ -65,6 +65,7 @@ export class UserService {
       lastName: user.lastName,
       phone: user.phone,
       email: user.email,
+      profileImage: user.profileImage,
       status: user.status,
       institution: institution
     };

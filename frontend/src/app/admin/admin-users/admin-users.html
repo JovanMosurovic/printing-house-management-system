@@ -66,6 +66,19 @@
 
   <form #userForm="ngForm">
     <div>
+      <img [src]="editingUser.profileImage" alt="Profile image" width="200">
+    </div>
+
+    <div>
+      Profile image:
+      <input #profileImageInput type="file" accept=".jpg,.jpeg,.png,.gif"
+             (change)="selectProfileImage(profileImageInput)">
+      @if (profileImageError) {
+        <p>{{profileImageError}}</p>
+      }
+    </div>
+
+    <div>
       Role:
       <input type="text" name="role" [value]="getRoleName(editingUser.role)" readonly disabled>
     </div>

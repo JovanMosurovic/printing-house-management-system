@@ -23,6 +23,7 @@ export class AdminUsers implements OnInit {
   message = "";
   messageIsError = false;
   messageIsClosing = false;
+  profileImageError = "";
 
   ngOnInit() {
     let loggedUser = this.authService.getLoggedUser();
@@ -60,6 +61,7 @@ export class AdminUsers implements OnInit {
     this.message = "";
     this.messageIsError = false;
     this.messageIsClosing = false;
+    this.profileImageError = "";
     this.userToDelete = null;
     this.originalUser = copyUser(user);
     this.editingUser = copyUser(user);
@@ -68,6 +70,7 @@ export class AdminUsers implements OnInit {
   cancelEditing() {
     this.editingUser = null;
     this.originalUser = null;
+    this.profileImageError = "";
   }
 
   saveUser(userForm: NgForm) {
@@ -75,7 +78,7 @@ export class AdminUsers implements OnInit {
     this.messageIsError = false;
     this.messageIsClosing = false;
 
-    if (userForm.invalid) {
+    if (userForm.invalid || this.profileImageError) {
       userForm.form.markAllAsTouched();
       return;
     }
@@ -98,6 +101,51 @@ export class AdminUsers implements OnInit {
         }
       }
     });
+  }
+
+  selectProfileImage(input: HTMLInputElement) {
+    let file = input.files?.[0];
+
+    this.profileImageError = "";
+
+    if (!file || this.editingUser == null) return;
+
+    if (file.type != "image/jpeg" && file.type != "image/png" && file.type != "image/gif") {
+      this.profileImageError = "Profile image must be a JPG, PNG or GIF file.";
+      input.value = "";
+      return;
+    }
+
+    let reader = new FileReader();
+
+    reader.onload = () => {
+      let profileImageBase64 = reader.result as string;
+      let image = new Image();
+
+      image.onload = () => {
+        if (image.width < 100 || image.height < 100 || image.width > 250 || image.height > 250) {
+          this.profileImageError = "Profile image dimensions must be between 100x100 and 250x250 pixels.";
+          input.value = "";
+          return;
+        }
+
+        if (this.editingUser != null) this.editingUser.profileImage = profileImageBase64;
+      };
+
+      image.onerror = () => {
+        this.profileImageError = "Profile image is not valid.";
+        input.value = "";
+      };
+
+      image.src = profileImageBase64;
+    };
+
+    reader.onerror = () => {
+      this.profileImageError = "Profile image could not be read.";
+      input.value = "";
+    };
+
+    reader.readAsDataURL(file);
   }
 
   askToDeleteUser(user: UserModel) {

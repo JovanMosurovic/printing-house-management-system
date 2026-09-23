@@ -33,6 +33,7 @@ export class UserController{
             let lastName = req.body.lastName?.trim();
             let phone = req.body.phone?.trim();
             let email = req.body.email?.trim().toLowerCase();
+            let profileImage = req.body.profileImage;
             let status = req.body.status;
             let institution = req.body.institution;
 
@@ -99,12 +100,44 @@ export class UserController{
                 }
             }
 
+            if (profileImage) {
+                try {
+                    let imageMatch = profileImage.match(/^data:image\/(jpeg|png|gif);base64,(.+)$/);
+
+                    if (imageMatch == null) {
+                        res.status(400).json({message: "Profile image must be a JPG, PNG or GIF file."});
+                        return;
+                    }
+
+                    let imageFormat = imageMatch[1];
+                    let imageBuffer = Buffer.from(imageMatch[2], "base64");
+                    let dimensions = imageSize(imageBuffer);
+                    let expectedImageType = imageFormat == "jpeg" ? "jpg" : imageFormat;
+
+                    if (dimensions.type != expectedImageType) {
+                        res.status(400).json({message: "Profile image format is not valid."});
+                        return;
+                    }
+
+                    if (dimensions.width < 100 || dimensions.height < 100 ||
+                        dimensions.width > 250 || dimensions.height > 250) {
+                        res.status(400).json({message: "Profile image dimensions must be between 100x100 and 250x250 pixels."});
+                        return;
+                    }
+                } catch {
+                    res.status(400).json({message: "Profile image must be a valid JPG, PNG or GIF file."});
+                    return;
+                }
+            }
+
             user.username = username;
             user.firstName = firstName;
             user.lastName = lastName;
             user.phone = phone;
             user.email = email;
             user.status = status;
+
+            if (profileImage) user.profileImage = profileImage;
 
             if (user.role == "businessClient" || user.role == "printer") user.institution = institution;
 
